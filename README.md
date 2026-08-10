@@ -1,45 +1,60 @@
 <div align="center">
-<h1>Amigo do Bairro</h1>
+<h1>Neighborhood Friend</h1>
 <p>
-  Uma aplicação web para comunidades de bairro cuidarem, em conjunto, dos pets que vivem na rua.<br/>
-  Organize comunidades, acompanhe cada animal e registre o que importa no dia a dia.
+  A web application for neighborhood communities to collectively care for street pets.<br/>
+  Organize communities, track each animal, and record what matters in daily life.
 </p>
 </div>
 
-### O que é
+### What it is
 
-Amigo do Bairro é um projeto pensado para vizinhos que querem colaborar no cuidado de pets de rua de uma mesma região.
+Neighborhood Friend is a project designed for neighbors who want to collaborate in caring for street pets in the same area.
 
-Com ele, é possível:
+With it, you can:
 
-1. Criar comunidades por bairro ou vizinhança.
-2. Participar de mais de uma comunidade.
-3. Registrar pets da comunidade.
-4. Acompanhar informações úteis como se o pet já comeu, se está doente e fotos.
-
-<br/>
-
-### Por que existe
-
-O objetivo é tornar o cuidado coletivo mais simples e organizado.
-
-Em vez de depender de mensagens soltas e memória, a ideia é centralizar o histórico básico de cada pet para que qualquer pessoa da comunidade consiga entender o que já foi feito e o que ainda precisa de atenção.
+1. Create communities by neighborhood or area.
+2. Join more than one community.
+3. Register pets in the community.
+4. Track useful information such as whether the pet has eaten, if it is sick, and photos.
 
 <br/>
 
-### Como rodar
+### Why it exists
 
-No diretório `frontend/`:
+The goal is to make collective care simpler and more organized.
 
-```bash
-npm install
-npm run dev
+Instead of relying on scattered messages and memory, the idea is to centralize the basic history of each pet so that anyone in the community can understand what has already been done and what still needs attention.
+
+<br/>
+
+
+## How to run it locally
+0. Prerequisites
+- [Node.js](https://nodejs.org/)
+- [Yarn](https://classic.yarnpkg.com/lang/en/) or `npm`
+
+1. Clone the Repository
+```
+git clone https://github.com/sofiahernandes/software-engineering.git
+cd software-engineering
 ```
 
-Depois, abra `http://localhost:3000`.
+3. Install Dependencies
+```
+npm install
+# or
+yarn install
+```
+
+6. Start the Development Server
+```
+npm run dev
+# or
+yarn dev
+```
 
 <br/>
 
-### Licença
+## License
 
-<a href="https://github.com/sofiahernandes/margaret">Margaret</a> © 2026 by <a href="https://github.com/analicecoimbra">Analice Coimbra Carneiro</a>, <a href="https://github.com/alicelobwp">Mariah Alice Pimentel Lôbo Pereira</a>, <a href="https://github.com/sofiahernandes">Sofia Botechia Hernandes</a> and <a href="https://github.com/viick04">Victória Duarte Vieira Azevedo</a> is licensed under [MIT](LICENSE).
+<a href="https://github.com/sofiahernandes/margaret">Amigo do Bairro</a> © 2026 by <a href="https://github.com/analicecoimbra">Analice Coimbra Carneiro</a>, <a href="https://github.com/alicelobwp">Mariah Alice Pimentel Lôbo Pereira</a>, <a href="https://github.com/sofiahernandes">Sofia Botechia Hernandes</a> and <a href="https://github.com/viick04">Victória Duarte Vieira Azevedo</a> is licensed under [MIT](LICENSE).
