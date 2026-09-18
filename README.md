@@ -35,8 +35,8 @@ Instead of relying on scattered messages and memory, the idea is to centralize t
 
 1. Clone the Repository
 ```
-git clone https://github.com/sofiahernandes/software-engineering.git
-cd software-engineering
+git clone https://github.com/sofiahernandes/community-pets-network.git
+cd community-pets-network
 ```
 
 3. Install Dependencies
