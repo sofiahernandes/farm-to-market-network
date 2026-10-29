@@ -173,16 +173,16 @@ Acompanhar conversão vitrine→checkout, aprovação de pagamento, pedidos conf
 
 ## 9. Riscos e desbloqueios
 
-| Risco | Mitigação | Desbloqueio |
-|---|---|---|
-| Split Mercado Pago não aprovado | Adapter sandbox e feature flag desligada | Conta conectada e aprovação comercial |
-| Cidade/slots indefinidos | Modelo configurável, sem hardcode | CEPs, dias, cutoff e capacidade aprovados |
-| README conflita com B2C | `PLAN.md` como fonte de verdade e ADR | Backlog revisado |
-| Requisitos herdados | Excluir pets/comunidades e registrar decisão | Revisão de requisitos concluída |
-| Perecíveis/overselling | Transação, cutoff, política de falta e testes concorrentes | Teste de concorrência aprovado |
-| Dados pessoais/pagamento | Minimização, criptografia/segregação, logs redigidos | Revisão LGPD/segurança |
-| Operação manual | Zonas, slots e runbook antes de otimização | Simulação de dia de entrega |
-| Fotos/certificados | Adapter de storage, compressão e limites | Upload autorizado funcionando |
+| Risco                           | Mitigação                                                  | Desbloqueio                               |
+| ------------------------------- | ---------------------------------------------------------- | ----------------------------------------- |
+| Split Mercado Pago não aprovado | Adapter sandbox e feature flag desligada                   | Conta conectada e aprovação comercial     |
+| Cidade/slots indefinidos        | Modelo configurável, sem hardcode                          | CEPs, dias, cutoff e capacidade aprovados |
+| README conflita com B2C         | `PLAN.md` como fonte de verdade e ADR                      | Backlog revisado                          |
+| Requisitos herdados             | Excluir pets/comunidades e registrar decisão               | Revisão de requisitos concluída           |
+| Perecíveis/overselling          | Transação, cutoff, política de falta e testes concorrentes | Teste de concorrência aprovado            |
+| Dados pessoais/pagamento        | Minimização, criptografia/segregação, logs redigidos       | Revisão LGPD/segurança                    |
+| Operação manual                 | Zonas, slots e runbook antes de otimização                 | Simulação de dia de entrega               |
+| Fotos/certificados              | Adapter de storage, compressão e limites                   | Upload autorizado funcionando             |
 
 ## 10. Decisões abertas antes do primeiro sprint
 
