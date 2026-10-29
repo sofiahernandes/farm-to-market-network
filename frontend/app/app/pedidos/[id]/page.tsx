@@ -25,26 +25,27 @@ export default function PedidoDetalhe({ params }: { params: { id: string } }) {
           <span>/</span>Detalhe
         </div>
         {error && <p className="danger-text">{error}</p>}
-        {!order && !error && <p>Carregando pedido…</p>}
+        {!order && !error && <p className="loading-indicator">Carregando pedido…</p>}
         {order && (
-          <section className="dashboard-card">
-            <div className="eyebrow">Pedido {order.id}</div>
-            <h1>
+          <section className="dashboard-card order-detail-card">
+            <div className="card-heading">
+              <div>
+                <span className="order-code">Pedido #{order.id}</span>
+                <h1>
+                  {order.items.map((i) => `${i.quantity}× ${i.name}`).join(', ')}
+                </h1>
+              </div>
               <StatusBadge>{order.status}</StatusBadge>
-            </h1>
-            <p className="lead">
-              {order.items.map((i) => `${i.quantity}× ${i.name}`).join(', ')}
-            </p>
+            </div>
             <div className="delivery-info">
               <div>
                 <span>Total</span>
                 <strong>{formatPrice(order.totalCents)}</strong>
               </div>
               <div>
-                <span>Endereço</span>
+                <span>Endereço de entrega</span>
                 <strong>
-                  {order.address.street}, {order.address.number} ·{' '}
-                  {order.address.city}
+                  {order.address.street}, {order.address.number} · {order.address.city}
                 </strong>
               </div>
               <div>
@@ -54,17 +55,19 @@ export default function PedidoDetalhe({ params }: { params: { id: string } }) {
                 </strong>
               </div>
             </div>
-            <hr />
-            <h2>Atualizações</h2>
-            {order.statusHistory.map((s, i) => (
-              <div className="order-row" key={`${s.createdAt}-${i}`}>
-                <span className="order-icon">●</span>
-                <div>
-                  <strong>{s.toStatus}</strong>
-                  <span>{new Date(s.createdAt).toLocaleString('pt-BR')}</span>
+            <hr className="detail-rule" />
+            <h2>Histórico de atualizações</h2>
+            <div className="status-history-list">
+              {order.statusHistory.map((s, i) => (
+                <div className="order-row" key={`${s.createdAt}-${i}`}>
+                  <span className="status-timeline-dot" />
+                  <div>
+                    <strong>{s.toStatus}</strong>
+                    <span>{new Date(s.createdAt).toLocaleString('pt-BR')}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         )}
       </main>

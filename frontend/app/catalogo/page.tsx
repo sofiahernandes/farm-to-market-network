@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Footer, Header, ProductCard, SectionHeading } from '@/components/ui';
+import { PinIcon, SearchIcon } from '@/components/icons';
 import { api, type CatalogResponse } from '@/lib/api';
 
 export default function Catalogo() {
@@ -33,19 +34,18 @@ export default function Catalogo() {
         <div className="breadcrumb">
           Início <span>/</span> Catálogo
         </div>
-        <SectionHeading
-          eyebrow="Ofertas persistidas"
-          title="Escolha o que vai para sua mesa."
-        >
-          <span className="muted">{data?.pagination.count ?? ''} ofertas</span>
+        <SectionHeading title="Escolha o que vai para sua mesa.">
+          <span className="count-tag">
+            {data?.pagination.count ? `${data.pagination.count} ofertas disponíveis` : ''}
+          </span>
         </SectionHeading>
         <div className="catalog-toolbar">
           <label className="search-box">
-            <span aria-hidden="true">⌕</span>
+            <SearchIcon size={18} className="search-icon" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar produto ou descrição"
+              placeholder="Buscar por produto, variedade ou produtor"
               aria-label="Buscar produto ou descrição"
             />
           </label>
@@ -53,6 +53,7 @@ export default function Catalogo() {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             aria-label="Filtrar por categoria"
+            className="category-select"
           >
             <option value="">Todas as categorias</option>
             <option value="Cestas">Cestas</option>
@@ -61,14 +62,16 @@ export default function Catalogo() {
           </select>
         </div>
         <div className="zone-alert">
-          <span>⌖</span>
+          <div className="zone-alert-icon">
+            <PinIcon size={20} />
+          </div>
           <div>
             <strong>Disponibilidade conforme o estoque do backend</strong>
             <p>O endereço é confirmado no checkout.</p>
           </div>
         </div>
         <section className="catalog-results" aria-live="polite">
-          {loading && <p className="muted">Carregando ofertas…</p>}
+          {loading && <p className="muted loading-indicator">Carregando ofertas…</p>}
           {error && (
             <div className="info-alert">
               <strong>Não foi possível carregar o catálogo.</strong>
@@ -76,9 +79,9 @@ export default function Catalogo() {
             </div>
           )}
           {!loading && !error && data?.data.length === 0 && (
-            <div className="dashboard-card">
-              <h2>Ainda não há ofertas disponíveis.</h2>
-              <p className="muted">Tente outra busca ou categoria.</p>
+            <div className="dashboard-card empty-card">
+              <h2>Nenhuma oferta encontrada para essa busca.</h2>
+              <p className="muted">Tente limpar os termos ou selecione outra categoria.</p>
             </div>
           )}
           {!loading && !error && data && data.data.length > 0 && (

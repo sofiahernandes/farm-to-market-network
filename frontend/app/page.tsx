@@ -1,5 +1,14 @@
 import Link from 'next/link';
-import { Footer, Header, SectionHeading } from '@/components/ui';
+import { Footer, Header } from '@/components/ui';
+import {
+  ArrowRightIcon,
+  BasketIcon,
+  CalendarIcon,
+  PackageIcon,
+  ShieldCheckIcon,
+  SproutIcon,
+  TruckIcon,
+} from '@/components/icons';
 
 export default function Home() {
   return (
@@ -8,134 +17,199 @@ export default function Home() {
       <main>
         <section className="hero">
           <div className="container hero-grid">
-            <div>
-              <div className="hero-kicker">
-                <span className="pulse-dot" /> Alimentação local, com clareza
-              </div>
+            <div className="hero-content">
               <h1>
-                Do campo à sua porta, <em>sem atalhos.</em>
+                Do campo à sua porta, com origem e colheita transparentes.
               </h1>
               <p className="hero-lead">
-                Encontre produtos e cestas fixas de pequenos produtores da sua
-                região. Você escolhe com calma, acompanha cada etapa e recebe na
-                janela combinada.
+                Conectamos consumidores a produtores rurais locais. Alimentos
+                frescos da safra, sem intermediários excessivos, com rastreabilidade
+                clara do produtor até a sua mesa.
               </p>
               <div className="hero-actions">
                 <Link className="button button-primary" href="/catalogo">
-                  Explorar ofertas <span>↗</span>
+                  <span>Explorar ofertas da semana</span>
+                  <ArrowRightIcon size={16} />
                 </Link>
-                <Link className="text-link" href="#como-funciona">
-                  Como funciona <span>↓</span>
+                <Link className="button button-secondary" href="#como-funciona">
+                  <span>Como funciona</span>
                 </Link>
               </div>
-              <div className="hero-note">
-                <span className="avatar-stack" aria-hidden="true">
-                  <i>🌱</i>
-                  <i>🥕</i>
-                  <i>🍅</i>
-                </span>
-                <span>
-                  <strong>Pequenos produtores, grandes cuidados.</strong>
-                  <br />
-                  <span className="muted">
-                    Ofertas com origem e disponibilidade visíveis
-                  </span>
-                </span>
+              <div className="hero-highlights">
+                <div className="highlight-item">
+                  <SproutIcon size={18} />
+                  <span>Produtores locais identificados</span>
+                </div>
+                <div className="highlight-item">
+                  <CalendarIcon size={18} />
+                  <span>Colheita sob demanda</span>
+                </div>
+                <div className="highlight-item">
+                  <TruckIcon size={18} />
+                  <span>Entregas em janelas programadas</span>
+                </div>
               </div>
             </div>
-            <div
-              className="hero-visual"
-              aria-label="Ilustração de uma cesta de alimentos frescos"
-            >
-              <div className="sun-shape" />
-              <div className="hero-sticker">
-                colheita
-                <br />
-                <strong>da semana</strong>
-              </div>
-              <div className="basket">
-                🥬<span>🍅</span>
-                <b>🥕</b>
-                <small>🌿</small>
-              </div>
-              <div className="visual-caption">
-                <span>01</span>
-                <strong>Escolha local</strong>
-                <span className="line" />
-                <span>com data e origem</span>
+
+            <div className="hero-visual" aria-label="Painel de ofertas da colheita semanal">
+              <div className="harvest-board">
+                <div className="harvest-board-header">
+                  <div>
+                    <span className="harvest-board-tag">Distribuição Regional</span>
+                    <h2>Colheita da Semana</h2>
+                  </div>
+                  <span className="harvest-status-live">
+                    <span className="status-dot" />
+                    Pedidos abertos
+                  </span>
+                </div>
+
+                <div className="harvest-items">
+                  <div className="harvest-item">
+                    <div className="harvest-item-icon">
+                      <PackageIcon size={22} />
+                    </div>
+                    <div className="harvest-item-info">
+                      <div className="harvest-item-top">
+                        <strong>Cesta Agroecológica Familiar</strong>
+                        <span className="harvest-price">R$ 68,00</span>
+                      </div>
+                      <p>Sítio das Paineiras · 5,8 kg de verduras e raízes da estação</p>
+                    </div>
+                  </div>
+
+                  <div className="harvest-item">
+                    <div className="harvest-item-icon">
+                      <SproutIcon size={22} />
+                    </div>
+                    <div className="harvest-item-info">
+                      <div className="harvest-item-top">
+                        <strong>Folhagens & Ervas Frescas</strong>
+                        <span className="harvest-price">R$ 24,00</span>
+                      </div>
+                      <p>Horta Vale Verde · Maço selecionado colhido no dia</p>
+                    </div>
+                  </div>
+
+                  <div className="harvest-item">
+                    <div className="harvest-item-icon">
+                      <BasketIcon size={22} />
+                    </div>
+                    <div className="harvest-item-info">
+                      <div className="harvest-item-top">
+                        <strong>Ovos Caipiras de Pasto</strong>
+                        <span className="harvest-price">R$ 18,50</span>
+                      </div>
+                      <p>Granja Santa Clara · Dúzia selecionada, aves livres</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="harvest-board-footer">
+                  <div className="harvest-delivery-note">
+                    <CalendarIcon size={16} />
+                    <span>Próxima rota de entrega: Terça-feira, 08h–12h</span>
+                  </div>
+                  <Link href="/catalogo" className="harvest-explore-link">
+                    <span>Ver todas as ofertas</span>
+                    <ArrowRightIcon size={14} />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </section>
+
         <section className="trust-strip">
           <div className="container trust-grid">
-            <span>Feito para o seu bairro</span>
-            <span>•</span>
-            <span>Sem promessas vazias</span>
-            <span>•</span>
-            <span>Gateway de pagamento fake sandbox</span>
+            <div className="trust-cell">
+              <SproutIcon size={18} />
+              <span>Agricultura familiar e regional</span>
+            </div>
+            <div className="trust-cell">
+              <ShieldCheckIcon size={18} />
+              <span>Preço transparente sem taxas ocultas</span>
+            </div>
+            <div className="trust-cell">
+              <TruckIcon size={18} />
+              <span>Janelas de entrega confirmadas</span>
+            </div>
+            <div className="trust-cell">
+              <CalendarIcon size={18} />
+              <span>Ambiente sandbox para testes</span>
+            </div>
           </div>
         </section>
+
         <section id="como-funciona" className="section container">
-          <SectionHeading
-            eyebrow="Um jeito mais simples"
-            title="Você sabe o que compra, de quem vem e quando chega."
-          />
+          <div className="section-header-compact">
+            <h2>Você sabe o que compra, de quem vem e quando chega.</h2>
+            <p className="lead">
+              Sem surpresas na entrega e sem complicações. Um fluxo direto do produtor rural para você.
+            </p>
+          </div>
           <div className="steps-grid">
-            <div className="step">
-              <span>01</span>
-              <h3>Explore</h3>
+            <div className="step-card">
+              <div className="step-num">1</div>
+              <h3>Explore a safra atual</h3>
               <p>
-                Veja ofertas elegíveis para sua região, com preço, unidade e
-                disponibilidade.
+                Consulte as ofertas ativas na sua região com informação clara de produtor,
+                preço por unidade e estoque real disponível.
               </p>
             </div>
-            <div className="step">
-              <span>02</span>
-              <h3>Escolha</h3>
+            <div className="step-card">
+              <div className="step-num">2</div>
+              <h3>Monte sua sacola de itens</h3>
               <p>
-                Monte sua sacola ou assine uma cesta fixa com itens e preço
-                definidos.
+                Escolha itens avulsos ou cestas compostas de acordo com a necessidade da sua casa,
+                sem fidelidade forçada.
               </p>
             </div>
-            <div className="step">
-              <span>03</span>
-              <h3>Acompanhe</h3>
+            <div className="step-card">
+              <div className="step-num">3</div>
+              <h3>Receba fresco em sua porta</h3>
               <p>
-                Escolha uma janela e acompanhe o pedido até a entrega na sua
-                porta.
+                Os produtores colhem especialmente para o lote do dia e entregam na janela combinada
+                diretamente no seu endereço.
               </p>
             </div>
           </div>
         </section>
+
         <section id="produtores" className="section section-soft">
           <div className="container">
-            <SectionHeading
-              eyebrow="Da nossa rede"
-              title="Ofertas que respeitam a estação."
-            >
-              <Link className="text-link" href="/catalogo">
-                Ver catálogo completo ↗
+            <div className="network-banner">
+              <div>
+                <h2>Ofertas que respeitam o ciclo natural da terra.</h2>
+                <p className="lead">
+                  Ao comprar pelo AgriTech, você apoia produtores familiares locais e garante alimentos
+                  mais saborosos e nutritivos.
+                </p>
+              </div>
+              <Link className="button button-primary" href="/catalogo">
+                <span>Conferir catálogo completo</span>
+                <ArrowRightIcon size={16} />
               </Link>
-            </SectionHeading>
-            <p className="lead">
-              Consulte as ofertas persistidas no catálogo e veja origem,
-              unidade, preço e disponibilidade.
-            </p>
+            </div>
           </div>
         </section>
-        <section id="ajuda" className="cta-section container">
-          <div>
-            <div className="eyebrow">Para quem produz</div>
-            <h2>Compre de quem produz perto de você.</h2>
-            <p>
-              Explore ofertas persistidas com origem, unidade, preço e
-              disponibilidade claros.
-            </p>
+
+        <section id="ajuda" className="section container">
+          <div className="cta-section">
+            <div className="cta-copy">
+              <h2>Alimentos saudáveis com comércio justo.</h2>
+              <p>
+                Acompanhe a sua sacola e veja como é fácil receber alimentos de alta qualidade
+                com origem garantida.
+              </p>
+            </div>
+            <div className="cta-actions">
+              <Link className="button button-light" href="/catalogo">
+                <span>Explorar ofertas</span>
+                <ArrowRightIcon size={16} />
+              </Link>
+            </div>
           </div>
-          <Link className="button button-light" href="/catalogo">
-            Explorar ofertas ↗
-          </Link>
         </section>
       </main>
       <Footer />

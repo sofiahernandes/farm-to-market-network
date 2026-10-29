@@ -35,11 +35,10 @@ export default function CriarConta() {
           <Link href="/">Início</Link>
           <span>/</span>Criar conta
         </div>
-        <section className="dashboard-card">
-          <div className="eyebrow">Conta de consumidor</div>
-          <h1>Comece pela origem.</h1>
+        <section className="auth-card dashboard-card">
+          <h1>Cadastre-se no AgriTech</h1>
           <p className="lead">
-            Cadastre-se para montar sua sacola e acompanhar pedidos persistidos.
+            Crie sua conta para montar sua sacola semanal e apoiar pequenos produtores rurais.
           </p>
           <form className="checkout-form" onSubmit={submit}>
             <label>
@@ -49,6 +48,7 @@ export default function CriarConta() {
                 type="email"
                 value={f.email}
                 onChange={(e) => setF({ ...f, email: e.target.value })}
+                placeholder="seu.email@exemplo.com"
               />
             </label>
             <label>
@@ -57,6 +57,7 @@ export default function CriarConta() {
                 required
                 value={f.cpf}
                 onChange={(e) => setF({ ...f, cpf: e.target.value })}
+                placeholder="000.000.000-00"
               />
             </label>
             <label>
@@ -67,6 +68,7 @@ export default function CriarConta() {
                 type="password"
                 value={f.password}
                 onChange={(e) => setF({ ...f, password: e.target.value })}
+                placeholder="••••••••"
               />
             </label>
             {error && (
@@ -78,11 +80,11 @@ export default function CriarConta() {
               disabled={loading}
               className="button button-primary button-full"
             >
-              {loading ? 'Criando…' : 'Criar conta'}
+              {loading ? 'Criando sua conta…' : 'Finalizar cadastro'}
             </button>
           </form>
-          <p className="muted">
-            Já tem conta?{' '}
+          <p className="muted auth-footer">
+            Já tem uma conta cadastrada?{' '}
             <Link className="text-link" href="/entrar">
               Entrar
             </Link>

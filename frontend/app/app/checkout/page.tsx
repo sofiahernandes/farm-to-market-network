@@ -59,17 +59,16 @@ export default function Checkout() {
       <>
         <Header app />
         <main className="page-main container narrow">
-          <section className="dashboard-card">
-            <div className="eyebrow">Pedido confirmado</div>
-            <h1>Pedido {order.id}</h1>
+          <section className="dashboard-card order-confirmed-card">
+            <h1>Pedido #{order.id} confirmado com sucesso</h1>
             <p className="lead">
-              Seu pedido foi confirmado e o estoque foi reservado.
+              A reserva dos itens no estoque foi efetuada e o produtor foi notificado para o preparo.
             </p>
-            <p>
-              Pagamento: {order.payment.provider} · {order.payment.status}
-            </p>
+            <div className="payment-summary-box">
+              <span>Status do pagamento: {order.payment.provider} · {order.payment.status}</span>
+            </div>
             <Link href="/app/pedidos" className="button button-primary">
-              Acompanhar pedidos
+              Acompanhar meus pedidos
             </Link>
           </section>
         </main>
@@ -84,75 +83,87 @@ export default function Checkout() {
           <Link href="/app/carrinho">Sacola</Link>
           <span>/</span>Checkout
         </div>
-        <h1>Onde você recebe?</h1>
+        <h1>Endereço e janela de entrega</h1>
         <p className="lead">
-          Informe o endereço e a janela persistida pelo backend.
+          Informe o local onde você deseja receber seus alimentos frescos.
         </p>
         {loading ? (
-          <p>Carregando…</p>
+          <p className="loading-indicator">Carregando dados…</p>
         ) : cart && cart.data.length === 0 ? (
           <p className="danger-text">
-            Carrinho vazio. <Link href="/catalogo">Voltar ao catálogo</Link>
+            Sua sacola está vazia. <Link href="/catalogo">Voltar ao catálogo</Link>
           </p>
         ) : (
           <div className="checkout-layout">
             <form className="checkout-form dashboard-card" onSubmit={submit}>
-              <label>
-                CEP
-                <input
-                  required
-                  value={form.postalCode}
-                  onChange={(e) =>
-                    setForm({ ...form, postalCode: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                Rua
-                <input
-                  required
-                  value={form.street}
-                  onChange={(e) => setForm({ ...form, street: e.target.value })}
-                />
-              </label>
-              <label>
-                Número
-                <input
-                  required
-                  value={form.number}
-                  onChange={(e) => setForm({ ...form, number: e.target.value })}
-                />
-              </label>
-              <label>
-                Complemento
-                <input
-                  value={form.complement}
-                  onChange={(e) =>
-                    setForm({ ...form, complement: e.target.value })
-                  }
-                />
-              </label>
-              <label>
-                Cidade
-                <input
-                  required
-                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                />
-              </label>
-              <label>
-                Estado
-                <input
-                  required
-                  value={form.state}
-                  onChange={(e) => setForm({ ...form, state: e.target.value })}
-                />
-              </label>
+              <div className="form-group-grid">
+                <label>
+                  CEP
+                  <input
+                    required
+                    value={form.postalCode}
+                    onChange={(e) =>
+                      setForm({ ...form, postalCode: e.target.value })
+                    }
+                    placeholder="00000-000"
+                  />
+                </label>
+                <label>
+                  Cidade
+                  <input
+                    required
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    placeholder="Sua cidade"
+                  />
+                </label>
+              </div>
+              <div className="form-group-street">
+                <label>
+                  Rua / Logradouro
+                  <input
+                    required
+                    value={form.street}
+                    onChange={(e) => setForm({ ...form, street: e.target.value })}
+                    placeholder="Ex: Rua das Flores"
+                  />
+                </label>
+                <label>
+                  Número
+                  <input
+                    required
+                    value={form.number}
+                    onChange={(e) => setForm({ ...form, number: e.target.value })}
+                    placeholder="123"
+                  />
+                </label>
+              </div>
+              <div className="form-group-grid">
+                <label>
+                  Complemento
+                  <input
+                    value={form.complement}
+                    onChange={(e) =>
+                      setForm({ ...form, complement: e.target.value })
+                    }
+                    placeholder="Apto, bloco (opcional)"
+                  />
+                </label>
+                <label>
+                  Estado (UF)
+                  <input
+                    required
+                    value={form.state}
+                    onChange={(e) => setForm({ ...form, state: e.target.value })}
+                    placeholder="SP"
+                  />
+                </label>
+              </div>
               <label>
                 Janela de entrega
                 <select value={slot} onChange={(e) => setSlot(e.target.value)}>
                   <option value="seed-slot">
-                    Janela seed-slot (confirmada pela API no checkout)
+                    Próxima janela: Terça-feira, 08h–12h (confirmada pelo produtor)
                   </option>
                 </select>
               </label>
@@ -165,13 +176,22 @@ export default function Checkout() {
                 Confirmar pedido
               </button>
               <p className="microcopy">
-                Pagamento fake sandbox; nenhuma cobrança real ocorre.
+                Ambiente de demonstração sandbox: nenhuma cobrança real ocorre no cartão.
               </p>
             </form>
             <aside className="dashboard-card summary-card">
               <h2>Seu pedido</h2>
-              <div>
-                <span>{cart?.data.length ?? 0} itens</span>
+              <div className="summary-row">
+                <span>{cart?.data.length ?? 0} itens na sacola</span>
+                <strong>{formatPrice(cart?.totalCents ?? 0)}</strong>
+              </div>
+              <div className="summary-row">
+                <span>Entrega direta</span>
+                <span className="free-badge">Inclusa</span>
+              </div>
+              <hr />
+              <div className="total-row">
+                <span>Total</span>
                 <strong>{formatPrice(cart?.totalCents ?? 0)}</strong>
               </div>
             </aside>

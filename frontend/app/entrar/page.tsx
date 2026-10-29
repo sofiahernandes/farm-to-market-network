@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/ui';
 import { auth, saveSession } from '@/lib/api';
+import { DEMO_CREDENTIALS } from '@/lib/mock-data';
 
 export default function Entrar() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(DEMO_CREDENTIALS.email);
+  const [password, setPassword] = useState(DEMO_CREDENTIALS.password);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -38,9 +39,12 @@ export default function Entrar() {
           <span>/</span>Entrar
         </div>
         <section className="auth-card dashboard-card">
-          <div className="eyebrow">Acesso AgriTech</div>
-          <h1>Entre para acompanhar sua comida.</h1>
-          <p className="lead">Use o email e a senha da sua conta.</p>
+          <p className="sandbox-notice" role="note">
+            Demonstração local: <strong>{DEMO_CREDENTIALS.email}</strong> · senha:{' '}
+            <strong>{DEMO_CREDENTIALS.password}</strong>
+          </p>
+          <h1>Acesse sua conta AgriTech</h1>
+          <p className="lead">Gerencie suas compras locais, sacola ativa e histórico de entregas.</p>
           <form className="checkout-form" onSubmit={submit}>
             <label>
               Email
@@ -49,6 +53,7 @@ export default function Entrar() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu.email@exemplo.com"
               />
             </label>
             <label>
@@ -58,6 +63,7 @@ export default function Entrar() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
               />
             </label>
             {error && (
@@ -69,13 +75,13 @@ export default function Entrar() {
               disabled={loading}
               className="button button-primary button-full"
             >
-              {loading ? 'Entrando…' : 'Entrar'}
+              {loading ? 'Entrando…' : 'Entrar na conta'}
             </button>
           </form>
           <p className="muted auth-footer">
             Ainda não tem conta?{' '}
             <Link className="text-link" href="/criar-conta">
-              Criar uma conta
+              Cadastre-se gratuitamente
             </Link>
           </p>
         </section>

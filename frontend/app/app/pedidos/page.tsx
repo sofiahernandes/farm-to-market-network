@@ -32,24 +32,24 @@ export default function Pedidos() {
           <Link href="/app">Área do consumidor</Link>
           <span>/</span>Pedidos
         </div>
-        <div className="eyebrow">Histórico e entrega</div>
-        <h1>Seus pedidos</h1>
-        <p className="lead">Pedidos consultados diretamente da API.</p>
-        {loading && <p>Carregando pedidos…</p>}
+        <h1>Seus pedidos e entregas</h1>
+        <p className="lead">Acompanhe a confirmação e o envio dos pedidos realizados diretamente aos produtores.</p>
+        {loading && <p className="loading-indicator">Carregando pedidos…</p>}
         {error && <p className="danger-text">{error}</p>}
         {!loading && !error && !orders.length && (
-          <section className="dashboard-card">
-            <h2>Você ainda não tem pedidos.</h2>
+          <section className="dashboard-card empty-card">
+            <h2>Você ainda não tem pedidos realizados.</h2>
+            <p className="muted">Descubra os produtos da safra semanal e monte a sua primeira sacola.</p>
             <Link href="/catalogo" className="button button-primary">
               Explorar ofertas
             </Link>
           </section>
         )}
         {orders.map((o) => (
-          <section className="dashboard-card" key={o.id}>
+          <section className="dashboard-card order-card" key={o.id}>
             <div className="card-heading">
               <div>
-                <span className="eyebrow">Pedido {o.id}</span>
+                <span className="order-code">Pedido #{o.id}</span>
                 <h2>
                   {o.items.map((i) => `${i.quantity}× ${i.name}`).join(', ')}
                 </h2>
@@ -58,15 +58,15 @@ export default function Pedidos() {
             </div>
             <div className="delivery-info">
               <div>
-                <span>Total</span>
+                <span>Total pago</span>
                 <strong>{formatPrice(o.totalCents)}</strong>
               </div>
               <div>
-                <span>Entrega</span>
+                <span>Janela de entrega</span>
                 <strong>{formatDate(o.deliverySlot.startsAt)}</strong>
               </div>
               <Link href={`/app/pedidos/${o.id}`} className="text-link">
-                Ver detalhes →
+                Ver detalhes do pedido →
               </Link>
             </div>
           </section>

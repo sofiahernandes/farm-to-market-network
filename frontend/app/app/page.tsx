@@ -31,9 +31,8 @@ export default function AppHome() {
       <main className="dashboard container">
         <div className="dashboard-intro">
           <div>
-            <div className="eyebrow">Área do consumidor</div>
-            <h1>Seu espaço AgriTech</h1>
-            <p className="lead">Acompanhe sua sacola e seus pedidos reais.</p>
+            <h1>Seu espaço de compras locais</h1>
+            <p className="lead">Acompanhe sua sacola ativa e o status dos seus pedidos aos produtores.</p>
           </div>
           <Link href="/catalogo" className="button button-primary">
             Explorar ofertas
@@ -47,24 +46,24 @@ export default function AppHome() {
             </strong>
             <small>{cart ? formatPrice(cart.totalCents) : 'Carregando'}</small>
           </div>
-          <div className="metric-card metric-sand">
-            <span className="metric-label">Pedidos</span>
+          <div className="metric-card">
+            <span className="metric-label">Pedidos confirmados</span>
             <strong>{orders.length}</strong>
-            <small>Histórico da conta</small>
+            <small>Histórico da sua conta</small>
           </div>
         </div>
         <section className="dashboard-card">
-          <h2>Próximos passos</h2>
+          <h2>Próximas ações</h2>
           <p className="muted">
-            Consulte ofertas persistidas, finalize a sacola ou acompanhe pedidos
-            confirmados.
+            Consulte as ofertas persistidas no catálogo, finalize os itens da sacola ou visualize
+            os detalhes de entrega dos pedidos em andamento.
           </p>
           <div className="hero-actions">
-            <Link href="/app/carrinho" className="button button-secondary">
+            <Link href="/app/carrinho" className="button button-primary">
               Ver sacola
             </Link>
             <Link href="/app/pedidos" className="button button-secondary">
-              Ver pedidos
+              Histórico de pedidos
             </Link>
           </div>
         </section>

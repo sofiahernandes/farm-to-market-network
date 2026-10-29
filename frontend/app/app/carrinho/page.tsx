@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Header, StatusBadge } from '@/components/ui';
+import { SproutIcon, ArrowRightIcon } from '@/components/icons';
 import { api, formatPrice, requireAuth, type Cart } from '@/lib/api';
 
 export default function Carrinho() {
-  const [cart, setCart] = useState<Cart | null>(null),
-    [error, setError] = useState(''),
-    [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!requireAuth()) return;
@@ -34,19 +35,21 @@ export default function Carrinho() {
           <Link href="/catalogo">Catálogo</Link>
           <span>/</span> Sacola
         </div>
-        <h1>Sua sacola</h1>
-        <p className="lead">Itens persistidos na sua conta.</p>
-        {loading && <p>Carregando sacola…</p>}
+        <h1>Sua sacola de compras</h1>
+        <p className="lead">Revise os itens selecionados dos produtores locais antes de confirmar a entrega.</p>
+        {loading && <p className="loading-indicator">Carregando sacola…</p>}
         {error && (
           <p className="danger-text" role="alert">
             {error}
           </p>
         )}
         {!loading && cart && cart.data.length === 0 && (
-          <section className="dashboard-card">
-            <h2>Sua sacola está vazia.</h2>
+          <section className="dashboard-card empty-card">
+            <h2>Sua sacola está vazia no momento.</h2>
+            <p className="muted">Descubra os produtos frescos e cestas da semana dos pequenos produtores.</p>
             <Link className="button button-primary" href="/catalogo">
-              Explorar ofertas
+              <span>Explorar ofertas</span>
+              <ArrowRightIcon size={16} />
             </Link>
           </section>
         )}
@@ -56,11 +59,11 @@ export default function Carrinho() {
               {cart.data.map((item) => (
                 <div className="cart-item" key={item.productId}>
                   <div className="mini-art" aria-hidden="true">
-                    🌱
+                    <SproutIcon size={24} />
                   </div>
-                  <div>
+                  <div className="cart-item-details">
                     <strong>{item.name}</strong>
-                    <span>
+                    <span className="cart-item-meta">
                       {item.quantity} × {formatPrice(item.unitPriceCents)}
                     </span>
                     <StatusBadge
@@ -68,34 +71,36 @@ export default function Carrinho() {
                         item.available >= item.quantity ? 'success' : 'warning'
                       }
                     >
-                      {item.available} disponíveis
+                      {item.available} disponíveis no lote
                     </StatusBadge>
                   </div>
-                  <strong>{formatPrice(item.subtotalCents)}</strong>
+                  <strong className="cart-item-subtotal">{formatPrice(item.subtotalCents)}</strong>
                   <button
-                    className="text-button danger-text"
+                    className="text-button danger-text remove-button"
                     onClick={() => remove(item.productId)}
                   >
                     Remover
                   </button>
                 </div>
               ))}
-              <Link href="/catalogo" className="text-link">
-                + Adicionar mais itens
-              </Link>
+              <div className="cart-add-more">
+                <Link href="/catalogo" className="text-link">
+                  + Adicionar mais itens da colheita
+                </Link>
+              </div>
             </section>
             <aside className="dashboard-card summary-card">
-              <h2>Resumo</h2>
-              <div>
-                <span>Subtotal</span>
+              <h2>Resumo do pedido</h2>
+              <div className="summary-row">
+                <span>Subtotal dos itens</span>
                 <strong>{formatPrice(cart.totalCents)}</strong>
               </div>
-              <div>
-                <span>Entrega</span>
-                <span className="muted">Definida no checkout</span>
+              <div className="summary-row">
+                <span>Taxa de entrega</span>
+                <span className="muted">Calculada no checkout</span>
               </div>
               <hr />
-              <div className="total">
+              <div className="total-row">
                 <span>Total estimado</span>
                 <strong>{formatPrice(cart.totalCents)}</strong>
               </div>
@@ -103,7 +108,8 @@ export default function Carrinho() {
                 href="/app/checkout"
                 className="button button-primary button-full"
               >
-                Continuar para entrega
+                <span>Avançar para endereço de entrega</span>
+                <ArrowRightIcon size={16} />
               </Link>
             </aside>
           </div>
