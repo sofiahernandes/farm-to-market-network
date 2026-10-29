@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  cpfHash      String     @unique
+  passwordHash String
+  role         String     @default("consumer")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  addresses    Address[]
+  cart         Cart?
+  orders       Order[]
+  auditLogs    AuditLog[]
+}
+
+model Producer {
+  id          String        @id @default(cuid())
+  displayName String
+  createdAt   DateTime      @default(now())
+  products    Product[]
+  zones       ServiceZone[]
+}
+
+model ServiceZone {
+  id               String         @id @default(cuid())
+  name             String         @unique
+  postalCodePrefix String
+  active           Boolean        @default(true)
+  producerId       String?
+  producer         Producer?      @relation(fields: [producerId], references: [id])
+  addresses        Address[]
+  slots            DeliverySlot[]
+}
+
+model Address {
+  id         String       @id @default(cuid())
+  userId     String
+  zoneId     String?
+  postalCode String
+  street     String
+  number     String
+  complement String?
+  city       String
+  state      String
+  createdAt  DateTime     @default(now())
+  user       User         @relation(fields: [userId], references: [id])
+  zone       ServiceZone? @relation(fields: [zoneId], references: [id])
+  orders     Order[]
+}
+
+model DeliverySlot {
+  id       String      @id @default(cuid())
+  zoneId   String
+  startsAt DateTime
+  endsAt   DateTime
+  capacity Int
+  active   Boolean     @default(true)
+  zone     ServiceZone @relation(fields: [zoneId], references: [id])
+  orders   Order[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  producerId  String
+  name        String
+  description String?
+  category    String
+  unit        String
+  priceCents  Int
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  producer    Producer    @relation(fields: [producerId], references: [id])
+  inventory   Inventory[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+}
+
+model Inventory {
+  id           String                @id @default(cuid())
+  productId    String
+  deliveryDate DateTime
+  available    Int
+  reserved     Int                   @default(0)
+  product      Product               @relation(fields: [productId], references: [id])
+  allocations  InventoryAllocation[]
+
+  @@unique([productId, deliveryDate])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id             String                @id @default(cuid())
+  userId         String
+  addressId      String
+  deliverySlotId String
+  status         String                @default("confirmed")
+  totalCents     Int
+  idempotencyKey String                @unique
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  user           User                  @relation(fields: [userId], references: [id])
+  address        Address               @relation(fields: [addressId], references: [id])
+  deliverySlot   DeliverySlot          @relation(fields: [deliverySlotId], references: [id])
+  items          OrderItem[]
+  payment        Payment?
+  delivery       Delivery?
+  statusHistory  OrderStatusHistory[]
+  allocations    InventoryAllocation[]
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  productId      String
+  quantity       Int
+  unitPriceCents Int
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product @relation(fields: [productId], references: [id])
+}
+
+model InventoryAllocation {
+  id          String    @id @default(cuid())
+  inventoryId String
+  orderId     String
+  productId   String
+  quantity    Int
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@unique([inventoryId, orderId])
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  orderId           String   @unique
+  provider          String
+  providerPaymentId String
+  status            String
+  amountCents       Int
+  idempotencyKey    String   @unique
+  createdAt         DateTime @default(now())
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Delivery {
+  id          String    @id @default(cuid())
+  orderId     String    @unique
+  status      String
+  confirmedAt DateTime?
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderStatusHistory {
+  id         String   @id @default(cuid())
+  orderId    String
+  fromStatus String?
+  toStatus   String
+  changedAt  DateTime @default(now())
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  actorUserId   String?
+  action        String
+  resourceType  String
+  resourceId    String
+  correlationId String?
+  metadata      Json
+  createdAt     DateTime @default(now())
+  actor         User?    @relation(fields: [actorUserId], references: [id])
+}
