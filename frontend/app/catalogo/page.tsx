@@ -1,3 +1,96 @@
-"use client";
-import { useEffect, useState } from "react"; import { Footer, Header, ProductCard, SectionHeading } from "@/components/ui"; import { api, type CatalogResponse } from "@/lib/api";
-export default function Catalogo(){const [data,setData]=useState<CatalogResponse|null>(null);const [search,setSearch]=useState("");const [category,setCategory]=useState("");const [loading,setLoading]=useState(true);const [error,setError]=useState("");useEffect(()=>{const id=setTimeout(()=>{setLoading(true);setError("");const q=new URLSearchParams({limit:"20"});if(search.trim())q.set("search",search.trim());if(category)q.set("category",category);api<CatalogResponse>(`/catalog?${q}`).then(setData).catch(e=>setError(e.message)).finally(()=>setLoading(false))},250);return()=>clearTimeout(id)},[search,category]);return <><Header/><main className="page-main container"><div className="breadcrumb">Início <span>/</span> Catálogo</div><SectionHeading eyebrow="Ofertas persistidas" title="Escolha o que vai para sua mesa."><span className="muted">{data?.pagination.count ?? ""} ofertas</span></SectionHeading><div className="catalog-toolbar"><label className="search-box"><span aria-hidden="true">⌕</span><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar produto ou descrição" aria-label="Buscar produto ou descrição"/></label><select value={category} onChange={e=>setCategory(e.target.value)} aria-label="Filtrar por categoria"><option value="">Todas as categorias</option><option value="Cestas">Cestas</option><option value="Hortaliças">Hortaliças</option><option value="Granja">Granja</option></select></div><div className="zone-alert"><span>⌖</span><div><strong>Disponibilidade conforme o estoque do backend</strong><p>O endereço é confirmado no checkout.</p></div></div><section className="catalog-results" aria-live="polite">{loading&&<p className="muted">Carregando ofertas…</p>}{error&&<div className="info-alert"><strong>Não foi possível carregar o catálogo.</strong><p>{error}</p></div>}{!loading&&!error&&data?.data.length===0&&<div className="dashboard-card"><h2>Ainda não há ofertas disponíveis.</h2><p className="muted">Tente outra busca ou categoria.</p></div>}{!loading&&!error&&data&&data.data.length>0&&<div className="product-grid">{data.data.map(p=><ProductCard key={p.id} product={p}/>)}</div>}</section></main><Footer/></>}
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Footer, Header, ProductCard, SectionHeading } from '@/components/ui';
+import { api, type CatalogResponse } from '@/lib/api';
+
+export default function Catalogo() {
+  const [data, setData] = useState<CatalogResponse | null>(null);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setLoading(true);
+      setError('');
+      const q = new URLSearchParams({ limit: '20' });
+      if (search.trim()) q.set('search', search.trim());
+      if (category) q.set('category', category);
+      api<CatalogResponse>(`/catalog?${q}`)
+        .then(setData)
+        .catch((e) => setError(e.message))
+        .finally(() => setLoading(false));
+    }, 250);
+    return () => clearTimeout(id);
+  }, [search, category]);
+
+  return (
+    <>
+      <Header />
+      <main className="page-main container">
+        <div className="breadcrumb">
+          Início <span>/</span> Catálogo
+        </div>
+        <SectionHeading
+          eyebrow="Ofertas persistidas"
+          title="Escolha o que vai para sua mesa."
+        >
+          <span className="muted">{data?.pagination.count ?? ''} ofertas</span>
+        </SectionHeading>
+        <div className="catalog-toolbar">
+          <label className="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar produto ou descrição"
+              aria-label="Buscar produto ou descrição"
+            />
+          </label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filtrar por categoria"
+          >
+            <option value="">Todas as categorias</option>
+            <option value="Cestas">Cestas</option>
+            <option value="Hortaliças">Hortaliças</option>
+            <option value="Granja">Granja</option>
+          </select>
+        </div>
+        <div className="zone-alert">
+          <span>⌖</span>
+          <div>
+            <strong>Disponibilidade conforme o estoque do backend</strong>
+            <p>O endereço é confirmado no checkout.</p>
+          </div>
+        </div>
+        <section className="catalog-results" aria-live="polite">
+          {loading && <p className="muted">Carregando ofertas…</p>}
+          {error && (
+            <div className="info-alert">
+              <strong>Não foi possível carregar o catálogo.</strong>
+              <p>{error}</p>
+            </div>
+          )}
+          {!loading && !error && data?.data.length === 0 && (
+            <div className="dashboard-card">
+              <h2>Ainda não há ofertas disponíveis.</h2>
+              <p className="muted">Tente outra busca ou categoria.</p>
+            </div>
+          )}
+          {!loading && !error && data && data.data.length > 0 && (
+            <div className="product-grid">
+              {data.data.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

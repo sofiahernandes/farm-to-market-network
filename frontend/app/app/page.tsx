@@ -1,3 +1,74 @@
-"use client";
-import Link from "next/link";import {useEffect,useState} from "react";import {Header} from "@/components/ui";import {api,formatPrice,requireAuth,type Cart,type Order} from "@/lib/api";
-export default function AppHome(){const [cart,setCart]=useState<Cart|null>(null),[orders,setOrders]=useState<Order[]>([]);useEffect(()=>{if(!requireAuth())return;api<Cart>("/cart").then(setCart).catch(()=>{});api<{data:Order[]}>("/orders").then(x=>setOrders(x.data)).catch(()=>{})},[]);return <><Header app/><main className="dashboard container"><div className="dashboard-intro"><div><div className="eyebrow">Área do consumidor</div><h1>Seu espaço AgriTech</h1><p className="lead">Acompanhe sua sacola e seus pedidos reais.</p></div><Link href="/catalogo" className="button button-primary">Explorar ofertas</Link></div><div className="metric-grid"><div className="metric-card"><span className="metric-label">Itens na sacola</span><strong>{cart?.data.reduce((s,i)=>s+i.quantity,0)??"—"}</strong><small>{cart?formatPrice(cart.totalCents):"Carregando"}</small></div><div className="metric-card metric-sand"><span className="metric-label">Pedidos</span><strong>{orders.length}</strong><small>Histórico da conta</small></div></div><section className="dashboard-card"><h2>Próximos passos</h2><p className="muted">Consulte ofertas persistidas, finalize a sacola ou acompanhe pedidos confirmados.</p><div className="hero-actions"><Link href="/app/carrinho" className="button button-secondary">Ver sacola</Link><Link href="/app/pedidos" className="button button-secondary">Ver pedidos</Link></div></section></main></>}
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Header } from '@/components/ui';
+import {
+  api,
+  formatPrice,
+  requireAuth,
+  type Cart,
+  type Order,
+} from '@/lib/api';
+
+export default function AppHome() {
+  const [cart, setCart] = useState<Cart | null>(null),
+    [orders, setOrders] = useState<Order[]>([]);
+
+  useEffect(() => {
+    if (!requireAuth()) return;
+    api<Cart>('/cart')
+      .then(setCart)
+      .catch(() => {});
+    api<{ data: Order[] }>('/orders')
+      .then((x) => setOrders(x.data))
+      .catch(() => {});
+  }, []);
+
+  return (
+    <>
+      <Header app />
+      <main className="dashboard container">
+        <div className="dashboard-intro">
+          <div>
+            <div className="eyebrow">Área do consumidor</div>
+            <h1>Seu espaço AgriTech</h1>
+            <p className="lead">Acompanhe sua sacola e seus pedidos reais.</p>
+          </div>
+          <Link href="/catalogo" className="button button-primary">
+            Explorar ofertas
+          </Link>
+        </div>
+        <div className="metric-grid">
+          <div className="metric-card">
+            <span className="metric-label">Itens na sacola</span>
+            <strong>
+              {cart?.data.reduce((s, i) => s + i.quantity, 0) ?? '—'}
+            </strong>
+            <small>{cart ? formatPrice(cart.totalCents) : 'Carregando'}</small>
+          </div>
+          <div className="metric-card metric-sand">
+            <span className="metric-label">Pedidos</span>
+            <strong>{orders.length}</strong>
+            <small>Histórico da conta</small>
+          </div>
+        </div>
+        <section className="dashboard-card">
+          <h2>Próximos passos</h2>
+          <p className="muted">
+            Consulte ofertas persistidas, finalize a sacola ou acompanhe pedidos
+            confirmados.
+          </p>
+          <div className="hero-actions">
+            <Link href="/app/carrinho" className="button button-secondary">
+              Ver sacola
+            </Link>
+            <Link href="/app/pedidos" className="button button-secondary">
+              Ver pedidos
+            </Link>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}

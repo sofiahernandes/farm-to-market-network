@@ -1,3 +1,114 @@
-"use client";
-import Link from "next/link";import {useEffect,useState} from "react";import {Header,StatusBadge} from "@/components/ui";import {api,formatPrice,requireAuth,type Cart} from "@/lib/api";
-export default function Carrinho(){const [cart,setCart]=useState<Cart|null>(null),[error,setError]=useState(""),[loading,setLoading]=useState(true);useEffect(()=>{if(!requireAuth())return;api<Cart>("/cart").then(setCart).catch(e=>setError(e.message)).finally(()=>setLoading(false))},[]);async function remove(id:string){try{setCart(await api<Cart>(`/cart/items/${id}`,{method:"DELETE"}))}catch(e){setError((e as Error).message)}}return <><Header app/><main className="page-main container narrow"><div className="breadcrumb"><Link href="/catalogo">Catálogo</Link><span>/</span> Sacola</div><h1>Sua sacola</h1><p className="lead">Itens persistidos na sua conta.</p>{loading&&<p>Carregando sacola…</p>}{error&&<p className="danger-text" role="alert">{error}</p>}{!loading&&cart&&cart.data.length===0&&<section className="dashboard-card"><h2>Sua sacola está vazia.</h2><Link className="button button-primary" href="/catalogo">Explorar ofertas</Link></section>}{cart&&cart.data.length>0&&<div className="checkout-layout"><section className="dashboard-card cart-items">{cart.data.map(item=><div className="cart-item" key={item.productId}><div className="mini-art" aria-hidden="true">🌱</div><div><strong>{item.name}</strong><span>{item.quantity} × {formatPrice(item.unitPriceCents)}</span><StatusBadge tone={item.available>=item.quantity?"success":"warning"}>{item.available} disponíveis</StatusBadge></div><strong>{formatPrice(item.subtotalCents)}</strong><button className="text-button danger-text" onClick={()=>remove(item.productId)}>Remover</button></div>)}<Link href="/catalogo" className="text-link">+ Adicionar mais itens</Link></section><aside className="dashboard-card summary-card"><h2>Resumo</h2><div><span>Subtotal</span><strong>{formatPrice(cart.totalCents)}</strong></div><div><span>Entrega</span><span className="muted">Definida no checkout</span></div><hr/><div className="total"><span>Total estimado</span><strong>{formatPrice(cart.totalCents)}</strong></div><Link href="/app/checkout" className="button button-primary button-full">Continuar para entrega</Link></aside></div>}</main></>}
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Header, StatusBadge } from '@/components/ui';
+import { api, formatPrice, requireAuth, type Cart } from '@/lib/api';
+
+export default function Carrinho() {
+  const [cart, setCart] = useState<Cart | null>(null),
+    [error, setError] = useState(''),
+    [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!requireAuth()) return;
+    api<Cart>('/cart')
+      .then(setCart)
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function remove(id: string) {
+    try {
+      setCart(await api<Cart>(`/cart/items/${id}`, { method: 'DELETE' }));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  return (
+    <>
+      <Header app />
+      <main className="page-main container narrow">
+        <div className="breadcrumb">
+          <Link href="/catalogo">Catálogo</Link>
+          <span>/</span> Sacola
+        </div>
+        <h1>Sua sacola</h1>
+        <p className="lead">Itens persistidos na sua conta.</p>
+        {loading && <p>Carregando sacola…</p>}
+        {error && (
+          <p className="danger-text" role="alert">
+            {error}
+          </p>
+        )}
+        {!loading && cart && cart.data.length === 0 && (
+          <section className="dashboard-card">
+            <h2>Sua sacola está vazia.</h2>
+            <Link className="button button-primary" href="/catalogo">
+              Explorar ofertas
+            </Link>
+          </section>
+        )}
+        {cart && cart.data.length > 0 && (
+          <div className="checkout-layout">
+            <section className="dashboard-card cart-items">
+              {cart.data.map((item) => (
+                <div className="cart-item" key={item.productId}>
+                  <div className="mini-art" aria-hidden="true">
+                    🌱
+                  </div>
+                  <div>
+                    <strong>{item.name}</strong>
+                    <span>
+                      {item.quantity} × {formatPrice(item.unitPriceCents)}
+                    </span>
+                    <StatusBadge
+                      tone={
+                        item.available >= item.quantity ? 'success' : 'warning'
+                      }
+                    >
+                      {item.available} disponíveis
+                    </StatusBadge>
+                  </div>
+                  <strong>{formatPrice(item.subtotalCents)}</strong>
+                  <button
+                    className="text-button danger-text"
+                    onClick={() => remove(item.productId)}
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
+              <Link href="/catalogo" className="text-link">
+                + Adicionar mais itens
+              </Link>
+            </section>
+            <aside className="dashboard-card summary-card">
+              <h2>Resumo</h2>
+              <div>
+                <span>Subtotal</span>
+                <strong>{formatPrice(cart.totalCents)}</strong>
+              </div>
+              <div>
+                <span>Entrega</span>
+                <span className="muted">Definida no checkout</span>
+              </div>
+              <hr />
+              <div className="total">
+                <span>Total estimado</span>
+                <strong>{formatPrice(cart.totalCents)}</strong>
+              </div>
+              <Link
+                href="/app/checkout"
+                className="button button-primary button-full"
+              >
+                Continuar para entrega
+              </Link>
+            </aside>
+          </div>
+        )}
+      </main>
+    </>
+  );
+}

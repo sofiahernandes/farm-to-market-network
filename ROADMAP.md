@@ -248,16 +248,16 @@ Se a equipe preferir manter `backend/` em vez de `apps/api`, deve preservar a me
 
 ## 7. Dependências críticas e riscos
 
-| Dependência/risco | Mitigação | Critério de desbloqueio |
-|---|---|---|
-| Aprovação comercial do Mercado Pago Split 1:1 | Implementar adapter e modo de simulação; bloquear split de produção por feature flag | Conta produtora onboarded e aprovação para produção |
-| Definição da cidade-piloto e slots | Modelar zonas/slots configuráveis, sem hardcode | CEPs, dias, cutoff e capacidade aprovados |
-| Ambiguidade entre B2C MVP e escopo B2B do README | Usar `PLAN.md` como fonte de verdade e manter B2B em roadmap posterior | Decisão registrada no backlog |
-| Requisitos herdados de pets/comunidades | Remover da matriz AgriTech e não implementar | Backlog revisado |
-| Estoque de perecíveis | Reserva transacional, cutoff e política de substituição/reembolso | Teste de concorrência aprovado |
-| Dados pessoais e pagamentos | Não armazenar cartão; criptografar/segregar CPF; logs sem dados sensíveis | Revisão de segurança e LGPD concluída |
-| Operação manual no piloto | Rotas por zona, calendário e runbook simples antes de otimização automática | Simulação de um dia de entrega concluída |
-| Fotos/certificações e storage | Adapter de object storage, compressão client-side e limites de arquivo | Upload e leitura autorizada funcionando |
+| Dependência/risco                                | Mitigação                                                                            | Critério de desbloqueio                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| Aprovação comercial do Mercado Pago Split 1:1    | Implementar adapter e modo de simulação; bloquear split de produção por feature flag | Conta produtora onboarded e aprovação para produção |
+| Definição da cidade-piloto e slots               | Modelar zonas/slots configuráveis, sem hardcode                                      | CEPs, dias, cutoff e capacidade aprovados           |
+| Ambiguidade entre B2C MVP e escopo B2B do README | Usar `PLAN.md` como fonte de verdade e manter B2B em roadmap posterior               | Decisão registrada no backlog                       |
+| Requisitos herdados de pets/comunidades          | Remover da matriz AgriTech e não implementar                                         | Backlog revisado                                    |
+| Estoque de perecíveis                            | Reserva transacional, cutoff e política de substituição/reembolso                    | Teste de concorrência aprovado                      |
+| Dados pessoais e pagamentos                      | Não armazenar cartão; criptografar/segregar CPF; logs sem dados sensíveis            | Revisão de segurança e LGPD concluída               |
+| Operação manual no piloto                        | Rotas por zona, calendário e runbook simples antes de otimização automática          | Simulação de um dia de entrega concluída            |
+| Fotos/certificações e storage                    | Adapter de object storage, compressão client-side e limites de arquivo               | Upload e leitura autorizada funcionando             |
 
 ## 8. Indicadores do piloto
 
