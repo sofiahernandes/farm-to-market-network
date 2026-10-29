@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">AgriTech</title>
+  <desc id="desc">Marca do AgriTech com uma folha e um caminho ascendente</desc>
+  <rect width="512" height="512" rx="112" fill="#075b3e"/>
+  <path d="M133 338c73-14 122-63 146-147 12-42 38-76 78-102 7 53-2 103-30 147-36 57-96 91-177 102-13 2-22 2-27 0-4-1-5-1-5 0 0 0 5 0 15 0z" fill="#dff3e7"/>
+  <path d="M137 366c72-1 140-29 203-84" fill="none" stroke="#f4c95d" stroke-width="22" stroke-linecap="round"/>
+  <path d="M337 282l9-42 39 14" fill="none" stroke="#f4c95d" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
