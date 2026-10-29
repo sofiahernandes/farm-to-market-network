@@ -1,6 +1,12 @@
 /* eslint-disable @next/next/no-location-assign-relative-destination -- API client handles auth expiry outside React event handlers. */
+import { mockApi } from './mock-data';
+
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/v1';
+
+// Local previews work without the Nest/Prisma stack. Set this to "false" in
+// .env.local when you want to call a running backend instead.
+export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA !== 'false';
 
 export type User = { id: string; email: string; role: string };
 
@@ -129,6 +135,7 @@ export async function api<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
+  if (USE_MOCK_DATA) return (await mockApi(path, options)) as T;
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
   const t = token();
