@@ -10,7 +10,13 @@ import { DEMO_CPF } from '@/lib/mock-data';
 export default function CriarConta() {
   const router = useRouter();
 
-  const [f, setF] = useState({ email: '', cpf: DEMO_CPF, password: '' }),
+  const [f, setF] = useState({
+      role: 'consumer' as 'consumer' | 'producer',
+      displayName: '',
+      email: '',
+      cpf: DEMO_CPF,
+      password: '',
+    }),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(false);
 
@@ -19,8 +25,9 @@ export default function CriarConta() {
     setLoading(true);
     setError('');
     try {
-      saveSession(await auth.register(f));
-      router.push('/catalogo');
+      const session = await auth.register(f);
+      saveSession(session);
+      router.push(session.user.role === 'producer' ? '/produtor' : '/catalogo');
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -42,9 +49,37 @@ export default function CriarConta() {
           </p>
           <h1>Cadastre-se no AgriTech</h1>
           <p className="lead">
-            Crie sua conta para montar sua sacola semanal e apoiar pequenos produtores rurais.
+            Escolha seu perfil para comprar direto da colheita ou comercializar a produção do seu sítio.
           </p>
           <form className="checkout-form" onSubmit={submit}>
+            <label>
+              Perfil da conta
+              <select
+                value={f.role}
+                onChange={(e) =>
+                  setF({
+                    ...f,
+                    role: e.target.value as 'consumer' | 'producer',
+                  })
+                }
+              >
+                <option value="consumer">Consumidor (comprar alimentos e assinar cestas)</option>
+                <option value="producer">Produtor Rural (publicar ofertas e gerenciar colheita)</option>
+              </select>
+            </label>
+            {f.role === 'producer' && (
+              <label>
+                Nome da propriedade ou sítio
+                <input
+                  required
+                  value={f.displayName}
+                  onChange={(e) =>
+                    setF({ ...f, displayName: e.target.value })
+                  }
+                  placeholder="Ex: Sítio Boa Terra"
+                />
+              </label>
+            )}
             <label>
               Email
               <input

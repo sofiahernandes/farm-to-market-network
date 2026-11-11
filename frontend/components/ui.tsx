@@ -79,13 +79,14 @@ export function Header({ app = false }: { app?: boolean }) {
               <Link href="/cestas">Cestas fixas</Link>
               <Link href="/app/assinaturas">Assinaturas</Link>
               <Link href="/app/pedidos">Meus pedidos</Link>
+              <Link href="/produtor">Painel do produtor</Link>
             </>
           ) : (
             <>
               <Link href="/catalogo">Ofertas da semana</Link>
               <Link href="/cestas">Cestas fixas</Link>
+              <Link href="/produtor">Para produtores</Link>
               <Link href="/#como-funciona">Como funciona</Link>
-              <Link href="/#produtores">Rede de produtores</Link>
             </>
           )}
         </nav>
@@ -150,8 +151,8 @@ export function Footer() {
           <h3>Navegação</h3>
           <Link href="/catalogo">Explorar ofertas</Link>
           <Link href="/cestas">Cestas fixas e assinatura</Link>
+          <Link href="/produtor">Painel do produtor</Link>
           <Link href="/#como-funciona">Como funciona</Link>
-          <Link href="/#produtores">Produtores parceiros</Link>
         </div>
         <div>
           <h3>Conta</h3>
@@ -253,6 +254,102 @@ export function SectionHeading({
         <h2>{title}</h2>
       </div>
       {children && <div className="section-heading-action">{children}</div>}
+    </div>
+  );
+}
+
+export function ProducerSubnav({
+  active,
+  pendingTasksCount = 0,
+  onboardingApproved = true,
+  paymentConnected = true,
+}: {
+  active:
+    | 'painel'
+    | 'onboarding'
+    | 'catalogo'
+    | 'novo'
+    | 'estoque'
+    | 'pedidos'
+    | 'financeiro'
+    | 'conta';
+  pendingTasksCount?: number;
+  onboardingApproved?: boolean;
+  paymentConnected?: boolean;
+}) {
+  const items: { key: typeof active; label: string; href: string }[] = [
+    { key: 'painel', label: 'Painel', href: '/produtor' },
+    { key: 'onboarding', label: 'Onboarding e aprovação', href: '/produtor/onboarding' },
+    { key: 'catalogo', label: 'Produtos e cestas', href: '/produtor/catalogo' },
+    { key: 'novo', label: 'Nova oferta', href: '/produtor/catalogo/novo' },
+    { key: 'estoque', label: 'Estoque semanal', href: '/produtor/estoque' },
+    { key: 'pedidos', label: 'Pedidos a atender', href: '/produtor/pedidos' },
+    { key: 'financeiro', label: 'Financeiro e repasse', href: '/produtor/financeiro' },
+    { key: 'conta', label: 'Propriedade e auditoria', href: '/produtor/conta' },
+  ];
+
+  return (
+    <div style={{ marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <nav
+        aria-label="Menu do produtor"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 14px',
+          background: 'var(--surface)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--radius-md)',
+        }}
+      >
+        {items.map((item) => {
+          const isCurrent = item.key === active;
+          return (
+            <Link
+              key={item.key}
+              href={item.href}
+              aria-current={isCurrent ? 'page' : undefined}
+              className={
+                isCurrent
+                  ? 'button button-small button-primary'
+                  : 'button button-small button-secondary'
+              }
+            >
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+        {pendingTasksCount > 0 && (
+          <span style={{ marginLeft: 'auto' }}>
+            <StatusBadge tone="warning">
+              {pendingTasksCount}{' '}
+              {pendingTasksCount === 1 ? 'pendência' : 'pendências'}
+            </StatusBadge>
+          </span>
+        )}
+      </nav>
+
+      {(!onboardingApproved || !paymentConnected) && (
+        <div className="info-alert" role="region" aria-label="Alerta de pré-requisito do produtor" style={{ marginBottom: 0 }}>
+          <div style={{ flex: 1 }}>
+            <strong>
+              Publicação de novas ofertas bloqueada: pré-requisito pendente
+            </strong>
+            <p>
+              {!onboardingApproved
+                ? 'Sua propriedade ainda não está com status Aprovado no onboarding.'
+                : ''}{' '}
+              {!paymentConnected
+                ? 'Sua conta de recebimento Mercado Pago ainda não está conectada.'
+                : ''}
+            </p>
+          </div>
+          <Link href="/produtor/onboarding" className="button button-small button-primary">
+            Ver pendências
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

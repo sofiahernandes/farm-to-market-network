@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {
   DEMO_CPF,
   DEMO_CREDENTIALS,
+  DEMO_PRODUCER_CREDENTIALS,
   MOCK_DELIVERY_SLOTS,
+  calculatePlatformFeeCents,
   isBeforeCutoff,
   isValidCpf,
   maskCpf,
@@ -18,12 +20,13 @@ import type {
   CatalogResponse,
   LgpdDeletionRequest,
   Order,
+  ProducerDashboardData,
   Product,
   SavedAddress,
   Subscription,
 } from '../api.ts';
 
-describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
+describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
   beforeEach(() => {
     resetMockState();
   });
@@ -80,13 +83,20 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
   });
 
   describe('Authentication & Registration', () => {
-    it('logs in with demo credentials and rejects wrong password', async () => {
-      const auth = (await mockApi('/auth/login', {
+    it('logs in with demo consumer or producer credentials and rejects wrong password', async () => {
+      const authConsumer = (await mockApi('/auth/login', {
         method: 'POST',
         body: JSON.stringify(DEMO_CREDENTIALS),
       })) as AuthResponse;
-      assert.equal(auth.user.email, DEMO_CREDENTIALS.email);
-      assert.equal(auth.user.role, 'consumer');
+      assert.equal(authConsumer.user.email, DEMO_CREDENTIALS.email);
+      assert.equal(authConsumer.user.role, 'consumer');
+
+      const authProducer = (await mockApi('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(DEMO_PRODUCER_CREDENTIALS),
+      })) as AuthResponse;
+      assert.equal(authProducer.user.email, DEMO_PRODUCER_CREDENTIALS.email);
+      assert.equal(authProducer.user.role, 'producer');
 
       await assert.rejects(
         () =>
@@ -340,7 +350,6 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       )) as Basket;
       assert.equal(stockAfterFirst.stock.available, 11);
 
-      // Calling generate-cycle with the same cycleKey is idempotent
       const cycleDuplicate = (await mockApi(
         '/subscriptions/SUB-2041/generate-cycle',
         {
@@ -354,7 +363,6 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       )) as Basket;
       assert.equal(stockAfterDuplicate.stock.available, 11);
 
-      // Simulate billing failure
       const failed = (await mockApi('/subscriptions/SUB-2041/generate-cycle', {
         method: 'POST',
         body: JSON.stringify({
@@ -402,6 +410,137 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
           }),
         /Já existe uma solicitação LGPD em análise/
       );
+    });
+  });
+
+  describe('Producer Panel (Onboarding, Offers CRUD, Weekly Stock, Fulfillment & Net Payouts)', () => {
+    it('publishes valid offer, syncs with consumer catalog, and pauses offer', async () => {
+      const created = (await mockApi('/producer/offers', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Mel silvestre orgânico',
+          description: 'Mel puro de florada silvestre.',
+          category: 'Granja',
+          unit: 'pote 500 g',
+          priceCents: 2890,
+          available: 14,
+          seasonality: 'Safra de Primavera',
+          certification: 'Orgânico Brasil (SISORG)',
+          active: true,
+        }),
+      })) as Product;
+
+      assert.equal(created.name, 'Mel silvestre orgânico');
+      assert.equal(created.active, true);
+
+      const publicCatalog = (await mockApi('/catalog')) as CatalogResponse;
+      assert.ok(publicCatalog.data.some((p) => p.id === created.id));
+
+      // Pause the offer and verify it disappears from public consumer catalog
+      await mockApi(`/producer/offers/${created.id}/toggle-status`, {
+        method: 'POST',
+      });
+      const afterPause = (await mockApi('/catalog')) as CatalogResponse;
+      assert.equal(
+        afterPause.data.some((p) => p.id === created.id),
+        false
+      );
+    });
+
+    it('blocks publishing offers when onboarding is not approved or payment account is disconnected', async () => {
+      await mockApi('/producer/onboarding', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          onboardingStatus: 'pending_review',
+          paymentAccountConnected: false,
+        }),
+      });
+
+      await assert.rejects(
+        () =>
+          mockApi('/producer/offers', {
+            method: 'POST',
+            body: JSON.stringify({
+              name: 'Rúcula hidropônica',
+              unit: 'maço',
+              priceCents: 650,
+              available: 10,
+              active: true,
+            }),
+          }),
+        /Conclua a aprovação do onboarding e conecte a conta de recebimento/
+      );
+
+      // Saving as draft (active: false) is still permitted
+      const draft = (await mockApi('/producer/offers', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Rúcula hidropônica',
+          unit: 'maço',
+          priceCents: 650,
+          available: 10,
+          active: false,
+        }),
+      })) as Product;
+      assert.equal(draft.active, false);
+    });
+
+    it('enforces non-negative stock and optimistic concurrency on weekly inventory updates', async () => {
+      await assert.rejects(
+        () =>
+          mockApi('/producer/inventory/mock-cesta', {
+            method: 'PATCH',
+            body: JSON.stringify({ available: -5 }),
+          }),
+        /O estoque disponível não pode ser negativo/
+      );
+
+      await assert.rejects(
+        () =>
+          mockApi('/producer/inventory/mock-cesta', {
+            method: 'PATCH',
+            body: JSON.stringify({
+              available: 20,
+              expectedAvailable: 999,
+            }),
+          }),
+        /A disponibilidade mudou enquanto você editava/
+      );
+
+      const dash = (await mockApi('/producer/inventory/mock-cesta', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          available: 25,
+          expectedAvailable: 12,
+        }),
+      })) as ProducerDashboardData;
+
+      const updatedCesta = dash.offers.find((o) => o.id === 'mock-cesta');
+      assert.equal(updatedCesta?.stock.available, 25);
+      assert.ok(
+        dash.auditLogs.some((l) => l.action === 'inventory.updated')
+      );
+    });
+
+    it('marks order separation in fulfillment queue and calculates gross, fee, and net payout', async () => {
+      assert.equal(calculatePlatformFeeCents(10000, 10), 1000);
+
+      const before = (await mockApi(
+        '/producer/dashboard'
+      )) as ProducerDashboardData;
+      assert.equal(before.metrics.pendingFulfillmentCount, 1);
+
+      const after = (await mockApi(
+        '/producer/orders/AG-1048/mark-separated',
+        { method: 'POST' }
+      )) as ProducerDashboardData;
+      assert.equal(after.metrics.pendingFulfillmentCount, 0);
+
+      for (const payout of after.payouts) {
+        const expectedFee = calculatePlatformFeeCents(payout.grossCents, 10);
+        assert.equal(payout.feeCents, expectedFee);
+        assert.equal(payout.netCents, payout.grossCents - expectedFee);
+      }
     });
   });
 });

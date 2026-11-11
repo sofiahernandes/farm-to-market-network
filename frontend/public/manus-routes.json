@@ -12,6 +12,14 @@
     { "path": "/app/assinaturas", "title": "Assinaturas" },
     { "path": "/app/pedidos", "title": "Pedidos" },
     { "path": "/app/pedidos/:id", "title": "Detalhe do pedido" },
-    { "path": "/app/conta", "title": "Minha conta e LGPD" }
+    { "path": "/app/conta", "title": "Minha conta e LGPD" },
+    { "path": "/produtor", "title": "Painel do produtor" },
+    { "path": "/produtor/onboarding", "title": "Onboarding do produtor" },
+    { "path": "/produtor/catalogo", "title": "Catálogo do produtor" },
+    { "path": "/produtor/catalogo/novo", "title": "Nova oferta do produtor" },
+    { "path": "/produtor/estoque", "title": "Estoque semanal do produtor" },
+    { "path": "/produtor/pedidos", "title": "Fila de colheita do produtor" },
+    { "path": "/produtor/financeiro", "title": "Extrato e repasse do produtor" },
+    { "path": "/produtor/conta", "title": "Propriedade e auditoria do produtor" }
   ]
 }

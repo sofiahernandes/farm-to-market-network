@@ -31,11 +31,103 @@ export type Product = {
   category: string;
   unit: string;
   priceCents: number;
+  active?: boolean;
+  certification?: string;
   producer: { id: string; name: string };
-  stock: { available: number; deliveryDate: string | null };
+  stock: {
+    available: number;
+    reserved?: number;
+    lowStockThreshold?: number;
+    deliveryDate: string | null;
+  };
   seasonality?: string;
   basketId?: string;
   basketItems?: BasketItem[];
+};
+
+export type ProducerCertification = {
+  id: string;
+  name: string;
+  issuer: string;
+  validUntil: string;
+  status: 'valid' | 'expiring_soon' | 'pending_verification';
+};
+
+export type ProducerAuditEntry = {
+  id: string;
+  action: string;
+  resourceType: 'Product' | 'Inventory' | 'Onboarding' | 'Order' | 'Payout';
+  resourceId: string;
+  summary: string;
+  createdAt: string;
+};
+
+export type ProducerPayoutItem = {
+  id: string;
+  orderId: string;
+  createdAt: string;
+  scheduledAt: string;
+  grossCents: number;
+  feePercent: number;
+  feeCents: number;
+  netCents: number;
+  status: 'scheduled' | 'paid' | 'pending_split_approval';
+  itemsSummary: string;
+};
+
+export type ProducerFulfillmentItem = {
+  orderId: string;
+  status: string;
+  producerSeparated: boolean;
+  deliverySlot: { id: string; startsAt: string; endsAt: string };
+  customerCity: string;
+  items: {
+    productId: string;
+    name: string;
+    quantity: number;
+    unit: string;
+    unitPriceCents: number;
+  }[];
+  producerGrossCents: number;
+};
+
+export type ProducerHarvestSummary = {
+  productId: string;
+  name: string;
+  unit: string;
+  totalQuantity: number;
+  ordersCount: number;
+};
+
+export type ProducerDashboardData = {
+  producer: {
+    id: string;
+    displayName: string;
+    city: string;
+    state: string;
+    story: string;
+    legalIdMasked: string;
+    onboardingStatus: 'approved' | 'pending_review' | 'changes_requested';
+    paymentAccountConnected: boolean;
+    splitFeatureFlagEnabled: boolean;
+    platformFeePercent: number;
+    pendingTasksCount: number;
+    pendingReasons: string[];
+    certifications: ProducerCertification[];
+  };
+  metrics: {
+    activeOffersCount: number;
+    pausedOffersCount: number;
+    lowStockCount: number;
+    pendingFulfillmentCount: number;
+    grossSalesCents: number;
+    netPayoutCents: number;
+  };
+  offers: Product[];
+  fulfillmentQueue: ProducerFulfillmentItem[];
+  harvestSummary: ProducerHarvestSummary[];
+  payouts: ProducerPayoutItem[];
+  auditLogs: ProducerAuditEntry[];
 };
 
 export type Basket = {
@@ -287,7 +379,13 @@ export async function api<T>(
 }
 
 export const auth = {
-  register: (data: { email: string; cpf: string; password: string }) =>
+  register: (data: {
+    email: string;
+    cpf: string;
+    password: string;
+    role?: 'consumer' | 'producer';
+    displayName?: string;
+  }) =>
     api<AuthResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),

@@ -102,7 +102,7 @@ export default function ContaPage() {
   return (
     <>
       <Header app />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/app">Área do consumidor</Link>
           <span>/</span>Minha conta e privacidade

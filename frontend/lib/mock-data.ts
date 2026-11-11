@@ -8,6 +8,12 @@ import type {
   DeliverySlotOption,
   LgpdDeletionRequest,
   Order,
+  ProducerAuditEntry,
+  ProducerCertification,
+  ProducerDashboardData,
+  ProducerFulfillmentItem,
+  ProducerHarvestSummary,
+  ProducerPayoutItem,
   Product,
   SavedAddress,
   Subscription,
@@ -16,6 +22,11 @@ import type {
 
 export const DEMO_CREDENTIALS = {
   email: 'jornada@agritech.local',
+  password: 'agritech123',
+};
+
+export const DEMO_PRODUCER_CREDENTIALS = {
+  email: 'produtor@agritech.local',
   password: 'agritech123',
 };
 
@@ -52,6 +63,15 @@ export function isValidCpf(input: string): boolean {
     return remainder === 10 ? 0 : remainder;
   };
   return digit(9) === Number(cpf[9]) && digit(10) === Number(cpf[10]);
+}
+
+export function calculatePlatformFeeCents(
+  grossCents: number,
+  percent: number
+): number {
+  if (grossCents < 0 || percent < 0 || percent > 100)
+    throw new Error('Invalid pricing input');
+  return Math.round((grossCents * percent) / 100);
 }
 
 export function isBeforeCutoff(
@@ -214,8 +234,15 @@ const baseProducts: Product[] = [
     category: 'Cestas',
     unit: 'cesta',
     priceCents: 6490,
+    active: true,
+    certification: 'Orgânico Participativo (OPAC)',
     producer: { id: 'sitio-verde', name: 'Sítio Verde' },
-    stock: { available: 12, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    stock: {
+      available: 12,
+      reserved: 2,
+      lowStockThreshold: 5,
+      deliveryDate: '2026-11-17T11:00:00.000Z',
+    },
     seasonality: 'Safra de Primavera · Colheita na véspera',
     basketId: 'basket-familiar',
     basketItems: baseBaskets[0].items,
@@ -228,8 +255,15 @@ const baseProducts: Product[] = [
     category: 'Cestas',
     unit: 'cesta',
     priceCents: 4290,
+    active: true,
+    certification: 'Agricultura Familiar (PRONAF)',
     producer: { id: 'horta-irmaos', name: 'Horta dos Irmãos' },
-    stock: { available: 15, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    stock: {
+      available: 15,
+      reserved: 1,
+      lowStockThreshold: 4,
+      deliveryDate: '2026-11-17T11:00:00.000Z',
+    },
     seasonality: 'Ano inteiro · Folhas e raízes frescas',
     basketId: 'basket-compacta',
     basketItems: baseBaskets[1].items,
@@ -242,8 +276,15 @@ const baseProducts: Product[] = [
     category: 'Cestas',
     unit: 'cesta',
     priceCents: 5490,
+    active: true,
+    certification: 'Manejo Sustentável Regional',
     producer: { id: 'pomar-serra', name: 'Pomar da Serra' },
-    stock: { available: 10, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    stock: {
+      available: 10,
+      reserved: 1,
+      lowStockThreshold: 4,
+      deliveryDate: '2026-11-19T11:00:00.000Z',
+    },
     seasonality: 'Safra de Primavera/Verão · Frutas doces',
     basketId: 'basket-pomar',
     basketItems: baseBaskets[2].items,
@@ -256,8 +297,15 @@ const baseProducts: Product[] = [
     category: 'Hortaliças',
     unit: 'kg',
     priceCents: 1490,
+    active: true,
+    certification: 'Orgânico Brasil (SISORG)',
     producer: { id: 'vale-sol', name: 'Vale do Sol' },
-    stock: { available: 24, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    stock: {
+      available: 24,
+      reserved: 3,
+      lowStockThreshold: 6,
+      deliveryDate: '2026-11-17T11:00:00.000Z',
+    },
     seasonality: 'Safra plena · Colheita diária',
   },
   {
@@ -267,8 +315,15 @@ const baseProducts: Product[] = [
     category: 'Hortaliças',
     unit: 'unidade',
     priceCents: 590,
+    active: true,
+    certification: 'Agricultura Familiar (PRONAF)',
     producer: { id: 'horta-irmaos', name: 'Horta dos Irmãos' },
-    stock: { available: 36, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    stock: {
+      available: 36,
+      reserved: 4,
+      lowStockThreshold: 8,
+      deliveryDate: '2026-11-17T11:00:00.000Z',
+    },
     seasonality: 'Ano inteiro · Colheita na manhã da entrega',
   },
   {
@@ -278,8 +333,15 @@ const baseProducts: Product[] = [
     category: 'Hortaliças',
     unit: '500 g',
     priceCents: 890,
+    active: true,
+    certification: 'Orgânico Participativo (OPAC)',
     producer: { id: 'sitio-verde', name: 'Sítio Verde' },
-    stock: { available: 18, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    stock: {
+      available: 4,
+      reserved: 1,
+      lowStockThreshold: 5,
+      deliveryDate: '2026-11-19T11:00:00.000Z',
+    },
     seasonality: 'Outono/Primavera · Raízes jovens',
   },
   {
@@ -290,8 +352,15 @@ const baseProducts: Product[] = [
     category: 'Granja',
     unit: 'dúzia',
     priceCents: 1890,
+    active: true,
+    certification: 'Bem-Estar Animal · Criação Livre',
     producer: { id: 'granja-feliz', name: 'Granja Feliz' },
-    stock: { available: 20, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    stock: {
+      available: 20,
+      reserved: 2,
+      lowStockThreshold: 5,
+      deliveryDate: '2026-11-19T11:00:00.000Z',
+    },
     seasonality: 'Produção contínua · Postura da semana',
   },
   {
@@ -301,9 +370,16 @@ const baseProducts: Product[] = [
     category: 'Frutas',
     unit: 'bandeja',
     priceCents: 1290,
+    active: true,
+    certification: 'Cultivo Integrado Sem Resíduos',
     producer: { id: 'pomar-serra', name: 'Pomar da Serra' },
-    stock: { available: 9, deliveryDate: '2026-11-19T11:00:00.000Z' },
-    seasonality: ' Inverno/Primavera · Colheita seletiva',
+    stock: {
+      available: 9,
+      reserved: 1,
+      lowStockThreshold: 4,
+      deliveryDate: '2026-11-19T11:00:00.000Z',
+    },
+    seasonality: 'Inverno/Primavera · Colheita seletiva',
   },
 ];
 
@@ -315,6 +391,21 @@ type StoredUser = {
   role: string;
 };
 
+type ProducerState = {
+  id: string;
+  displayName: string;
+  city: string;
+  state: string;
+  story: string;
+  legalIdMasked: string;
+  onboardingStatus: 'approved' | 'pending_review' | 'changes_requested';
+  paymentAccountConnected: boolean;
+  splitFeatureFlagEnabled: boolean;
+  platformFeePercent: number;
+  certifications: ProducerCertification[];
+  separatedOrderIds: string[];
+};
+
 const storageKeys = {
   cart: 'agritech_mock_cart',
   orders: 'agritech_mock_orders',
@@ -323,6 +414,10 @@ const storageKeys = {
   subscriptions: 'agritech_mock_subscriptions',
   addresses: 'agritech_mock_addresses',
   lgpdRequests: 'agritech_mock_lgpd_requests',
+  producerState: 'agritech_mock_producer_state',
+  customProducts: 'agritech_mock_custom_products',
+  productOverrides: 'agritech_mock_product_overrides',
+  producerAudit: 'agritech_mock_producer_audit',
 };
 
 const memoryStore = new Map<string, string>();
@@ -365,41 +460,149 @@ export function resetMockState() {
   memoryStore.clear();
 }
 
+function defaultProducerState(): ProducerState {
+  return {
+    id: 'sitio-verde',
+    displayName: 'Sítio Verde · Agricultura Familiar',
+    city: 'Ibiúna',
+    state: 'SP',
+    story:
+      'Propriedade familiar de 6 hectares dedicada a hortaliças orgânicas e cestas agroecológicas colhidas na véspera da entrega.',
+    legalIdMasked: '***.982.247-25 · DAP/CAF Ativo',
+    onboardingStatus: 'approved',
+    paymentAccountConnected: true,
+    splitFeatureFlagEnabled: false,
+    platformFeePercent: 10,
+    certifications: [
+      {
+        id: 'cert-opac',
+        name: 'Certificação Orgânica Participativa (OPAC)',
+        issuer: 'Rede Agroecológica Regional',
+        validUntil: '2027-08-15',
+        status: 'valid',
+      },
+      {
+        id: 'cert-caf',
+        name: 'Cadastro Nacional da Agricultura Familiar (CAF)',
+        issuer: 'MDA · Governo Federal',
+        validUntil: '2027-03-30',
+        status: 'valid',
+      },
+    ],
+    separatedOrderIds: ['AG-1037'],
+  };
+}
+
+function defaultProducerAudit(): ProducerAuditEntry[] {
+  return [
+    {
+      id: 'aud-1',
+      action: 'onboarding.approved',
+      resourceType: 'Onboarding',
+      resourceId: 'sitio-verde',
+      summary: 'Onboarding da propriedade Sítio Verde aprovado pela operação.',
+      createdAt: '2026-10-15T10:00:00.000Z',
+    },
+    {
+      id: 'aud-2',
+      action: 'inventory.updated',
+      resourceType: 'Inventory',
+      resourceId: 'mock-cesta',
+      summary: 'Disponibilidade semanal da Cesta da semana atualizada para 12 unidades.',
+      createdAt: '2026-10-28T09:15:00.000Z',
+    },
+  ];
+}
+
+function appendProducerAudit(
+  action: string,
+  resourceType: ProducerAuditEntry['resourceType'],
+  resourceId: string,
+  summary: string
+) {
+  const current = read<ProducerAuditEntry[]>(
+    storageKeys.producerAudit,
+    defaultProducerAudit()
+  );
+  const entry: ProducerAuditEntry = {
+    id: `aud-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    action,
+    resourceType,
+    resourceId,
+    summary,
+    createdAt: new Date().toISOString(),
+  };
+  write(storageKeys.producerAudit, [entry, ...current]);
+}
+
 function stockMap(): Record<string, number> {
   const defaults: Record<string, number> = {};
   for (const product of baseProducts) {
     defaults[product.id] = product.stock.available;
   }
+  const custom = read<Product[]>(storageKeys.customProducts, []);
+  for (const product of custom) {
+    defaults[product.id] = product.stock.available;
+  }
   return { ...defaults, ...read<Record<string, number>>(storageKeys.stock, {}) };
 }
 
-function currentProducts(): Product[] {
+function allProductsWithOverrides(): Product[] {
   const stocks = stockMap();
-  return baseProducts.map((product) => ({
-    ...product,
-    stock: {
+  const overrides = read<Record<string, Partial<Product>>>(
+    storageKeys.productOverrides,
+    {}
+  );
+  const custom = read<Product[]>(storageKeys.customProducts, []);
+  const combined = [...baseProducts, ...custom];
+  return combined.map((product) => {
+    const ov = overrides[product.id] ?? {};
+    const mergedStock = {
       ...product.stock,
-      available: Math.max(0, stocks[product.id] ?? product.stock.available),
-    },
-  }));
+      ...(ov.stock ?? {}),
+      available: Math.max(
+        0,
+        stocks[product.id] ?? ov.stock?.available ?? product.stock.available
+      ),
+    };
+    return {
+      ...product,
+      ...ov,
+      active: ov.active ?? product.active ?? true,
+      stock: mergedStock,
+    };
+  });
+}
+
+function currentProducts(): Product[] {
+  return allProductsWithOverrides().filter((p) => p.active !== false);
 }
 
 function currentBaskets(): Basket[] {
   const stocks = stockMap();
-  return baseBaskets.map((basket) => ({
-    ...basket,
-    stock: {
-      ...basket.stock,
-      available: Math.max(
-        0,
-        stocks[basket.productId] ?? basket.stock.available
-      ),
-    },
-  }));
+  const overrides = read<Record<string, Partial<Product>>>(
+    storageKeys.productOverrides,
+    {}
+  );
+  return baseBaskets
+    .filter((b) => overrides[b.productId]?.active !== false)
+    .map((basket) => ({
+      ...basket,
+      priceCents: overrides[basket.productId]?.priceCents ?? basket.priceCents,
+      stock: {
+        ...basket.stock,
+        available: Math.max(
+          0,
+          stocks[basket.productId] ?? basket.stock.available
+        ),
+      },
+    }));
 }
 
 function makeCartItem(productId: string, quantity: number): CartItem {
-  const product = currentProducts().find((item) => item.id === productId);
+  const product = allProductsWithOverrides().find(
+    (item) => item.id === productId
+  );
   if (!product) throw new Error('Oferta não encontrada.');
   return {
     productId,
@@ -500,8 +703,8 @@ function defaultOrdersList(): Order[] {
       'AG-1048',
       'Em preparação',
       [
-        ['mock-ovos', 1],
-        ['mock-alface', 2],
+        ['mock-cesta', 1],
+        ['mock-cenoura', 2],
       ],
       '2026-10-28T13:00:00.000Z'
     ),
@@ -517,7 +720,10 @@ function defaultOrdersList(): Order[] {
   ];
 }
 
-function enrichSubscriptionCutoff(sub: Subscription, now = new Date()): Subscription {
+function enrichSubscriptionCutoff(
+  sub: Subscription,
+  now = new Date()
+): Subscription {
   const deliveryDate = new Date(sub.nextDeliveryAt);
   const cutoffDate = new Date(
     deliveryDate.getTime() - sub.cutoffHours * 3600000
@@ -657,6 +863,150 @@ function validateAddress(addr: Order['address'] | undefined) {
   };
 }
 
+function buildProducerDashboard(): ProducerDashboardData {
+  const pState = read<ProducerState>(
+    storageKeys.producerState,
+    defaultProducerState()
+  );
+  const allOffers = allProductsWithOverrides();
+  const allOrders = orders();
+  const unitMap = new Map(allOffers.map((p) => [p.id, p.unit]));
+
+  const fulfillmentQueue: ProducerFulfillmentItem[] = allOrders.map((order) => {
+    const items = order.items.map((i) => ({
+      productId: i.productId,
+      name: i.name,
+      quantity: i.quantity,
+      unit: unitMap.get(i.productId) ?? 'un',
+      unitPriceCents: i.unitPriceCents,
+    }));
+    const producerGrossCents = items.reduce(
+      (sum, i) => sum + i.quantity * i.unitPriceCents,
+      0
+    );
+    return {
+      orderId: order.id,
+      status: order.status,
+      producerSeparated:
+        pState.separatedOrderIds.includes(order.id) ||
+        order.status === 'Entregue',
+      deliverySlot: order.deliverySlot,
+      customerCity: order.address.city,
+      items,
+      producerGrossCents,
+    };
+  });
+
+  const harvestMap = new Map<string, ProducerHarvestSummary>();
+  for (const fq of fulfillmentQueue) {
+    if (fq.status === 'Entregue') continue;
+    for (const item of fq.items) {
+      const prev = harvestMap.get(item.productId);
+      if (prev) {
+        prev.totalQuantity += item.quantity;
+        prev.ordersCount += 1;
+      } else {
+        harvestMap.set(item.productId, {
+          productId: item.productId,
+          name: item.name,
+          unit: item.unit,
+          totalQuantity: item.quantity,
+          ordersCount: 1,
+        });
+      }
+    }
+  }
+
+  const payouts: ProducerPayoutItem[] = fulfillmentQueue.map((fq) => {
+    const feeCents = calculatePlatformFeeCents(
+      fq.producerGrossCents,
+      pState.platformFeePercent
+    );
+    const netCents = fq.producerGrossCents - feeCents;
+    const isDelivered = fq.status === 'Entregue';
+    return {
+      id: `PAY-${fq.orderId}`,
+      orderId: fq.orderId,
+      createdAt: fq.deliverySlot.startsAt,
+      scheduledAt: new Date(
+        new Date(fq.deliverySlot.startsAt).getTime() + 2 * 86400000
+      ).toISOString(),
+      grossCents: fq.producerGrossCents,
+      feePercent: pState.platformFeePercent,
+      feeCents,
+      netCents,
+      status: !pState.paymentAccountConnected
+        ? 'pending_split_approval'
+        : isDelivered
+          ? 'paid'
+          : 'scheduled',
+      itemsSummary: fq.items.map((i) => `${i.quantity}× ${i.name}`).join(', '),
+    };
+  });
+
+  const lowStockOffers = allOffers.filter(
+    (o) => o.stock.available <= (o.stock.lowStockThreshold ?? 5)
+  );
+  const pendingFulfillment = fulfillmentQueue.filter(
+    (f) => !f.producerSeparated
+  );
+
+  const pendingReasons: string[] = [];
+  if (pState.onboardingStatus !== 'approved') {
+    pendingReasons.push('Cadastro da propriedade aguarda aprovação operacional');
+  }
+  if (!pState.paymentAccountConnected) {
+    pendingReasons.push('Conta de recebimento Mercado Pago não conectada');
+  }
+  if (lowStockOffers.length > 0) {
+    pendingReasons.push(
+      `${lowStockOffers.length} oferta(s) com alerta de baixo estoque`
+    );
+  }
+  if (pendingFulfillment.length > 0) {
+    pendingReasons.push(
+      `${pendingFulfillment.length} pedido(s) aguardando colheita e separação`
+    );
+  }
+
+  const grossSalesCents = payouts.reduce((s, p) => s + p.grossCents, 0);
+  const netPayoutCents = payouts.reduce((s, p) => s + p.netCents, 0);
+
+  return {
+    producer: {
+      id: pState.id,
+      displayName: pState.displayName,
+      city: pState.city,
+      state: pState.state,
+      story: pState.story,
+      legalIdMasked: pState.legalIdMasked,
+      onboardingStatus: pState.onboardingStatus,
+      paymentAccountConnected: pState.paymentAccountConnected,
+      splitFeatureFlagEnabled: pState.splitFeatureFlagEnabled,
+      platformFeePercent: pState.platformFeePercent,
+      pendingTasksCount: pendingReasons.length,
+      pendingReasons,
+      certifications: pState.certifications,
+    },
+    metrics: {
+      activeOffersCount: allOffers.filter((o) => o.active !== false).length,
+      pausedOffersCount: allOffers.filter((o) => o.active === false).length,
+      lowStockCount: lowStockOffers.length,
+      pendingFulfillmentCount: pendingFulfillment.length,
+      grossSalesCents,
+      netPayoutCents,
+    },
+    offers: allOffers,
+    fulfillmentQueue,
+    harvestSummary: Array.from(harvestMap.values()),
+    payouts,
+    auditLogs: read<ProducerAuditEntry[]>(
+      storageKeys.producerAudit,
+      defaultProducerAudit()
+    ),
+  };
+}
+
 function createOrder(
   body: { address: Order['address']; deliverySlotId?: string },
   idempotencyKey?: string
@@ -723,9 +1073,7 @@ function createSubscription(
   const stocks = stockMap();
   const available = stocks[basket.productId] ?? 0;
   if (available < 1) {
-    throw new Error(
-      `Sem disponibilidade no lote atual para ${basket.name}.`
-    );
+    throw new Error(`Sem disponibilidade no lote atual para ${basket.name}.`);
   }
 
   const currentSubs = subscriptions();
@@ -825,6 +1173,12 @@ export async function mockApi(
     ) {
       return authResponse();
     }
+    if (
+      email === DEMO_PRODUCER_CREDENTIALS.email &&
+      password === DEMO_PRODUCER_CREDENTIALS.password
+    ) {
+      return authResponse(email, 'producer', 'sitio-verde');
+    }
     const users = read<StoredUser[]>(storageKeys.users, []);
     const matched = users.find(
       (u) => u.email === email && u.password === password
@@ -841,6 +1195,7 @@ export async function mockApi(
     const email = body?.email?.trim().toLowerCase();
     const cpf = (body?.cpf ?? '').replace(/\D/g, '');
     const password = body?.password ?? '';
+    const role = body?.role === 'producer' ? 'producer' : 'consumer';
 
     if (!email || !email.includes('@')) {
       throw new Error('Informe um email válido.');
@@ -855,6 +1210,7 @@ export async function mockApi(
     const users = read<StoredUser[]>(storageKeys.users, []);
     if (
       email === DEMO_CREDENTIALS.email ||
+      email === DEMO_PRODUCER_CREDENTIALS.email ||
       users.some((u) => u.email === email || u.cpf === cpf)
     ) {
       throw new Error('Email ou CPF já cadastrado neste ambiente.');
@@ -865,10 +1221,298 @@ export async function mockApi(
       email,
       cpf,
       password,
-      role: 'consumer',
+      role,
     };
     write(storageKeys.users, [...users, newUser]);
+    if (role === 'producer' && body?.displayName?.trim()) {
+      const pState = read<ProducerState>(
+        storageKeys.producerState,
+        defaultProducerState()
+      );
+      pState.displayName = body.displayName.trim();
+      write(storageKeys.producerState, pState);
+    }
     return authResponse(newUser.email, newUser.role, newUser.id);
+  }
+
+  if (pathname === '/producer/dashboard' && method === 'GET') {
+    return buildProducerDashboard();
+  }
+
+  if (pathname === '/producer/onboarding' && method === 'PATCH') {
+    const current = read<ProducerState>(
+      storageKeys.producerState,
+      defaultProducerState()
+    );
+    const updated: ProducerState = {
+      ...current,
+      displayName: body?.displayName?.trim() || current.displayName,
+      city: body?.city?.trim() || current.city,
+      state: body?.state?.trim() || current.state,
+      story: body?.story?.trim() || current.story,
+      onboardingStatus: body?.onboardingStatus ?? current.onboardingStatus,
+      paymentAccountConnected:
+        typeof body?.paymentAccountConnected === 'boolean'
+          ? body.paymentAccountConnected
+          : current.paymentAccountConnected,
+      certifications: Array.isArray(body?.certifications)
+        ? body.certifications
+        : current.certifications,
+    };
+    write(storageKeys.producerState, updated);
+    appendProducerAudit(
+      'onboarding.updated',
+      'Onboarding',
+      updated.id,
+      `Status de onboarding: ${updated.onboardingStatus} · Conta Mercado Pago conectada: ${updated.paymentAccountConnected ? 'Sim' : 'Não'}.`
+    );
+    return buildProducerDashboard();
+  }
+
+  if (pathname === '/producer/offers' && method === 'POST') {
+    const pState = read<ProducerState>(
+      storageKeys.producerState,
+      defaultProducerState()
+    );
+    const wantsPublish = body?.active !== false;
+    if (
+      wantsPublish &&
+      (pState.onboardingStatus !== 'approved' ||
+        !pState.paymentAccountConnected)
+    ) {
+      throw new Error(
+        'Conclua a aprovação do onboarding e conecte a conta de recebimento antes de publicar ofertas.'
+      );
+    }
+    const name = body?.name?.trim();
+    const unit = body?.unit?.trim();
+    const category = body?.category?.trim() || 'Hortaliças';
+    const priceCents = Number(body?.priceCents ?? 0);
+    const available = Number(body?.available ?? 0);
+    if (!name || !unit) {
+      throw new Error('Informe o nome e a unidade de comercialização da oferta.');
+    }
+    if (!Number.isInteger(priceCents) || priceCents <= 0) {
+      throw new Error('O preço da oferta deve ser maior que zero.');
+    }
+    if (!Number.isInteger(available) || available < 0) {
+      throw new Error('A disponibilidade inicial não pode ser negativa.');
+    }
+
+    const custom = read<Product[]>(storageKeys.customProducts, []);
+    const newId = `prod-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const created: Product = {
+      id: newId,
+      name,
+      description:
+        body?.description?.trim() ||
+        `Colheita fresca de ${name} produzida por ${pState.displayName}.`,
+      category,
+      unit,
+      priceCents,
+      active: wantsPublish,
+      certification:
+        body?.certification?.trim() || 'Orgânico Participativo (OPAC)',
+      seasonality: body?.seasonality?.trim() || 'Safra atual · Colheita sob demanda',
+      producer: { id: pState.id, name: pState.displayName },
+      stock: {
+        available,
+        reserved: 0,
+        lowStockThreshold: Number(body?.lowStockThreshold ?? 5),
+        deliveryDate: MOCK_DELIVERY_SLOTS[0].startsAt,
+      },
+      basketItems: Array.isArray(body?.basketItems)
+        ? body.basketItems
+        : undefined,
+    };
+    write(storageKeys.customProducts, [created, ...custom]);
+    const stocks = stockMap();
+    stocks[newId] = available;
+    write(storageKeys.stock, stocks);
+
+    appendProducerAudit(
+      wantsPublish ? 'offer.published' : 'offer.draft_saved',
+      'Product',
+      newId,
+      `${wantsPublish ? 'Oferta publicada' : 'Rascunho salvo'}: ${name} (${unit}) por R$ ${(priceCents / 100).toFixed(2)} com lote de ${available}.`
+    );
+    return created;
+  }
+
+  if (
+    pathname.startsWith('/producer/offers/') &&
+    pathname.endsWith('/toggle-status') &&
+    method === 'POST'
+  ) {
+    const productId = pathname
+      .replace('/producer/offers/', '')
+      .replace('/toggle-status', '');
+    const all = allProductsWithOverrides();
+    const target = all.find((p) => p.id === productId);
+    if (!target) throw new Error('Oferta não encontrada.');
+
+    const nextActive = target.active === false;
+    const pState = read<ProducerState>(
+      storageKeys.producerState,
+      defaultProducerState()
+    );
+    if (
+      nextActive &&
+      (pState.onboardingStatus !== 'approved' ||
+        !pState.paymentAccountConnected)
+    ) {
+      throw new Error(
+        'Conclua a aprovação do onboarding e conecte a conta de recebimento antes de publicar ofertas.'
+      );
+    }
+
+    const overrides = read<Record<string, Partial<Product>>>(
+      storageKeys.productOverrides,
+      {}
+    );
+    overrides[productId] = {
+      ...(overrides[productId] ?? {}),
+      active: nextActive,
+    };
+    write(storageKeys.productOverrides, overrides);
+
+    appendProducerAudit(
+      nextActive ? 'offer.activated' : 'offer.paused',
+      'Product',
+      productId,
+      `Oferta "${target.name}" ${nextActive ? 'reativada no catálogo' : 'pausada pelo produtor'}.`
+    );
+    return buildProducerDashboard();
+  }
+
+  if (pathname.startsWith('/producer/offers/') && method === 'PATCH') {
+    const productId = pathname.replace('/producer/offers/', '');
+    const all = allProductsWithOverrides();
+    const target = all.find((p) => p.id === productId);
+    if (!target) throw new Error('Oferta não encontrada.');
+
+    const priceCents =
+      body?.priceCents !== undefined
+        ? Number(body.priceCents)
+        : target.priceCents;
+    if (!Number.isInteger(priceCents) || priceCents <= 0) {
+      throw new Error('Preço inválido.');
+    }
+
+    const overrides = read<Record<string, Partial<Product>>>(
+      storageKeys.productOverrides,
+      {}
+    );
+    overrides[productId] = {
+      ...(overrides[productId] ?? {}),
+      name: body?.name?.trim() || target.name,
+      description: body?.description?.trim() || target.description,
+      unit: body?.unit?.trim() || target.unit,
+      seasonality: body?.seasonality?.trim() || target.seasonality,
+      certification: body?.certification?.trim() || target.certification,
+      priceCents,
+    };
+    write(storageKeys.productOverrides, overrides);
+
+    appendProducerAudit(
+      'offer.updated',
+      'Product',
+      productId,
+      `Oferta "${overrides[productId].name}" atualizada (preço: R$ ${(priceCents / 100).toFixed(2)}).`
+    );
+    return buildProducerDashboard();
+  }
+
+  if (pathname.startsWith('/producer/inventory/') && method === 'PATCH') {
+    const productId = pathname.replace('/producer/inventory/', '');
+    const all = allProductsWithOverrides();
+    const target = all.find((p) => p.id === productId);
+    if (!target) throw new Error('Oferta não encontrada.');
+
+    if (
+      body?.expectedAvailable !== undefined &&
+      Number(body.expectedAvailable) !== target.stock.available
+    ) {
+      throw new Error(
+        'A disponibilidade mudou enquanto você editava. Atualize os dados antes de salvar.'
+      );
+    }
+
+    const nextAvailable = Number(body?.available);
+    if (!Number.isInteger(nextAvailable) || nextAvailable < 0) {
+      throw new Error('O estoque disponível não pode ser negativo.');
+    }
+
+    const stocks = stockMap();
+    const prevAvailable = stocks[productId] ?? target.stock.available;
+    stocks[productId] = nextAvailable;
+    write(storageKeys.stock, stocks);
+
+    if (body?.lowStockThreshold !== undefined || body?.deliveryDate) {
+      const overrides = read<Record<string, Partial<Product>>>(
+        storageKeys.productOverrides,
+        {}
+      );
+      overrides[productId] = {
+        ...(overrides[productId] ?? {}),
+        stock: {
+          ...target.stock,
+          available: nextAvailable,
+          lowStockThreshold:
+            body?.lowStockThreshold !== undefined
+              ? Math.max(0, Number(body.lowStockThreshold))
+              : target.stock.lowStockThreshold,
+          deliveryDate: body?.deliveryDate ?? target.stock.deliveryDate,
+        },
+      };
+      write(storageKeys.productOverrides, overrides);
+    }
+
+    appendProducerAudit(
+      'inventory.updated',
+      'Inventory',
+      productId,
+      `Estoque semanal de "${target.name}" alterado de ${prevAvailable} para ${nextAvailable} (${target.unit}).`
+    );
+    return buildProducerDashboard();
+  }
+
+  if (
+    pathname.startsWith('/producer/orders/') &&
+    pathname.endsWith('/mark-separated') &&
+    method === 'POST'
+  ) {
+    const orderId = pathname
+      .replace('/producer/orders/', '')
+      .replace('/mark-separated', '');
+    const pState = read<ProducerState>(
+      storageKeys.producerState,
+      defaultProducerState()
+    );
+    if (!pState.separatedOrderIds.includes(orderId)) {
+      pState.separatedOrderIds = [...pState.separatedOrderIds, orderId];
+      write(storageKeys.producerState, pState);
+    }
+    const list = orders();
+    const idx = list.findIndex((o) => o.id === orderId);
+    if (idx >= 0 && list[idx].status !== 'Entregue') {
+      const now = new Date().toISOString();
+      list[idx].statusHistory = [
+        ...list[idx].statusHistory,
+        {
+          toStatus: 'Colheita e separação concluídas pelo produtor',
+          createdAt: now,
+        },
+      ];
+      write(storageKeys.orders, list);
+    }
+    appendProducerAudit(
+      'fulfillment.separated',
+      'Order',
+      orderId,
+      `Lote do pedido #${orderId} colhido, separado e etiquetado para coleta.`
+    );
+    return buildProducerDashboard();
   }
 
   if (pathname === '/delivery-slots' && method === 'GET') {

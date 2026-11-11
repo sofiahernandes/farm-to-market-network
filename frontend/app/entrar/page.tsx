@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/ui';
 import { auth, saveSession } from '@/lib/api';
-import { DEMO_CREDENTIALS } from '@/lib/mock-data';
+import { DEMO_CREDENTIALS, DEMO_PRODUCER_CREDENTIALS } from '@/lib/mock-data';
 
 export default function Entrar() {
   const router = useRouter();
@@ -20,9 +20,16 @@ export default function Entrar() {
     setError('');
 
     try {
-      saveSession(await auth.login({ email, password }));
+      const session = await auth.login({ email, password });
+      saveSession(session);
       const next = new URLSearchParams(location.search).get('next');
-      router.push(next || '/catalogo');
+      if (next) {
+        router.push(next);
+      } else if (session.user.role === 'producer') {
+        router.push('/produtor');
+      } else {
+        router.push('/catalogo');
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -39,12 +46,37 @@ export default function Entrar() {
           <span>/</span>Entrar
         </div>
         <section className="auth-card dashboard-card">
-          <p className="sandbox-notice" role="note">
-            Demonstração local: <strong>{DEMO_CREDENTIALS.email}</strong> · senha:{' '}
-            <strong>{DEMO_CREDENTIALS.password}</strong>
-          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <p className="sandbox-notice" role="note" style={{ marginTop: 0 }}>
+              Contas de demonstração local (senha: <strong>{DEMO_CREDENTIALS.password}</strong>):
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail(DEMO_CREDENTIALS.email);
+                  setPassword(DEMO_CREDENTIALS.password);
+                }}
+                className="button button-small button-secondary"
+              >
+                Preencher Consumidor ({DEMO_CREDENTIALS.email})
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail(DEMO_PRODUCER_CREDENTIALS.email);
+                  setPassword(DEMO_PRODUCER_CREDENTIALS.password);
+                }}
+                className="button button-small button-secondary"
+              >
+                Preencher Produtor ({DEMO_PRODUCER_CREDENTIALS.email})
+              </button>
+            </div>
+          </div>
           <h1>Acesse sua conta AgriTech</h1>
-          <p className="lead">Gerencie suas compras locais, sacola ativa e histórico de entregas.</p>
+          <p className="lead">
+            Gerencie suas compras locais, sacola ativa ou o painel da sua propriedade rural.
+          </p>
           <form className="checkout-form" onSubmit={submit}>
             <label>
               Email
