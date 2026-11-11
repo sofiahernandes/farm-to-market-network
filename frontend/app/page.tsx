@@ -23,8 +23,8 @@ export default function Home() {
               </h1>
               <p className="hero-lead">
                 Conectamos consumidores a produtores rurais locais. Alimentos
-                frescos da safra, sem intermediários excessivos, com rastreabilidade
-                clara do produtor até a sua mesa.
+                frescos da safra, sem intermediários excessivos, com
+                rastreabilidade clara do produtor até a sua mesa.
               </p>
               <div className="hero-actions">
                 <Link className="button button-primary" href="/catalogo">
@@ -51,11 +51,13 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="hero-visual" aria-label="Painel de ofertas da colheita semanal">
+            <div
+              className="hero-visual"
+              aria-label="Painel de ofertas da colheita semanal"
+            >
               <div className="harvest-board">
                 <div className="harvest-board-header">
                   <div>
-                    <span className="harvest-board-tag">Distribuição Regional</span>
                     <h2>Colheita da Semana</h2>
                   </div>
                   <span className="harvest-status-live">
@@ -74,7 +76,6 @@ export default function Home() {
                         <strong>Cesta Agroecológica Familiar</strong>
                         <span className="harvest-price">R$ 68,00</span>
                       </div>
-                      <p>Sítio das Paineiras · 5,8 kg de verduras e raízes da estação</p>
                     </div>
                   </div>
 
@@ -87,7 +88,6 @@ export default function Home() {
                         <strong>Folhagens & Ervas Frescas</strong>
                         <span className="harvest-price">R$ 24,00</span>
                       </div>
-                      <p>Horta Vale Verde · Maço selecionado colhido no dia</p>
                     </div>
                   </div>
 
@@ -100,7 +100,6 @@ export default function Home() {
                         <strong>Ovos Caipiras de Pasto</strong>
                         <span className="harvest-price">R$ 18,50</span>
                       </div>
-                      <p>Granja Santa Clara · Dúzia selecionada, aves livres</p>
                     </div>
                   </div>
                 </div>
@@ -145,7 +144,8 @@ export default function Home() {
           <div className="section-header-compact">
             <h2>Você sabe o que compra, de quem vem e quando chega.</h2>
             <p className="lead">
-              Sem surpresas na entrega e sem complicações. Um fluxo direto do produtor rural para você.
+              Sem surpresas na entrega e sem complicações. Um fluxo direto do
+              produtor rural para você.
             </p>
           </div>
           <div className="steps-grid">
@@ -153,24 +153,24 @@ export default function Home() {
               <div className="step-num">1</div>
               <h3>Explore a safra atual</h3>
               <p>
-                Consulte as ofertas ativas na sua região com informação clara de produtor,
-                preço por unidade e estoque real disponível.
+                Consulte as ofertas ativas na sua região com informação clara de
+                produtor, preço por unidade e estoque real disponível.
               </p>
             </div>
             <div className="step-card">
               <div className="step-num">2</div>
               <h3>Monte sua sacola de itens</h3>
               <p>
-                Escolha itens avulsos ou cestas compostas de acordo com a necessidade da sua casa,
-                sem fidelidade forçada.
+                Escolha itens avulsos ou cestas compostas de acordo com a
+                necessidade da sua casa, sem fidelidade forçada.
               </p>
             </div>
             <div className="step-card">
               <div className="step-num">3</div>
               <h3>Receba fresco em sua porta</h3>
               <p>
-                Os produtores colhem especialmente para o lote do dia e entregam na janela combinada
-                diretamente no seu endereço.
+                Os produtores colhem especialmente para o lote do dia e entregam
+                na janela combinada diretamente no seu endereço.
               </p>
             </div>
           </div>
@@ -182,8 +182,8 @@ export default function Home() {
               <div>
                 <h2>Ofertas que respeitam o ciclo natural da terra.</h2>
                 <p className="lead">
-                  Ao comprar pelo AgriTech, você apoia produtores familiares locais e garante alimentos
-                  mais saborosos e nutritivos.
+                  Ao comprar pelo AgriTech, você apoia produtores familiares
+                  locais e garante alimentos mais saborosos e nutritivos.
                 </p>
               </div>
               <Link className="button button-primary" href="/catalogo">
@@ -199,8 +199,8 @@ export default function Home() {
             <div className="cta-copy">
               <h2>Alimentos saudáveis com comércio justo.</h2>
               <p>
-                Acompanhe a sua sacola e veja como é fácil receber alimentos de alta qualidade
-                com origem garantida.
+                Acompanhe a sua sacola e veja como é fácil receber alimentos de
+                alta qualidade com origem garantida.
               </p>
             </div>
             <div className="cta-actions">
