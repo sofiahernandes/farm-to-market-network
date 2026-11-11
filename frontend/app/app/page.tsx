@@ -77,7 +77,6 @@ export default function AppHome() {
           </div>
           <div className="metric-card">
             <span className="metric-label">Privacidade e Conta</span>
-            <strong>LGPD</strong>
             <small>Endereços, zona e dados protegidos</small>
           </div>
         </div>
@@ -97,7 +96,7 @@ export default function AppHome() {
               Histórico de pedidos
             </Link>
             <Link href="/app/conta" className="button button-secondary">
-              Minha conta e LGPD
+              Minha conta
             </Link>
           </div>
         </section>

@@ -1,5 +1,11 @@
 import type {
   AccountProfile,
+  AdminDashboardData,
+  AdminDeliverySlot,
+  AdminExceptionItem,
+  AdminManifestEntry,
+  AdminManualRoute,
+  AdminServiceZone,
   AuthResponse,
   Basket,
   Cart,
@@ -29,6 +35,55 @@ export const DEMO_PRODUCER_CREDENTIALS = {
   email: 'produtor@agritech.local',
   password: 'agritech123',
 };
+
+export const DEMO_OPERATIONS_CREDENTIALS = {
+  email: 'operacoes@agritech.local',
+  password: 'agritech123',
+};
+
+export type OrderStage =
+  | 'pending_payment'
+  | 'confirmed'
+  | 'preparing'
+  | 'in_transit'
+  | 'delivered';
+
+export const ORDER_STATUS_FLOW: OrderStage[] = [
+  'pending_payment',
+  'confirmed',
+  'preparing',
+  'in_transit',
+  'delivered',
+];
+
+export function canTransitionOrder(from: OrderStage, to: OrderStage): boolean {
+  return ORDER_STATUS_FLOW.indexOf(to) === ORDER_STATUS_FLOW.indexOf(from) + 1;
+}
+
+export function stageToConsumerLabel(stage: OrderStage): string {
+  switch (stage) {
+    case 'pending_payment':
+      return 'Pagamento pendente';
+    case 'confirmed':
+      return 'Pedido confirmado';
+    case 'preparing':
+      return 'Em preparação';
+    case 'in_transit':
+      return 'A caminho';
+    case 'delivered':
+      return 'Entregue';
+  }
+}
+
+export function consumerLabelToStage(status: string): OrderStage {
+  const lower = status.toLowerCase();
+  if (lower.includes('pendente')) return 'pending_payment';
+  if (lower.includes('confirmado') || lower === 'confirmed') return 'confirmed';
+  if (lower.includes('prepar') || lower === 'preparing') return 'preparing';
+  if (lower.includes('caminho') || lower === 'in_transit') return 'in_transit';
+  if (lower.includes('entregue') || lower === 'delivered') return 'delivered';
+  return 'preparing';
+}
 
 export const DEMO_CPF = '529.982.247-25';
 
@@ -418,6 +473,10 @@ const storageKeys = {
   customProducts: 'agritech_mock_custom_products',
   productOverrides: 'agritech_mock_product_overrides',
   producerAudit: 'agritech_mock_producer_audit',
+  adminZones: 'agritech_mock_admin_zones',
+  adminSlots: 'agritech_mock_admin_slots',
+  adminRoutes: 'agritech_mock_admin_routes',
+  adminExceptions: 'agritech_mock_admin_exceptions',
 };
 
 const memoryStore = new Map<string, string>();
@@ -1007,6 +1066,290 @@ function buildProducerDashboard(): ProducerDashboardData {
   };
 }
 
+function defaultAdminZones(): AdminServiceZone[] {
+  return [
+    {
+      id: 'zone-centro-sul',
+      name: 'Zona Centro-Sul · Piloto',
+      postalCodePrefix: '01310',
+      city: 'São Paulo',
+      active: true,
+      cutoffHours: 36,
+      ordersCount: 2,
+    },
+    {
+      id: 'zone-oeste',
+      name: 'Zona Oeste · Pinheiros/Butantã',
+      postalCodePrefix: '05400',
+      city: 'São Paulo',
+      active: true,
+      cutoffHours: 36,
+      ordersCount: 0,
+    },
+  ];
+}
+
+function defaultAdminSlots(): AdminDeliverySlot[] {
+  return [
+    {
+      id: MOCK_DELIVERY_SLOTS[0].id,
+      zoneId: 'zone-centro-sul',
+      zoneName: 'Zona Centro-Sul · Piloto',
+      label: MOCK_DELIVERY_SLOTS[0].label,
+      startsAt: MOCK_DELIVERY_SLOTS[0].startsAt,
+      endsAt: MOCK_DELIVERY_SLOTS[0].endsAt,
+      capacity: 50,
+      occupied: 2,
+      active: true,
+    },
+    {
+      id: MOCK_DELIVERY_SLOTS[1].id,
+      zoneId: 'zone-centro-sul',
+      zoneName: 'Zona Centro-Sul · Piloto',
+      label: MOCK_DELIVERY_SLOTS[1].label,
+      startsAt: MOCK_DELIVERY_SLOTS[1].startsAt,
+      endsAt: MOCK_DELIVERY_SLOTS[1].endsAt,
+      capacity: 30,
+      occupied: 0,
+      active: true,
+    },
+    {
+      id: MOCK_DELIVERY_SLOTS[2].id,
+      zoneId: 'zone-oeste',
+      zoneName: 'Zona Oeste · Pinheiros/Butantã',
+      label: MOCK_DELIVERY_SLOTS[2].label,
+      startsAt: MOCK_DELIVERY_SLOTS[2].startsAt,
+      endsAt: MOCK_DELIVERY_SLOTS[2].endsAt,
+      capacity: 25,
+      occupied: 0,
+      active: true,
+    },
+  ];
+}
+
+function defaultAdminRoutes(): AdminManualRoute[] {
+  return [
+    {
+      id: 'route-cs-01',
+      name: 'Rota 01 · Centro-Sul Manhã',
+      zoneId: 'zone-centro-sul',
+      zoneName: 'Zona Centro-Sul · Piloto',
+      slotId: MOCK_DELIVERY_SLOTS[0].id,
+      slotLabel: MOCK_DELIVERY_SLOTS[0].label,
+      driverName: 'Carlos Mendes · VUC Refrigerado',
+      status: 'open',
+      orderIds: ['AG-1048'],
+      createdAt: '2026-10-28T07:30:00.000Z',
+    },
+  ];
+}
+
+function defaultAdminExceptions(): AdminExceptionItem[] {
+  return [
+    {
+      id: 'exc-seed-1',
+      type: 'stock_shortage',
+      severity: 'medium',
+      referenceId: 'AG-1048',
+      title: 'Substituição preventiva de item sazonal em cesta fixa',
+      description:
+        'A alface crespa hidropônica atingiu o limite de colheita no Sítio Verde; sugerida substituição equivalente por alface americana orgânica.',
+      status: 'open',
+      createdAt: '2026-10-28T08:10:00.000Z',
+    },
+  ];
+}
+
+function mapPostalCodeToZone(
+  postalCode: string,
+  zones: AdminServiceZone[]
+): AdminServiceZone {
+  const clean = (postalCode ?? '').replace(/\D/g, '');
+  const matched = zones.find((z) =>
+    clean.startsWith(z.postalCodePrefix.replace(/\D/g, '').slice(0, 2))
+  );
+  return matched ?? zones[0];
+}
+
+function buildAdminDashboard(): AdminDashboardData {
+  const zonesRaw = read<AdminServiceZone[]>(
+    storageKeys.adminZones,
+    defaultAdminZones()
+  );
+  const slotsRaw = read<AdminDeliverySlot[]>(
+    storageKeys.adminSlots,
+    defaultAdminSlots()
+  );
+  const routesRaw = read<AdminManualRoute[]>(
+    storageKeys.adminRoutes,
+    defaultAdminRoutes()
+  );
+  const storedExceptions = read<AdminExceptionItem[]>(
+    storageKeys.adminExceptions,
+    defaultAdminExceptions()
+  );
+  const allOrders = orders();
+  const allSubs = subscriptions();
+  const lgpdReqs = read<LgpdDeletionRequest[]>(storageKeys.lgpdRequests, []);
+  const pState = read<ProducerState>(
+    storageKeys.producerState,
+    defaultProducerState()
+  );
+  const allOffers = allProductsWithOverrides();
+  const unitMap = new Map(allOffers.map((p) => [p.id, p.unit]));
+  const producerMap = new Map(allOffers.map((p) => [p.id, p.producer.name]));
+
+  const routeByOrder = new Map<string, AdminManualRoute>();
+  for (const r of routesRaw) {
+    for (const oid of r.orderIds) {
+      routeByOrder.set(oid, r);
+    }
+  }
+
+  const enrichedOrders: Order[] = allOrders.map((o) => {
+    const z = mapPostalCodeToZone(o.address.postalCode, zonesRaw);
+    const assignedRoute = routeByOrder.get(o.id);
+    const stage =
+      o.operationalStage ??
+      (consumerLabelToStage(o.status) as Order['operationalStage']);
+    return {
+      ...o,
+      operationalStage: stage,
+      zoneName: o.zoneName ?? z?.name ?? 'Zona Centro-Sul · Piloto',
+      routeId: assignedRoute?.id ?? o.routeId ?? null,
+      routeName: assignedRoute?.name ?? o.routeName ?? null,
+    };
+  });
+
+  const zones: AdminServiceZone[] = zonesRaw.map((z) => {
+    const count = enrichedOrders.filter((o) => o.zoneName === z.name).length;
+    return { ...z, ordersCount: count };
+  });
+
+  const slots: AdminDeliverySlot[] = slotsRaw.map((s) => {
+    const occupied = enrichedOrders.filter(
+      (o) => o.deliverySlot.id === s.id
+    ).length;
+    const z = zones.find((zn) => zn.id === s.zoneId);
+    return {
+      ...s,
+      zoneName: z?.name ?? s.zoneName,
+      occupied,
+    };
+  });
+
+  const dynamicExceptions: AdminExceptionItem[] = [...storedExceptions];
+  for (const sub of allSubs) {
+    for (const cyc of sub.cycles) {
+      if (
+        (cyc.status === 'payment_failed' || cyc.status === 'stock_shortage') &&
+        !dynamicExceptions.some((e) => e.referenceId === `${sub.id}:${cyc.id}`)
+      ) {
+        dynamicExceptions.push({
+          id: `exc-${sub.id}-${cyc.id}`,
+          type:
+            cyc.status === 'payment_failed'
+              ? 'payment_failure'
+              : 'stock_shortage',
+          severity: 'high',
+          referenceId: `${sub.id}:${cyc.id}`,
+          title:
+            cyc.status === 'payment_failed'
+              ? `Falha na cobrança recorrente da assinatura ${sub.id}`
+              : `Ruptura de estoque no ciclo ${cyc.cycleKey} da assinatura ${sub.id}`,
+          description:
+            cyc.note ?? 'Incidente operacional registrado no ciclo recorrente.',
+          status: 'open',
+          createdAt: cyc.createdAt,
+        });
+      }
+    }
+  }
+
+  for (const req of lgpdReqs) {
+    if (!dynamicExceptions.some((e) => e.referenceId === req.protocol)) {
+      dynamicExceptions.push({
+        id: `exc-lgpd-${req.id}`,
+        type: 'lgpd_request',
+        severity: 'high',
+        referenceId: req.protocol,
+        title: `Solicitação LGPD de exclusão/anonimização (${req.protocol})`,
+        description: req.reason,
+        status: req.status === 'completed' ? 'resolved' : 'open',
+        createdAt: req.requestedAt,
+        resolvedAt: req.completedAt,
+      });
+    }
+  }
+
+  const slotLabelMap = new Map(slots.map((s) => [s.id, s.label]));
+  const manifest: AdminManifestEntry[] = enrichedOrders.map((o) => {
+    const itemsSummary = o.items
+      .map(
+        (i) => `${i.quantity}× ${i.name} (${unitMap.get(i.productId) ?? 'un'})`
+      )
+      .join('; ');
+    const producersSummary = Array.from(
+      new Set(
+        o.items.map(
+          (i) => producerMap.get(i.productId) ?? 'Sítio Verde · Agricultura Familiar'
+        )
+      )
+    ).join(', ');
+    return {
+      orderId: o.id,
+      status: o.status,
+      operationalStage: o.operationalStage ?? 'preparing',
+      customerEmail: DEMO_CREDENTIALS.email,
+      zoneName: o.zoneName ?? 'Zona Centro-Sul · Piloto',
+      routeName: o.routeName ?? 'Sem rota atribuída',
+      slotLabel:
+        slotLabelMap.get(o.deliverySlot.id) ?? MOCK_DELIVERY_SLOTS[0].label,
+      addressLine: `${o.address.street}, ${o.address.number}${o.address.complement ? ` (${o.address.complement})` : ''} - ${o.address.city}/${o.address.state}`,
+      postalCode: o.address.postalCode,
+      producerSeparated:
+        pState.separatedOrderIds.includes(o.id) || o.status === 'Entregue',
+      itemsSummary,
+      producersSummary,
+      totalCents: o.totalCents,
+    };
+  });
+
+  const totalSlotCapacity = slots
+    .filter((s) => s.active)
+    .reduce((sum, s) => sum + s.capacity, 0);
+  const occupiedSlotsCount = slots
+    .filter((s) => s.active)
+    .reduce((sum, s) => sum + s.occupied, 0);
+
+  return {
+    metrics: {
+      totalOrdersCount: enrichedOrders.length,
+      inTransitCount: enrichedOrders.filter(
+        (o) => o.operationalStage === 'in_transit'
+      ).length,
+      deliveredCount: enrichedOrders.filter(
+        (o) => o.operationalStage === 'delivered'
+      ).length,
+      openExceptionsCount: dynamicExceptions.filter((e) => e.status === 'open')
+        .length,
+      activeZonesCount: zones.filter((z) => z.active).length,
+      totalSlotCapacity,
+      occupiedSlotsCount,
+    },
+    zones,
+    slots,
+    routes: routesRaw,
+    orders: enrichedOrders,
+    exceptions: dynamicExceptions,
+    manifest,
+    auditLogs: read<ProducerAuditEntry[]>(
+      storageKeys.producerAudit,
+      defaultProducerAudit()
+    ),
+  };
+}
+
 function createOrder(
   body: { address: Order['address']; deliverySlotId?: string },
   idempotencyKey?: string
@@ -1178,6 +1521,12 @@ export async function mockApi(
       password === DEMO_PRODUCER_CREDENTIALS.password
     ) {
       return authResponse(email, 'producer', 'sitio-verde');
+    }
+    if (
+      email === DEMO_OPERATIONS_CREDENTIALS.email &&
+      password === DEMO_OPERATIONS_CREDENTIALS.password
+    ) {
+      return authResponse(email, 'operations', 'ops-central');
     }
     const users = read<StoredUser[]>(storageKeys.users, []);
     const matched = users.find(
@@ -1515,8 +1864,355 @@ export async function mockApi(
     return buildProducerDashboard();
   }
 
+  if (pathname === '/admin/dashboard' && method === 'GET') {
+    return buildAdminDashboard();
+  }
+
+  if (pathname === '/admin/zones' && method === 'POST') {
+    const name = body?.name?.trim();
+    const postalCodePrefix = (body?.postalCodePrefix ?? '').replace(/\D/g, '');
+    const city = body?.city?.trim() || 'São Paulo';
+    const cutoffHours = Number(body?.cutoffHours ?? 36);
+    if (!name || postalCodePrefix.length < 2) {
+      throw new Error(
+        'Informe o nome da zona e ao menos 2 dígitos iniciais do CEP.'
+      );
+    }
+    const zones = read<AdminServiceZone[]>(
+      storageKeys.adminZones,
+      defaultAdminZones()
+    );
+    const created: AdminServiceZone = {
+      id: `zone-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      name,
+      postalCodePrefix,
+      city,
+      active: true,
+      cutoffHours: Number.isInteger(cutoffHours) && cutoffHours > 0 ? cutoffHours : 36,
+      ordersCount: 0,
+    };
+    write(storageKeys.adminZones, [...zones, created]);
+    appendProducerAudit(
+      'zone.created',
+      'Onboarding',
+      created.id,
+      `Zona de atendimento "${created.name}" (CEP ${created.postalCodePrefix}*) criada por Operações.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (
+    pathname.startsWith('/admin/zones/') &&
+    pathname.endsWith('/toggle') &&
+    method === 'PATCH'
+  ) {
+    const zoneId = pathname
+      .replace('/admin/zones/', '')
+      .replace('/toggle', '');
+    const zones = read<AdminServiceZone[]>(
+      storageKeys.adminZones,
+      defaultAdminZones()
+    );
+    const idx = zones.findIndex((z) => z.id === zoneId);
+    if (idx < 0) throw new Error('Zona de atendimento não encontrada.');
+    zones[idx] = { ...zones[idx], active: !zones[idx].active };
+    write(storageKeys.adminZones, zones);
+    appendProducerAudit(
+      zones[idx].active ? 'zone.activated' : 'zone.paused',
+      'Onboarding',
+      zoneId,
+      `Zona "${zones[idx].name}" ${zones[idx].active ? 'ativada' : 'pausada'} por Operações.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (pathname === '/admin/slots' && method === 'POST') {
+    const zoneId = body?.zoneId?.trim();
+    const label = body?.label?.trim();
+    const startsAt = body?.startsAt || MOCK_DELIVERY_SLOTS[0].startsAt;
+    const endsAt = body?.endsAt || MOCK_DELIVERY_SLOTS[0].endsAt;
+    const capacity = Number(body?.capacity ?? 30);
+    if (!zoneId || !label) {
+      throw new Error('Selecione a zona e informe o rótulo da janela de entrega.');
+    }
+    if (!Number.isInteger(capacity) || capacity <= 0) {
+      throw new Error('A capacidade da janela deve ser maior que zero.');
+    }
+    const zones = read<AdminServiceZone[]>(
+      storageKeys.adminZones,
+      defaultAdminZones()
+    );
+    const zone = zones.find((z) => z.id === zoneId);
+    if (!zone) throw new Error('Zona de atendimento inválida.');
+
+    const slots = read<AdminDeliverySlot[]>(
+      storageKeys.adminSlots,
+      defaultAdminSlots()
+    );
+    const created: AdminDeliverySlot = {
+      id: `slot-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      zoneId: zone.id,
+      zoneName: zone.name,
+      label,
+      startsAt,
+      endsAt,
+      capacity,
+      occupied: 0,
+      active: true,
+    };
+    write(storageKeys.adminSlots, [...slots, created]);
+    appendProducerAudit(
+      'slot.created',
+      'Inventory',
+      created.id,
+      `Janela de entrega "${created.label}" criada na ${zone.name} com capacidade de ${capacity} pedidos.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (pathname.startsWith('/admin/slots/') && method === 'PATCH') {
+    const slotId = pathname.replace('/admin/slots/', '');
+    const slots = read<AdminDeliverySlot[]>(
+      storageKeys.adminSlots,
+      defaultAdminSlots()
+    );
+    const idx = slots.findIndex((s) => s.id === slotId);
+    if (idx < 0) throw new Error('Janela de entrega não encontrada.');
+    const nextCapacity =
+      body?.capacity !== undefined ? Number(body.capacity) : slots[idx].capacity;
+    if (!Number.isInteger(nextCapacity) || nextCapacity <= 0) {
+      throw new Error('A capacidade deve ser um número inteiro positivo.');
+    }
+    const nextActive =
+      typeof body?.active === 'boolean' ? body.active : slots[idx].active;
+    slots[idx] = {
+      ...slots[idx],
+      capacity: nextCapacity,
+      active: nextActive,
+    };
+    write(storageKeys.adminSlots, slots);
+    appendProducerAudit(
+      'slot.updated',
+      'Inventory',
+      slotId,
+      `Janela "${slots[idx].label}" atualizada (capacidade: ${nextCapacity}, ativa: ${nextActive ? 'Sim' : 'Não'}).`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (pathname === '/admin/routes' && method === 'POST') {
+    const name = body?.name?.trim();
+    const zoneId = body?.zoneId?.trim();
+    const slotId = body?.slotId?.trim();
+    const driverName = body?.driverName?.trim() || 'Motorista da Frota Local';
+    if (!name || !zoneId || !slotId) {
+      throw new Error(
+        'Informe o nome da rota, a zona e a janela de entrega correspondente.'
+      );
+    }
+    const zones = read<AdminServiceZone[]>(
+      storageKeys.adminZones,
+      defaultAdminZones()
+    );
+    const slots = read<AdminDeliverySlot[]>(
+      storageKeys.adminSlots,
+      defaultAdminSlots()
+    );
+    const zone = zones.find((z) => z.id === zoneId) ?? zones[0];
+    const slot = slots.find((s) => s.id === slotId) ?? slots[0];
+    const routes = read<AdminManualRoute[]>(
+      storageKeys.adminRoutes,
+      defaultAdminRoutes()
+    );
+    const created: AdminManualRoute = {
+      id: `route-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      name,
+      zoneId: zone.id,
+      zoneName: zone.name,
+      slotId: slot.id,
+      slotLabel: slot.label,
+      driverName,
+      status: 'open',
+      orderIds: [],
+      createdAt: new Date().toISOString(),
+    };
+    write(storageKeys.adminRoutes, [created, ...routes]);
+    appendProducerAudit(
+      'route.created',
+      'Order',
+      created.id,
+      `Rota manual "${created.name}" (${zone.name}) criada com motorista ${driverName}.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (
+    pathname.startsWith('/admin/orders/') &&
+    pathname.endsWith('/assign-route') &&
+    method === 'POST'
+  ) {
+    const orderId = pathname
+      .replace('/admin/orders/', '')
+      .replace('/assign-route', '');
+    const routeId = body?.routeId?.trim() || null;
+    const routes = read<AdminManualRoute[]>(
+      storageKeys.adminRoutes,
+      defaultAdminRoutes()
+    );
+    const list = orders();
+    const orderIdx = list.findIndex((o) => o.id === orderId);
+    if (orderIdx < 0) throw new Error('Pedido não encontrado.');
+
+    const updatedRoutes = routes.map((r) => {
+      const withoutOrder = r.orderIds.filter((id) => id !== orderId);
+      if (routeId && r.id === routeId) {
+        return { ...r, orderIds: [...withoutOrder, orderId] };
+      }
+      return { ...r, orderIds: withoutOrder };
+    });
+    write(storageKeys.adminRoutes, updatedRoutes);
+
+    const assigned = updatedRoutes.find((r) => r.id === routeId);
+    list[orderIdx] = {
+      ...list[orderIdx],
+      routeId: assigned?.id ?? null,
+      routeName: assigned?.name ?? null,
+    };
+    write(storageKeys.orders, list);
+
+    appendProducerAudit(
+      'route.assigned',
+      'Order',
+      orderId,
+      assigned
+        ? `Pedido #${orderId} alocado manualmente na rota "${assigned.name}".`
+        : `Pedido #${orderId} desvinculado de rota manual.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (
+    pathname.startsWith('/admin/orders/') &&
+    pathname.endsWith('/status') &&
+    method === 'POST'
+  ) {
+    const orderId = pathname
+      .replace('/admin/orders/', '')
+      .replace('/status', '');
+    const targetStage = body?.stage as OrderStage | undefined;
+    if (!targetStage || !ORDER_STATUS_FLOW.includes(targetStage)) {
+      throw new Error('Estágio operacional inválido.');
+    }
+    const list = orders();
+    const idx = list.findIndex((o) => o.id === orderId);
+    if (idx < 0) throw new Error('Pedido não encontrado.');
+    const order = list[idx];
+    const currentStage =
+      (order.operationalStage as OrderStage | undefined) ??
+      consumerLabelToStage(order.status);
+
+    if (!canTransitionOrder(currentStage, targetStage)) {
+      throw new Error(
+        `Transição inválida de "${stageToConsumerLabel(currentStage)}" para "${stageToConsumerLabel(targetStage)}". Respeite a sequência operacional.`
+      );
+    }
+
+    const now = new Date().toISOString();
+    const nextConsumerLabel = stageToConsumerLabel(targetStage);
+    order.status = nextConsumerLabel;
+    order.operationalStage = targetStage;
+    if (targetStage === 'delivered') {
+      order.delivery = { status: 'delivered', confirmedAt: now };
+    }
+    order.statusHistory = [
+      ...order.statusHistory,
+      {
+        toStatus: `${nextConsumerLabel} (atualizado por Operações)`,
+        createdAt: now,
+        actor: 'Operações',
+      },
+    ];
+    list[idx] = order;
+    write(storageKeys.orders, list);
+
+    appendProducerAudit(
+      `order.status.${targetStage}`,
+      'Order',
+      orderId,
+      `Status do pedido #${orderId} avançado para "${nextConsumerLabel}" pela equipe de Operações.`
+    );
+    return buildAdminDashboard();
+  }
+
+  if (
+    pathname.startsWith('/admin/exceptions/') &&
+    pathname.endsWith('/resolve') &&
+    method === 'POST'
+  ) {
+    const excId = pathname
+      .replace('/admin/exceptions/', '')
+      .replace('/resolve', '');
+    const resolutionNote =
+      body?.resolutionNote?.trim() ||
+      'Exceção tratada e registrada pela central de Operações.';
+    const now = new Date().toISOString();
+    const dash = buildAdminDashboard();
+    const target = dash.exceptions.find((e) => e.id === excId);
+    if (!target) throw new Error('Exceção operacional não encontrada.');
+
+    const stored = read<AdminExceptionItem[]>(
+      storageKeys.adminExceptions,
+      defaultAdminExceptions()
+    );
+    const resolvedItem: AdminExceptionItem = {
+      ...target,
+      status: 'resolved',
+      resolutionNote,
+      resolvedAt: now,
+    };
+    const existingIdx = stored.findIndex((e) => e.id === excId);
+    if (existingIdx >= 0) {
+      stored[existingIdx] = resolvedItem;
+      write(storageKeys.adminExceptions, stored);
+    } else {
+      write(storageKeys.adminExceptions, [resolvedItem, ...stored]);
+    }
+
+    if (target.type === 'lgpd_request') {
+      const reqs = read<LgpdDeletionRequest[]>(storageKeys.lgpdRequests, []);
+      const updatedReqs = reqs.map((r) =>
+        r.protocol === target.referenceId
+          ? { ...r, status: 'completed' as const, completedAt: now }
+          : r
+      );
+      write(storageKeys.lgpdRequests, updatedReqs);
+    }
+
+    appendProducerAudit(
+      'exception.resolved',
+      'Order',
+      target.referenceId,
+      `Exceção "${target.title}" resolvida: ${resolutionNote}`
+    );
+    return buildAdminDashboard();
+  }
+
   if (pathname === '/delivery-slots' && method === 'GET') {
-    return { data: MOCK_DELIVERY_SLOTS };
+    const adminSlots = read<AdminDeliverySlot[]>(
+      storageKeys.adminSlots,
+      defaultAdminSlots()
+    );
+    const activeSlots = adminSlots
+      .filter((s) => s.active)
+      .map(({ id, label, startsAt, endsAt }) => ({
+        id,
+        label,
+        startsAt,
+        endsAt,
+      }));
+    return {
+      data: activeSlots.length > 0 ? activeSlots : MOCK_DELIVERY_SLOTS,
+    };
   }
 
   if (pathname === '/baskets' && method === 'GET') {

@@ -11,6 +11,8 @@ import {
 import { ShieldCheckIcon } from '@/components/icons';
 import {
   api,
+  formatAuditAction,
+  formatAuditResource,
   formatDateTime,
   type ProducerDashboardData,
 } from '@/lib/api';
@@ -85,24 +87,34 @@ export default function ProdutorContaPage() {
             </section>
 
             <section className="dashboard-card">
-              <h2>Trilha de auditoria imutável ({data.auditLogs.length} registros)</h2>
-              <p className="muted" style={{ marginBottom: '14px' }}>
-                Registro cronológico append-only das alterações realizadas pelo produtor e pela operação.
-              </p>
+              <div className="card-heading">
+                <div>
+                  <h2>Histórico de auditoria ({data.auditLogs.length} registros)</h2>
+                  <p className="muted" style={{ marginBottom: '14px' }}>
+                    Registro cronológico e imutável das alterações realizadas pelo produtor e pela operação.
+                  </p>
+                </div>
+                <StatusBadge tone="info">Registro imutável</StatusBadge>
+              </div>
               <div className="status-history-list">
                 {data.auditLogs.map((log) => (
-                  <div className="order-row" key={log.id}>
-                    <ShieldCheckIcon size={16} />
-                    <div>
-                      <strong>{log.summary}</strong>
-                      <span style={{ display: 'block', fontSize: '12px' }}>
-                        Evento: <code>{log.action}</code> · Entidade:{' '}
-                        <code>
-                          {log.resourceType}/{log.resourceId}
-                        </code>{' '}
-                        · {formatDateTime(log.createdAt)}
-                      </span>
+                  <div
+                    className="order-row"
+                    key={log.id}
+                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <ShieldCheckIcon size={18} />
+                      <div>
+                        <strong>{log.summary}</strong>
+                        <span className="muted" style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>
+                          {formatAuditResource(log.resourceType)} · {formatDateTime(log.createdAt)}
+                        </span>
+                      </div>
                     </div>
+                    <StatusBadge tone="info">
+                      {formatAuditAction(log.action)}
+                    </StatusBadge>
                   </div>
                 ))}
               </div>

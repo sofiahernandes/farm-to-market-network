@@ -196,6 +196,7 @@ export type LgpdDeletionRequest = {
   reason: string;
   status: 'pending_review' | 'completed';
   requestedAt: string;
+  completedAt?: string;
 };
 
 export type AccountProfile = {
@@ -225,6 +226,10 @@ export type CartItem = {
 export type Order = {
   id: string;
   status: string;
+  operationalStage?: 'pending_payment' | 'confirmed' | 'preparing' | 'in_transit' | 'delivered';
+  routeId?: string | null;
+  routeName?: string | null;
+  zoneName?: string;
   totalCents: number;
   idempotencyKey: string;
   items: {
@@ -244,7 +249,95 @@ export type Order = {
     state: string;
   };
   deliverySlot: { id: string; startsAt: string; endsAt: string };
-  statusHistory: { toStatus: string; createdAt: string }[];
+  statusHistory: { toStatus: string; createdAt: string; actor?: string }[];
+};
+
+export type AdminServiceZone = {
+  id: string;
+  name: string;
+  postalCodePrefix: string;
+  city: string;
+  cutoffHours: number;
+  active: boolean;
+  ordersCount: number;
+};
+
+export type AdminDeliverySlot = {
+  id: string;
+  zoneId: string;
+  zoneName: string;
+  label: string;
+  startsAt: string;
+  endsAt: string;
+  capacity: number;
+  occupied: number;
+  active: boolean;
+};
+
+export type AdminManualRoute = {
+  id: string;
+  name: string;
+  zoneId: string;
+  zoneName: string;
+  slotId: string;
+  slotLabel: string;
+  driverName: string;
+  orderIds: string[];
+  status: 'open' | 'dispatched' | 'closed';
+  createdAt: string;
+};
+
+export type AdminExceptionItem = {
+  id: string;
+  type:
+    | 'payment_failure'
+    | 'payment_failed'
+    | 'stock_shortage'
+    | 'refund_request'
+    | 'lgpd_request';
+  severity: 'medium' | 'high';
+  referenceId: string;
+  title: string;
+  description: string;
+  status: 'open' | 'resolved';
+  resolutionNote?: string;
+  createdAt: string;
+  resolvedAt?: string;
+};
+
+export type AdminManifestEntry = {
+  orderId: string;
+  status: string;
+  operationalStage: string;
+  customerEmail: string;
+  zoneName: string;
+  routeName: string;
+  slotLabel: string;
+  addressLine: string;
+  postalCode: string;
+  producerSeparated: boolean;
+  itemsSummary: string;
+  producersSummary: string;
+  totalCents: number;
+};
+
+export type AdminDashboardData = {
+  metrics: {
+    totalOrdersCount: number;
+    inTransitCount: number;
+    deliveredCount: number;
+    openExceptionsCount: number;
+    activeZonesCount: number;
+    totalSlotCapacity: number;
+    occupiedSlotsCount: number;
+  };
+  zones: AdminServiceZone[];
+  slots: AdminDeliverySlot[];
+  routes: AdminManualRoute[];
+  orders: Order[];
+  exceptions: AdminExceptionItem[];
+  manifest: AdminManifestEntry[];
+  auditLogs: ProducerAuditEntry[];
 };
 
 export type DeliverySlotOption = {
@@ -338,6 +431,58 @@ export function formatDateTime(value: string | null) {
         timeStyle: 'short',
       })
     : 'Horário a confirmar';
+}
+
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  'onboarding.approved': 'Onboarding aprovado',
+  'onboarding.updated': 'Cadastro atualizado',
+  'inventory.updated': 'Estoque atualizado',
+  'offer.published': 'Oferta publicada',
+  'offer.draft_saved': 'Rascunho salvo',
+  'offer.activated': 'Oferta reativada',
+  'offer.paused': 'Oferta pausada',
+  'offer.updated': 'Oferta editada',
+  'fulfillment.separated': 'Separação concluída',
+  'zone.created': 'Zona criada',
+  'zone.activated': 'Zona ativada',
+  'zone.paused': 'Zona pausada',
+  'slot.created': 'Janela criada',
+  'slot.updated': 'Janela atualizada',
+  'route.created': 'Rota criada',
+  'route.assigned': 'Rota atribuída',
+  'order.status.pending_payment': 'Aguardando pagamento',
+  'order.status.confirmed': 'Pedido confirmado',
+  'order.status.preparing': 'Em preparação',
+  'order.status.in_transit': 'Despachado para rota',
+  'order.status.delivered': 'Entrega confirmada',
+  'exception.resolved': 'Exceção resolvida',
+};
+
+const AUDIT_RESOURCE_LABELS: Record<string, string> = {
+  Onboarding: 'Propriedade / Zona',
+  Inventory: 'Estoque / Janela',
+  Product: 'Oferta do catálogo',
+  Order: 'Pedido / Rota',
+};
+
+const EXCEPTION_TYPE_LABELS: Record<string, string> = {
+  stock_shortage: 'Ruptura ou substituição de estoque',
+  payment_failure: 'Falha de cobrança recorrente',
+  payment_failed: 'Falha de cobrança recorrente',
+  refund_request: 'Solicitação de reembolso',
+  lgpd_request: 'Direito do titular (LGPD)',
+};
+
+export function formatAuditAction(action: string): string {
+  return AUDIT_ACTION_LABELS[action] ?? 'Registro operacional';
+}
+
+export function formatAuditResource(resourceType: string): string {
+  return AUDIT_RESOURCE_LABELS[resourceType] ?? resourceType;
+}
+
+export function formatExceptionType(type: string): string {
+  return EXCEPTION_TYPE_LABELS[type] ?? 'Ocorrência operacional';
 }
 
 export async function api<T>(

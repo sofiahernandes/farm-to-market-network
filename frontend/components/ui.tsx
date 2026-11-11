@@ -79,13 +79,15 @@ export function Header({ app = false }: { app?: boolean }) {
               <Link href="/cestas">Cestas fixas</Link>
               <Link href="/app/assinaturas">Assinaturas</Link>
               <Link href="/app/pedidos">Meus pedidos</Link>
-              <Link href="/produtor">Painel do produtor</Link>
+              <Link href="/produtor">Produtor</Link>
+              <Link href="/admin">Operações</Link>
             </>
           ) : (
             <>
               <Link href="/catalogo">Ofertas da semana</Link>
               <Link href="/cestas">Cestas fixas</Link>
               <Link href="/produtor">Para produtores</Link>
+              <Link href="/admin">Operações</Link>
               <Link href="/#como-funciona">Como funciona</Link>
             </>
           )}
@@ -152,6 +154,7 @@ export function Footer() {
           <Link href="/catalogo">Explorar ofertas</Link>
           <Link href="/cestas">Cestas fixas e assinatura</Link>
           <Link href="/produtor">Painel do produtor</Link>
+          <Link href="/admin">Painel de operações</Link>
           <Link href="/#como-funciona">Como funciona</Link>
         </div>
         <div>
@@ -232,7 +235,6 @@ export function StatusBadge({
 }) {
   return (
     <span className={`status status-${tone}`}>
-      <span className="status-dot" aria-hidden="true" />
       <span>{children}</span>
     </span>
   );
@@ -350,6 +352,75 @@ export function ProducerSubnav({
           </Link>
         </div>
       )}
+    </div>
+  );
+}
+
+export function AdminSubnav({
+  active,
+  openExceptionsCount = 0,
+}: {
+  active:
+    | 'visao-geral'
+    | 'pedidos'
+    | 'zonas-slots'
+    | 'rotas'
+    | 'entregas'
+    | 'romaneio';
+  openExceptionsCount?: number;
+}) {
+  const items: { key: typeof active; label: string; href: string }[] = [
+    { key: 'visao-geral', label: 'Visão geral', href: '/admin' },
+    { key: 'pedidos', label: 'Pedidos e exceções', href: '/admin/pedidos' },
+    { key: 'zonas-slots', label: 'Zonas e janelas', href: '/admin/zonas-slots' },
+    { key: 'rotas', label: 'Rotas manuais', href: '/admin/rotas' },
+    { key: 'entregas', label: 'Status de entregas', href: '/admin/entregas' },
+    { key: 'romaneio', label: 'Romaneio diário', href: '/admin/romaneio' },
+  ];
+
+  return (
+    <div style={{ marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <nav
+        aria-label="Menu de operações"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 14px',
+          background: 'var(--surface)',
+          border: '1px solid var(--line)',
+          borderRadius: 'var(--radius-md)',
+        }}
+      >
+        {items.map((item) => {
+          const isCurrent = item.key === active;
+          return (
+            <Link
+              key={item.key}
+              href={item.href}
+              aria-current={isCurrent ? 'page' : undefined}
+              className={
+                isCurrent
+                  ? 'button button-small button-primary'
+                  : 'button button-small button-secondary'
+              }
+            >
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+        {openExceptionsCount > 0 && (
+          <span style={{ marginLeft: 'auto' }}>
+            <StatusBadge tone="warning">
+              {openExceptionsCount}{' '}
+              {openExceptionsCount === 1
+                ? 'exceção aberta'
+                : 'exceções abertas'}
+            </StatusBadge>
+          </span>
+        )}
+      </nav>
     </div>
   );
 }

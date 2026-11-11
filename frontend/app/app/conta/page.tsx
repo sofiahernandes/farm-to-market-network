@@ -108,7 +108,7 @@ export default function ContaPage() {
           <span>/</span>Minha conta e privacidade
         </div>
 
-        <h1>Minha conta, endereços e LGPD</h1>
+        <h1>Minha conta e endereços</h1>
         <p className="lead">
           Gerencie seus endereços por zona de atendimento, transparência de pagamentos e direitos de titular de dados.
         </p>
@@ -275,7 +275,7 @@ export default function ContaPage() {
             </section>
 
             <section className="dashboard-card">
-              <h2>Privacidade e solicitação de exclusão de dados (LGPD)</h2>
+              <h2>Privacidade e solicitação de exclusão de dados</h2>
               <p className="muted" style={{ marginBottom: '16px' }}>
                 Você pode solicitar a exclusão e anonimização dos seus dados pessoais a qualquer momento. A solicitação gera um protocolo rastreável na trilha de auditoria.
               </p>

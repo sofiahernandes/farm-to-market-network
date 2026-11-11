@@ -183,3 +183,5 @@ export function PackageIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export { PinIcon as MapPinIcon, ShieldCheckIcon as ShieldIcon };

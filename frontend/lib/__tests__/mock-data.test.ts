@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import {
   DEMO_CPF,
   DEMO_CREDENTIALS,
+  DEMO_OPERATIONS_CREDENTIALS,
   DEMO_PRODUCER_CREDENTIALS,
   MOCK_DELIVERY_SLOTS,
   calculatePlatformFeeCents,
+  canTransitionOrder,
   isBeforeCutoff,
   isValidCpf,
   maskCpf,
@@ -14,10 +16,12 @@ import {
 } from '../mock-data.ts';
 import type {
   AccountProfile,
+  AdminDashboardData,
   AuthResponse,
   Basket,
   Cart,
   CatalogResponse,
+  DeliverySlotOption,
   LgpdDeletionRequest,
   Order,
   ProducerDashboardData,
@@ -541,6 +545,148 @@ describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
         assert.equal(payout.feeCents, expectedFee);
         assert.equal(payout.netCents, payout.grossCents - expectedFee);
       }
+    });
+  });
+
+  describe('Operations Panel (ServiceZones, DeliverySlots, Manual Routes, Order Progression & Exceptions)', () => {
+    it('logs in with demo operations credentials', async () => {
+      const res = (await mockApi('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(DEMO_OPERATIONS_CREDENTIALS),
+      })) as AuthResponse;
+      assert.equal(res.user.role, 'operations');
+      assert.equal(res.user.email, DEMO_OPERATIONS_CREDENTIALS.email);
+    });
+
+    it('creates service zones and delivery slots and syncs active slots with consumer checkout', async () => {
+      const afterZone = (await mockApi('/admin/zones', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Zona Sul · Vila Mariana',
+          postalCodePrefix: '04010',
+          city: 'São Paulo',
+          cutoffHours: 36,
+        }),
+      })) as AdminDashboardData;
+
+      const createdZone = afterZone.zones.find(
+        (z) => z.name === 'Zona Sul · Vila Mariana'
+      );
+      assert.ok(createdZone);
+
+      const afterSlot = (await mockApi('/admin/slots', {
+        method: 'POST',
+        body: JSON.stringify({
+          zoneId: createdZone.id,
+          label: 'Sexta-feira · 09h às 12h',
+          capacity: 40,
+        }),
+      })) as AdminDashboardData;
+
+      assert.ok(
+        afterSlot.slots.some((s) => s.label === 'Sexta-feira · 09h às 12h')
+      );
+
+      const consumerSlots = (await mockApi('/delivery-slots')) as {
+        data: DeliverySlotOption[];
+      };
+      assert.ok(
+        consumerSlots.data.some((s) => s.label === 'Sexta-feira · 09h às 12h')
+      );
+    });
+
+    it('creates manual route and assigns order to route', async () => {
+      const afterRoute = (await mockApi('/admin/routes', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Rota 02 · Centro-Sul Tarde',
+          zoneId: 'zone-centro-sul',
+          slotId: MOCK_DELIVERY_SLOTS[0].id,
+          driverName: 'Juliana Costa · Fiorino Isotérmica',
+        }),
+      })) as AdminDashboardData;
+
+      const createdRoute = afterRoute.routes.find(
+        (r) => r.name === 'Rota 02 · Centro-Sul Tarde'
+      );
+      assert.ok(createdRoute);
+
+      const afterAssign = (await mockApi(
+        '/admin/orders/AG-1048/assign-route',
+        {
+          method: 'POST',
+          body: JSON.stringify({ routeId: createdRoute.id }),
+        }
+      )) as AdminDashboardData;
+
+      const assignedOrder = afterAssign.orders.find((o) => o.id === 'AG-1048');
+      assert.equal(assignedOrder?.routeId, createdRoute.id);
+      assert.equal(assignedOrder?.routeName, 'Rota 02 · Centro-Sul Tarde');
+    });
+
+    it('enforces sequential order status progression and rejects invalid jumps', async () => {
+      assert.equal(canTransitionOrder('preparing', 'in_transit'), true);
+      assert.equal(canTransitionOrder('preparing', 'delivered'), false);
+
+      await assert.rejects(
+        () =>
+          mockApi('/admin/orders/AG-1048/status', {
+            method: 'POST',
+            body: JSON.stringify({ stage: 'delivered' }),
+          }),
+        /Transição inválida/
+      );
+
+      const afterTransit = (await mockApi('/admin/orders/AG-1048/status', {
+        method: 'POST',
+        body: JSON.stringify({ stage: 'in_transit' }),
+      })) as AdminDashboardData;
+      const inTransitOrder = afterTransit.orders.find(
+        (o) => o.id === 'AG-1048'
+      );
+      assert.equal(inTransitOrder?.status, 'A caminho');
+      assert.equal(inTransitOrder?.operationalStage, 'in_transit');
+
+      const afterDelivered = (await mockApi('/admin/orders/AG-1048/status', {
+        method: 'POST',
+        body: JSON.stringify({ stage: 'delivered' }),
+      })) as AdminDashboardData;
+      const deliveredOrder = afterDelivered.orders.find(
+        (o) => o.id === 'AG-1048'
+      );
+      assert.equal(deliveredOrder?.status, 'Entregue');
+      assert.equal(deliveredOrder?.operationalStage, 'delivered');
+      assert.equal(deliveredOrder?.delivery.status, 'delivered');
+    });
+
+    it('resolves operational exceptions including LGPD requests and logs audit entry', async () => {
+      const lgpd = (await mockApi('/account/lgpd-deletion-request', {
+        method: 'POST',
+        body: JSON.stringify({ reason: 'Solicitação de anonimização' }),
+      })) as LgpdDeletionRequest;
+
+      const before = (await mockApi('/admin/dashboard')) as AdminDashboardData;
+      const lgpdExc = before.exceptions.find(
+        (e) => e.referenceId === lgpd.protocol
+      );
+      assert.ok(lgpdExc);
+      assert.equal(lgpdExc.status, 'open');
+
+      const after = (await mockApi(
+        `/admin/exceptions/${lgpdExc.id}/resolve`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            resolutionNote: 'Dados anonimizados conforme protocolo LGPD.',
+          }),
+        }
+      )) as AdminDashboardData;
+
+      const resolvedExc = after.exceptions.find((e) => e.id === lgpdExc.id);
+      assert.equal(resolvedExc?.status, 'resolved');
+
+      const profile = (await mockApi('/account/profile')) as AccountProfile;
+      assert.equal(profile.lgpdRequests[0].status, 'completed');
     });
   });
 });

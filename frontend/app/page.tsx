@@ -61,7 +61,6 @@ export default function Home() {
                     <h2>Colheita da Semana</h2>
                   </div>
                   <span className="harvest-status-live">
-                    <span className="status-dot" />
                     Pedidos abertos
                   </span>
                 </div>

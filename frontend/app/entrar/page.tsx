@@ -5,7 +5,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/ui';
 import { auth, saveSession } from '@/lib/api';
-import { DEMO_CREDENTIALS, DEMO_PRODUCER_CREDENTIALS } from '@/lib/mock-data';
+import {
+  DEMO_CREDENTIALS,
+  DEMO_OPERATIONS_CREDENTIALS,
+  DEMO_PRODUCER_CREDENTIALS,
+} from '@/lib/mock-data';
 
 export default function Entrar() {
   const router = useRouter();
@@ -27,6 +31,8 @@ export default function Entrar() {
         router.push(next);
       } else if (session.user.role === 'producer') {
         router.push('/produtor');
+      } else if (session.user.role === 'operations') {
+        router.push('/admin');
       } else {
         router.push('/catalogo');
       }
@@ -70,6 +76,16 @@ export default function Entrar() {
                 className="button button-small button-secondary"
               >
                 Preencher Produtor ({DEMO_PRODUCER_CREDENTIALS.email})
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail(DEMO_OPERATIONS_CREDENTIALS.email);
+                  setPassword(DEMO_OPERATIONS_CREDENTIALS.password);
+                }}
+                className="button button-small button-secondary"
+              >
+                Preencher Operações ({DEMO_OPERATIONS_CREDENTIALS.email})
               </button>
             </div>
           </div>

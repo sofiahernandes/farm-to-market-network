@@ -18,6 +18,8 @@ import {
 } from '@/components/icons';
 import {
   api,
+  formatAuditAction,
+  formatAuditResource,
   formatDateTime,
   formatPrice,
   type ProducerDashboardData,
@@ -278,15 +280,23 @@ export default function ProdutorDashboardPage() {
               </div>
               <div className="status-history-list" style={{ marginTop: '12px' }}>
                 {data.auditLogs.slice(0, 4).map((log) => (
-                  <div className="order-row" key={log.id}>
-                    <ShieldCheckIcon size={16} />
-                    <div>
-                      <strong>{log.summary}</strong>
-                      <span style={{ display: 'block', fontSize: '12px' }}>
-                        Ação: {log.action} · Recurso: {log.resourceType} ({log.resourceId}) ·{' '}
-                        {formatDateTime(log.createdAt)}
-                      </span>
+                  <div
+                    className="order-row"
+                    key={log.id}
+                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <ShieldCheckIcon size={18} />
+                      <div>
+                        <strong>{log.summary}</strong>
+                        <span className="muted" style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>
+                          {formatAuditResource(log.resourceType)} · {formatDateTime(log.createdAt)}
+                        </span>
+                      </div>
                     </div>
+                    <StatusBadge tone="info">
+                      {formatAuditAction(log.action)}
+                    </StatusBadge>
                   </div>
                 ))}
               </div>
