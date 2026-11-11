@@ -33,7 +33,7 @@ export default function Entrar() {
   return (
     <>
       <Header />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/">Início</Link>
           <span>/</span>Entrar

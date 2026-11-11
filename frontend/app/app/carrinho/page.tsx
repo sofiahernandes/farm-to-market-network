@@ -19,7 +19,22 @@ export default function Carrinho() {
       .finally(() => setLoading(false));
   }, []);
 
+  async function updateQuantity(productId: string, quantity: number) {
+    setError('');
+    try {
+      setCart(
+        await api<Cart>(`/cart/items/${productId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ quantity }),
+        })
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
   async function remove(id: string) {
+    setError('');
     try {
       setCart(await api<Cart>(`/cart/items/${id}`, { method: 'DELETE' }));
     } catch (e) {
@@ -30,12 +45,12 @@ export default function Carrinho() {
   return (
     <>
       <Header app />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/catalogo">Catálogo</Link>
           <span>/</span> Sacola
         </div>
-        <h1>Sua sacola de compras</h1>
+        <h2 className='title'>Sua sacola de compras</h2>
         <p className="lead">Revise os itens selecionados dos produtores locais antes de confirmar a entrega.</p>
         {loading && <p className="loading-indicator">Carregando sacola…</p>}
         {error && (
@@ -73,6 +88,45 @@ export default function Carrinho() {
                     >
                       {item.available} disponíveis no lote
                     </StatusBadge>
+                  </div>
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                    aria-label={`Ajustar quantidade de ${item.name}`}
+                  >
+                    <button
+                      type="button"
+                      className="button button-small button-secondary"
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity - 1)
+                      }
+                      aria-label={`Diminuir quantidade de ${item.name}`}
+                    >
+                      −
+                    </button>
+                    <span
+                      style={{
+                        minWidth: '24px',
+                        textAlign: 'center',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {item.quantity}
+                    </span>
+                    <button
+                      type="button"
+                      className="button button-small button-secondary"
+                      disabled={item.quantity >= item.available}
+                      onClick={() =>
+                        updateQuantity(item.productId, item.quantity + 1)
+                      }
+                      aria-label={`Aumentar quantidade de ${item.name}`}
+                    >
+                      +
+                    </button>
                   </div>
                   <strong className="cart-item-subtotal">{formatPrice(item.subtotalCents)}</strong>
                   <button

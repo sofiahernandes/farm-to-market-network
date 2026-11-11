@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Footer, Header, StatusBadge } from '@/components/ui';
 import {
   PackageIcon,
@@ -20,7 +21,9 @@ import {
   type Cart,
 } from '@/lib/api';
 
-export default function ProductDetail({ params }: { params: { id: string } }) {
+export default function ProductDetail() {
+  const params = useParams<{ id: string }>();
+  const productId = params?.id ?? '';
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState('');
@@ -28,11 +31,12 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api<Product>(`/catalog/${params.id}`)
+    if (!productId) return;
+    api<Product>(`/catalog/${productId}`)
       .then(setProduct)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, [params.id]);
+  }, [productId]);
 
   async function add() {
     if (!isAuthenticated()) {
@@ -40,11 +44,12 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
       return;
     }
     setMessage('');
+    setError('');
 
     try {
       await api<Cart>('/cart/items', {
         method: 'POST',
-        body: JSON.stringify({ productId: params.id, quantity }),
+        body: JSON.stringify({ productId, quantity }),
       });
       setMessage('Oferta adicionada à sua sacola.');
     } catch (e) {
@@ -128,7 +133,12 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
                       max={product.stock.available || 1}
                       value={quantity}
                       onChange={(e) =>
-                        setQuantity(Math.max(1, Number(e.target.value)))
+                        setQuantity(
+                          Math.min(
+                            product.stock.available || 1,
+                            Math.max(1, Number(e.target.value))
+                          )
+                        )
                       }
                       className="quantity-input"
                     />

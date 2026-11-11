@@ -1,12 +1,25 @@
+'use client';
+
 import Link from 'next/link';
-import type { Product } from '@/lib/api';
-import { formatPrice } from '@/lib/api';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  api,
+  clearSession,
+  formatPrice,
+  getCurrentUser,
+  isAuthenticated,
+  type Cart,
+  type Product,
+  type User,
+} from '@/lib/api';
 import {
   LogoIcon,
   SproutIcon,
   BasketIcon,
   PackageIcon,
   ArrowRightIcon,
+  UserIcon,
 } from '@/components/icons';
 
 export function Logo() {
@@ -22,14 +35,48 @@ export function Logo() {
 }
 
 export function Header({ app = false }: { app?: boolean }) {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [cartCount, setCartCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    function syncState() {
+      const authed = isAuthenticated();
+      setUser(authed ? getCurrentUser() : null);
+      if (authed) {
+        api<Cart>('/cart')
+          .then((c) =>
+            setCartCount(c.data.reduce((sum, item) => sum + item.quantity, 0))
+          )
+          .catch(() => setCartCount(null));
+      } else {
+        setCartCount(null);
+      }
+    }
+
+    syncState();
+    window.addEventListener('agritech:state', syncState);
+    window.addEventListener('storage', syncState);
+    return () => {
+      window.removeEventListener('agritech:state', syncState);
+      window.removeEventListener('storage', syncState);
+    };
+  }, []);
+
+  function handleLogout() {
+    clearSession();
+    router.push('/');
+  }
+
   return (
     <header className="site-header">
       <div className="container nav-wrap">
         <Logo />
         <nav className="main-nav" aria-label="Navegação principal">
-          {app ? (
+          {app || user ? (
             <>
               <Link href="/catalogo">Explorar ofertas</Link>
+              <Link href="/app">Área do consumidor</Link>
               <Link href="/app/pedidos">Meus pedidos</Link>
             </>
           ) : (
@@ -43,20 +90,44 @@ export function Header({ app = false }: { app?: boolean }) {
         <div className="nav-actions">
           <Link className="cart-link" href="/app/carrinho">
             <BasketIcon size={18} />
-            <span>Sacola</span>
+            <span>
+              Sacola{cartCount !== null && cartCount > 0 ? ` (${cartCount})` : ''}
+            </span>
           </Link>
-          <Link
-            className="button button-small button-secondary hide-mobile"
-            href="/entrar"
-          >
-            Entrar
-          </Link>
-          <Link
-            className="button button-small button-primary hide-mobile"
-            href="/criar-conta"
-          >
-            Criar conta
-          </Link>
+          {user ? (
+            <>
+              <Link
+                className="button button-small button-secondary hide-mobile"
+                href="/app"
+                title={user.email}
+              >
+                <UserIcon size={15} />
+                <span>Minha conta</span>
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="button button-small button-secondary"
+              >
+                Sair
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                className="button button-small button-secondary hide-mobile"
+                href="/entrar"
+              >
+                Entrar
+              </Link>
+              <Link
+                className="button button-small button-primary hide-mobile"
+                href="/criar-conta"
+              >
+                Criar conta
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

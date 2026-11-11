@@ -2,24 +2,49 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { Header, StatusBadge } from '@/components/ui';
+import { CheckIcon } from '@/components/icons';
 import { api, formatPrice, requireAuth, type Order } from '@/lib/api';
 
-export default function PedidoDetalhe({ params }: { params: { id: string } }) {
+export default function PedidoDetalhe() {
+  const params = useParams<{ id: string }>();
+  const orderId = params?.id ?? '';
   const [order, setOrder] = useState<Order | null>(null),
-    [error, setError] = useState('');
+    [error, setError] = useState(''),
+    [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
+    if (!orderId) return;
     if (!requireAuth()) return;
-    api<Order>(`/orders/${params.id}`)
+    api<Order>(`/orders/${orderId}`)
       .then(setOrder)
       .catch((e) => setError(e.message));
-  }, [params.id]);
+  }, [orderId]);
+
+  async function confirmDelivery() {
+    if (!order) return;
+    setConfirming(true);
+    setError('');
+    try {
+      const updated = await api<Order>(`/orders/${order.id}/confirm-delivery`, {
+        method: 'POST',
+      });
+      setOrder(updated);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setConfirming(false);
+    }
+  }
+
+  const isDelivered =
+    order?.status === 'Entregue' || order?.status === 'delivered';
 
   return (
     <>
       <Header app />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/app/pedidos">Pedidos</Link>
           <span>/</span>Detalhe
@@ -35,7 +60,9 @@ export default function PedidoDetalhe({ params }: { params: { id: string } }) {
                   {order.items.map((i) => `${i.quantity}× ${i.name}`).join(', ')}
                 </h1>
               </div>
-              <StatusBadge>{order.status}</StatusBadge>
+              <StatusBadge tone={isDelivered ? 'success' : 'info'}>
+                {order.status}
+              </StatusBadge>
             </div>
             <div className="delivery-info">
               <div>
@@ -55,6 +82,23 @@ export default function PedidoDetalhe({ params }: { params: { id: string } }) {
                 </strong>
               </div>
             </div>
+            {!isDelivered && (
+              <div style={{ marginTop: '20px' }}>
+                <button
+                  type="button"
+                  disabled={confirming}
+                  onClick={confirmDelivery}
+                  className="button button-primary"
+                >
+                  <CheckIcon size={16} />
+                  <span>
+                    {confirming
+                      ? 'Confirmando entrega…'
+                      : 'Confirmar recebimento da entrega'}
+                  </span>
+                </button>
+              </div>
+            )}
             <hr className="detail-rule" />
             <h2>Histórico de atualizações</h2>
             <div className="status-history-list">

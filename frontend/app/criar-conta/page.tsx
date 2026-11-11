@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/ui';
 import { auth, saveSession } from '@/lib/api';
+import { DEMO_CPF } from '@/lib/mock-data';
 
 export default function CriarConta() {
   const router = useRouter();
 
-  const [f, setF] = useState({ email: '', cpf: '', password: '' }),
+  const [f, setF] = useState({ email: '', cpf: DEMO_CPF, password: '' }),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(false);
 
@@ -30,12 +31,15 @@ export default function CriarConta() {
   return (
     <>
       <Header />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/">Início</Link>
           <span>/</span>Criar conta
         </div>
         <section className="auth-card dashboard-card">
+          <p className="sandbox-notice" role="note">
+            CPF de teste válido pré-preenchido: <strong>{DEMO_CPF}</strong>
+          </p>
           <h1>Cadastre-se no AgriTech</h1>
           <p className="lead">
             Crie sua conta para montar sua sacola semanal e apoiar pequenos produtores rurais.

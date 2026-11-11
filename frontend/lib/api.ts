@@ -70,6 +70,13 @@ export type Order = {
   statusHistory: { toStatus: string; createdAt: string }[];
 };
 
+export type DeliverySlotOption = {
+  id: string;
+  label: string;
+  startsAt: string;
+  endsAt: string;
+};
+
 export type CatalogResponse = {
   data: Product[];
   pagination: {
@@ -78,13 +85,17 @@ export type CatalogResponse = {
     count: number;
     nextOffset: number | null;
   };
-
 };
-
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
+  }
+}
+
+function notifyStateChange() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('agritech:state'));
   }
 }
 
@@ -94,14 +105,26 @@ function token() {
     : localStorage.getItem('agritech_token');
 }
 
+export function getCurrentUser(): User | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('agritech_user');
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function saveSession(auth: AuthResponse) {
   localStorage.setItem('agritech_token', auth.accessToken);
   localStorage.setItem('agritech_user', JSON.stringify(auth.user));
+  notifyStateChange();
 }
 
 export function clearSession() {
   localStorage.removeItem('agritech_token');
   localStorage.removeItem('agritech_user');
+  notifyStateChange();
 }
 
 export function isAuthenticated() {
@@ -135,7 +158,12 @@ export async function api<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  if (USE_MOCK_DATA) return (await mockApi(path, options)) as T;
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (USE_MOCK_DATA) {
+    const result = (await mockApi(path, options)) as T;
+    if (method !== 'GET') notifyStateChange();
+    return result;
+  }
   const headers = new Headers(options.headers);
   headers.set('Content-Type', 'application/json');
   const t = token();
@@ -160,6 +188,7 @@ export async function api<T>(
         'Não foi possível concluir a operação.';
     throw new ApiError(response.status, message);
   }
+  if (method !== 'GET') notifyStateChange();
   return body as T;
 }
 

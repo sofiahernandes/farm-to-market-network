@@ -10,21 +10,23 @@ import {
   type Cart,
   type Order,
 } from '@/lib/api';
+import { MOCK_DELIVERY_SLOTS } from '@/lib/mock-data';
 
 export default function Checkout() {
   const [cart, setCart] = useState<Cart | null>(null),
     [form, setForm] = useState({
-      postalCode: '',
-      street: '',
-      number: '',
-      complement: '',
-      city: '',
-      state: '',
+      postalCode: '01310-100',
+      street: 'Avenida Paulista',
+      number: '1000',
+      complement: 'Apto. 42',
+      city: 'São Paulo',
+      state: 'SP',
     }),
-    [slot, setSlot] = useState('seed-slot'),
+    [slot, setSlot] = useState(MOCK_DELIVERY_SLOTS[0].id),
     [error, setError] = useState(''),
     [order, setOrder] = useState<Order | null>(null),
-    [loading, setLoading] = useState(true);
+    [loading, setLoading] = useState(true),
+    [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!requireAuth()) return;
@@ -37,6 +39,7 @@ export default function Checkout() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setSubmitting(true);
     try {
       const key =
         localStorage.getItem('agritech_checkout_key') || crypto.randomUUID();
@@ -51,6 +54,8 @@ export default function Checkout() {
       localStorage.removeItem('agritech_checkout_key');
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -58,7 +63,7 @@ export default function Checkout() {
     return (
       <>
         <Header app />
-        <main className="page-main container narrow">
+        <main className="page-main container">
           <section className="dashboard-card order-confirmed-card">
             <h1>Pedido #{order.id} confirmado com sucesso</h1>
             <p className="lead">
@@ -67,9 +72,14 @@ export default function Checkout() {
             <div className="payment-summary-box">
               <span>Status do pagamento: {order.payment.provider} · {order.payment.status}</span>
             </div>
-            <Link href="/app/pedidos" className="button button-primary">
-              Acompanhar meus pedidos
-            </Link>
+            <div className="hero-actions" style={{ marginTop: '16px' }}>
+              <Link href={`/app/pedidos/${order.id}`} className="button button-primary">
+                Ver detalhes do pedido
+              </Link>
+              <Link href="/app/pedidos" className="button button-secondary">
+                Acompanhar meus pedidos
+              </Link>
+            </div>
           </section>
         </main>
       </>
@@ -78,7 +88,7 @@ export default function Checkout() {
   return (
     <>
       <Header app />
-      <main className="page-main container narrow">
+      <main className="page-main container">
         <div className="breadcrumb">
           <Link href="/app/carrinho">Sacola</Link>
           <span>/</span>Checkout
@@ -162,9 +172,11 @@ export default function Checkout() {
               <label>
                 Janela de entrega
                 <select value={slot} onChange={(e) => setSlot(e.target.value)}>
-                  <option value="seed-slot">
-                    Próxima janela: Terça-feira, 08h–12h (confirmada pelo produtor)
-                  </option>
+                  {MOCK_DELIVERY_SLOTS.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.label}
+                    </option>
+                  ))}
                 </select>
               </label>
               {error && (
@@ -172,8 +184,11 @@ export default function Checkout() {
                   {error}
                 </p>
               )}
-              <button className="button button-primary button-full">
-                Confirmar pedido
+              <button
+                disabled={submitting}
+                className="button button-primary button-full"
+              >
+                {submitting ? 'Confirmando pedido…' : 'Confirmar pedido'}
               </button>
               <p className="microcopy">
                 Ambiente de demonstração sandbox: nenhuma cobrança real ocorre no cartão.
