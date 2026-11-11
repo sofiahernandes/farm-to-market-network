@@ -1,11 +1,17 @@
 import type {
+  AccountProfile,
   AuthResponse,
+  Basket,
   Cart,
   CartItem,
   CatalogResponse,
   DeliverySlotOption,
+  LgpdDeletionRequest,
   Order,
   Product,
+  SavedAddress,
+  Subscription,
+  SubscriptionCycle,
 } from './api';
 
 export const DEMO_CREDENTIALS = {
@@ -19,20 +25,20 @@ export const MOCK_DELIVERY_SLOTS: DeliverySlotOption[] = [
   {
     id: 'seed-slot',
     label: 'Terça-feira, 08h–12h · Rota Manhã (Confirmada pelo produtor)',
-    startsAt: '2026-11-03T11:00:00.000Z',
-    endsAt: '2026-11-03T15:00:00.000Z',
+    startsAt: '2026-11-17T11:00:00.000Z',
+    endsAt: '2026-11-17T15:00:00.000Z',
   },
   {
     id: 'seed-slot-tarde',
     label: 'Terça-feira, 14h–18h · Rota Tarde (Confirmada pelo produtor)',
-    startsAt: '2026-11-03T17:00:00.000Z',
-    endsAt: '2026-11-03T21:00:00.000Z',
+    startsAt: '2026-11-17T17:00:00.000Z',
+    endsAt: '2026-11-17T21:00:00.000Z',
   },
   {
     id: 'seed-slot-quinta',
     label: 'Quinta-feira, 08h–12h · Colheita de Meio de Semana',
-    startsAt: '2026-11-05T11:00:00.000Z',
-    endsAt: '2026-11-05T15:00:00.000Z',
+    startsAt: '2026-11-19T11:00:00.000Z',
+    endsAt: '2026-11-19T15:00:00.000Z',
   },
 ];
 
@@ -48,6 +54,157 @@ export function isValidCpf(input: string): boolean {
   return digit(9) === Number(cpf[9]) && digit(10) === Number(cpf[10]);
 }
 
+export function isBeforeCutoff(
+  now: Date,
+  deliveryAt: Date,
+  cutoffHours: number
+): boolean {
+  return deliveryAt.getTime() - now.getTime() >= cutoffHours * 3600000;
+}
+
+export function maskCpf(cpf: string): string {
+  const digits = (cpf ?? '').replace(/\D/g, '');
+  if (digits.length !== 11) return '***.***.***-**';
+  return `***.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9, 11)}`;
+}
+
+const baseBaskets: Basket[] = [
+  {
+    id: 'basket-familiar',
+    productId: 'mock-cesta',
+    name: 'Cesta da semana (Familiar)',
+    description:
+      'Cesta fixa agroecológica com 7 itens variados da colheita semanal para famílias de 3 a 4 pessoas. Preço e composição definidos pelo produtor antes de cada ciclo.',
+    priceCents: 6490,
+    producer: { id: 'sitio-verde', name: 'Sítio Verde' },
+    frequencies: ['weekly', 'monthly'],
+    cutoffHours: 36,
+    stock: { available: 12, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Safra de Primavera · Colheita na véspera',
+    items: [
+      {
+        productId: 'mock-alface',
+        name: 'Alface crespa hidropônica de solo',
+        quantity: '2 maços',
+        origin: 'Sítio Verde',
+      },
+      {
+        productId: 'mock-tomate',
+        name: 'Tomate italiano orgânico',
+        quantity: '1 kg',
+        origin: 'Vale do Sol',
+      },
+      {
+        productId: 'mock-cenoura',
+        name: 'Cenoura baby com rama',
+        quantity: '500 g',
+        origin: 'Sítio Verde',
+      },
+      {
+        name: 'Couve manteiga orgânica',
+        quantity: '1 maço',
+        origin: 'Sítio Verde',
+      },
+      {
+        name: 'Abobrinha italiana fresca',
+        quantity: '600 g',
+        origin: 'Sítio Verde',
+      },
+      {
+        name: 'Cheiro-verde (salsinha e cebolinha)',
+        quantity: '1 maço',
+        origin: 'Horta dos Irmãos',
+      },
+      {
+        productId: 'mock-morango',
+        name: 'Banana prata ou fruta da semana',
+        quantity: '1 dúzia',
+        origin: 'Pomar da Serra',
+      },
+    ],
+  },
+  {
+    id: 'basket-compacta',
+    productId: 'mock-cesta-compacta',
+    name: 'Cesta fixa compacta (Casal)',
+    description:
+      'Seleção enxuta de 5 itens essenciais de hortaliças e legumes frescos da semana, pensada para 1 a 2 pessoas sem desperdício.',
+    priceCents: 4290,
+    producer: { id: 'horta-irmaos', name: 'Horta dos Irmãos' },
+    frequencies: ['weekly', 'monthly'],
+    cutoffHours: 36,
+    stock: { available: 15, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Ano inteiro · Folhas e raízes frescas',
+    items: [
+      {
+        productId: 'mock-alface',
+        name: 'Alface crespa fresca',
+        quantity: '1 unidade',
+        origin: 'Horta dos Irmãos',
+      },
+      {
+        name: 'Rúcula cultivada em canteiro',
+        quantity: '1 maço',
+        origin: 'Horta dos Irmãos',
+      },
+      {
+        productId: 'mock-tomate',
+        name: 'Tomate italiano maduro',
+        quantity: '500 g',
+        origin: 'Vale do Sol',
+      },
+      {
+        productId: 'mock-cenoura',
+        name: 'Cenoura baby lavada',
+        quantity: '500 g',
+        origin: 'Sítio Verde',
+      },
+      {
+        name: 'Batata doce rosada',
+        quantity: '600 g',
+        origin: 'Horta dos Irmãos',
+      },
+    ],
+  },
+  {
+    id: 'basket-pomar',
+    productId: 'mock-cesta-pomar',
+    name: 'Cesta fixa Pomar & Granja',
+    description:
+      'Combinação semanal ou mensal de frutas selecionadas da estação e ovos caipiras de galinhas criadas livres a pasto.',
+    priceCents: 5490,
+    producer: { id: 'pomar-serra', name: 'Pomar da Serra' },
+    frequencies: ['weekly', 'monthly'],
+    cutoffHours: 48,
+    stock: { available: 10, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    seasonality: 'Safra de Primavera/Verão · Frutas doces',
+    items: [
+      {
+        productId: 'mock-morango',
+        name: 'Morango da estação selecionado',
+        quantity: '2 bandejas',
+        origin: 'Pomar da Serra',
+      },
+      {
+        productId: 'mock-ovos',
+        name: 'Ovos caipiras de pasto',
+        quantity: '1 dúzia',
+        origin: 'Granja Feliz',
+      },
+      {
+        name: 'Laranja lima suculenta',
+        quantity: '1 kg',
+        origin: 'Pomar da Serra',
+      },
+      {
+        name: 'Abacate manteiga',
+        quantity: '2 unidades',
+        origin: 'Pomar da Serra',
+      },
+    ],
+  },
+];
+
 const baseProducts: Product[] = [
   {
     id: 'mock-cesta',
@@ -58,7 +215,38 @@ const baseProducts: Product[] = [
     unit: 'cesta',
     priceCents: 6490,
     producer: { id: 'sitio-verde', name: 'Sítio Verde' },
-    stock: { available: 12, deliveryDate: '2026-11-03T11:00:00.000Z' },
+    stock: { available: 12, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Safra de Primavera · Colheita na véspera',
+    basketId: 'basket-familiar',
+    basketItems: baseBaskets[0].items,
+  },
+  {
+    id: 'mock-cesta-compacta',
+    name: 'Cesta fixa compacta (Casal)',
+    description:
+      'Seleção enxuta de 5 itens essenciais de hortaliças e legumes frescos da semana para 1 a 2 pessoas.',
+    category: 'Cestas',
+    unit: 'cesta',
+    priceCents: 4290,
+    producer: { id: 'horta-irmaos', name: 'Horta dos Irmãos' },
+    stock: { available: 15, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Ano inteiro · Folhas e raízes frescas',
+    basketId: 'basket-compacta',
+    basketItems: baseBaskets[1].items,
+  },
+  {
+    id: 'mock-cesta-pomar',
+    name: 'Cesta fixa Pomar & Granja',
+    description:
+      'Combinação de frutas selecionadas da estação e ovos caipiras de galinhas criadas soltas.',
+    category: 'Cestas',
+    unit: 'cesta',
+    priceCents: 5490,
+    producer: { id: 'pomar-serra', name: 'Pomar da Serra' },
+    stock: { available: 10, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    seasonality: 'Safra de Primavera/Verão · Frutas doces',
+    basketId: 'basket-pomar',
+    basketItems: baseBaskets[2].items,
   },
   {
     id: 'mock-tomate',
@@ -69,7 +257,8 @@ const baseProducts: Product[] = [
     unit: 'kg',
     priceCents: 1490,
     producer: { id: 'vale-sol', name: 'Vale do Sol' },
-    stock: { available: 24, deliveryDate: '2026-11-03T11:00:00.000Z' },
+    stock: { available: 24, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Safra plena · Colheita diária',
   },
   {
     id: 'mock-alface',
@@ -79,7 +268,8 @@ const baseProducts: Product[] = [
     unit: 'unidade',
     priceCents: 590,
     producer: { id: 'horta-irmaos', name: 'Horta dos Irmãos' },
-    stock: { available: 36, deliveryDate: '2026-11-03T11:00:00.000Z' },
+    stock: { available: 36, deliveryDate: '2026-11-17T11:00:00.000Z' },
+    seasonality: 'Ano inteiro · Colheita na manhã da entrega',
   },
   {
     id: 'mock-cenoura',
@@ -89,7 +279,8 @@ const baseProducts: Product[] = [
     unit: '500 g',
     priceCents: 890,
     producer: { id: 'sitio-verde', name: 'Sítio Verde' },
-    stock: { available: 18, deliveryDate: '2026-11-05T11:00:00.000Z' },
+    stock: { available: 18, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    seasonality: 'Outono/Primavera · Raízes jovens',
   },
   {
     id: 'mock-ovos',
@@ -100,7 +291,8 @@ const baseProducts: Product[] = [
     unit: 'dúzia',
     priceCents: 1890,
     producer: { id: 'granja-feliz', name: 'Granja Feliz' },
-    stock: { available: 20, deliveryDate: '2026-11-05T11:00:00.000Z' },
+    stock: { available: 20, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    seasonality: 'Produção contínua · Postura da semana',
   },
   {
     id: 'mock-morango',
@@ -110,7 +302,8 @@ const baseProducts: Product[] = [
     unit: 'bandeja',
     priceCents: 1290,
     producer: { id: 'pomar-serra', name: 'Pomar da Serra' },
-    stock: { available: 9, deliveryDate: '2026-11-05T11:00:00.000Z' },
+    stock: { available: 9, deliveryDate: '2026-11-19T11:00:00.000Z' },
+    seasonality: ' Inverno/Primavera · Colheita seletiva',
   },
 ];
 
@@ -127,6 +320,9 @@ const storageKeys = {
   orders: 'agritech_mock_orders',
   stock: 'agritech_mock_stock',
   users: 'agritech_mock_users',
+  subscriptions: 'agritech_mock_subscriptions',
+  addresses: 'agritech_mock_addresses',
+  lgpdRequests: 'agritech_mock_lgpd_requests',
 };
 
 const memoryStore = new Map<string, string>();
@@ -188,6 +384,20 @@ function currentProducts(): Product[] {
   }));
 }
 
+function currentBaskets(): Basket[] {
+  const stocks = stockMap();
+  return baseBaskets.map((basket) => ({
+    ...basket,
+    stock: {
+      ...basket.stock,
+      available: Math.max(
+        0,
+        stocks[basket.productId] ?? basket.stock.available
+      ),
+    },
+  }));
+}
+
 function makeCartItem(productId: string, quantity: number): CartItem {
   const product = currentProducts().find((item) => item.id === productId);
   if (!product) throw new Error('Oferta não encontrada.');
@@ -210,6 +420,29 @@ const defaultAddress = {
   state: 'SP',
 };
 
+function defaultSavedAddresses(): SavedAddress[] {
+  return [
+    {
+      id: 'addr-1',
+      label: 'Casa · Bela Vista',
+      zoneName: 'Zona Centro-Sul (Atendida)',
+      isDefault: true,
+      ...defaultAddress,
+    },
+  ];
+}
+
+function resolveZoneName(postalCode: string): string {
+  const clean = postalCode.replace(/\D/g, '');
+  if (clean.startsWith('01') || clean.startsWith('04')) {
+    return 'Zona Centro-Sul (Atendida)';
+  }
+  if (clean.startsWith('05') || clean.startsWith('02')) {
+    return 'Zona Oeste-Norte (Atendida)';
+  }
+  return 'Zona Piloto Regional (Atendida)';
+}
+
 function makeOrder(
   id: string,
   status: string,
@@ -221,7 +454,10 @@ function makeOrder(
   const items = itemIds.map(([productId, quantity]) =>
     makeCartItem(productId, quantity)
   );
-  const totalCents = items.reduce((total, item) => total + item.subtotalCents, 0);
+  const totalCents = items.reduce(
+    (total, item) => total + item.subtotalCents,
+    0
+  );
   const slot =
     MOCK_DELIVERY_SLOTS.find((s) => s.id === slotId) ?? MOCK_DELIVERY_SLOTS[0];
   return {
@@ -281,6 +517,77 @@ function defaultOrdersList(): Order[] {
   ];
 }
 
+function enrichSubscriptionCutoff(sub: Subscription, now = new Date()): Subscription {
+  const deliveryDate = new Date(sub.nextDeliveryAt);
+  const cutoffDate = new Date(
+    deliveryDate.getTime() - sub.cutoffHours * 3600000
+  );
+  const basket =
+    currentBaskets().find((b) => b.id === sub.basketId) ?? baseBaskets[0];
+  return {
+    ...sub,
+    items: basket.items,
+    cutoffAt: cutoffDate.toISOString(),
+    canModifyCurrentCycle: isBeforeCutoff(now, deliveryDate, sub.cutoffHours),
+  };
+}
+
+function defaultSubscriptionsList(): Subscription[] {
+  const futureDelivery = new Date(Date.now() + 5 * 86400000).toISOString();
+  const futureBilling = new Date(Date.now() + 3 * 86400000).toISOString();
+  const basket = baseBaskets[0];
+  const slot = MOCK_DELIVERY_SLOTS[0];
+  const sub: Subscription = {
+    id: 'SUB-2041',
+    basketId: basket.id,
+    basketName: basket.name,
+    producer: basket.producer,
+    frequency: 'weekly',
+    priceCents: basket.priceCents,
+    status: 'active',
+    cutoffHours: basket.cutoffHours,
+    cutoffAt: new Date(
+      new Date(futureDelivery).getTime() - basket.cutoffHours * 3600000
+    ).toISOString(),
+    canModifyCurrentCycle: true,
+    nextBillingAt: futureBilling,
+    nextDeliveryAt: futureDelivery,
+    address: defaultAddress,
+    deliverySlot: {
+      id: slot.id,
+      label: slot.label,
+      startsAt: slot.startsAt,
+      endsAt: slot.endsAt,
+    },
+    items: basket.items,
+    cycles: [
+      {
+        id: 'CYC-101',
+        cycleKey: '2026-10-21',
+        deliveryDate: '2026-10-21T11:00:00.000Z',
+        billingDate: '2026-10-19T11:00:00.000Z',
+        amountCents: basket.priceCents,
+        status: 'confirmed',
+        paymentStatus: 'approved',
+        orderId: 'AG-1037',
+        note: 'Ciclo entregue e confirmado.',
+        createdAt: '2026-10-19T11:00:00.000Z',
+      },
+    ],
+    createdAt: '2026-10-15T10:00:00.000Z',
+    updatedAt: '2026-10-21T13:00:00.000Z',
+  };
+  return [enrichSubscriptionCutoff(sub)];
+}
+
+function subscriptions(): Subscription[] {
+  const list = read<Subscription[]>(
+    storageKeys.subscriptions,
+    defaultSubscriptionsList()
+  );
+  return list.map((s) => enrichSubscriptionCutoff(s));
+}
+
 function cart(): Cart {
   const raw = read<CartItem[]>(storageKeys.cart, defaultCartItems());
   const stocks = stockMap();
@@ -330,6 +637,26 @@ function extractHeader(
   return undefined;
 }
 
+function validateAddress(addr: Order['address'] | undefined) {
+  if (
+    !addr?.postalCode?.trim() ||
+    !addr?.street?.trim() ||
+    !addr?.number?.trim() ||
+    !addr?.city?.trim() ||
+    !addr?.state?.trim()
+  ) {
+    throw new Error('Preencha todos os campos obrigatórios do endereço.');
+  }
+  return {
+    postalCode: addr.postalCode.trim(),
+    street: addr.street.trim(),
+    number: addr.number.trim(),
+    complement: addr.complement?.trim() || undefined,
+    city: addr.city.trim(),
+    state: addr.state.trim().toUpperCase(),
+  };
+}
+
 function createOrder(
   body: { address: Order['address']; deliverySlotId?: string },
   idempotencyKey?: string
@@ -342,16 +669,7 @@ function createOrder(
   const currentCart = cart();
   if (!currentCart.data.length) throw new Error('Sua sacola está vazia.');
 
-  const addr = body?.address;
-  if (
-    !addr?.postalCode?.trim() ||
-    !addr?.street?.trim() ||
-    !addr?.number?.trim() ||
-    !addr?.city?.trim() ||
-    !addr?.state?.trim()
-  ) {
-    throw new Error('Preencha todos os campos obrigatórios do endereço.');
-  }
+  const cleanAddress = validateAddress(body?.address);
 
   const stocks = stockMap();
   for (const item of currentCart.data) {
@@ -381,17 +699,109 @@ function createOrder(
     body.deliverySlotId || 'seed-slot',
     idempotencyKey || `mock-${orderId}`
   );
-  order.address = {
-    postalCode: addr.postalCode.trim(),
-    street: addr.street.trim(),
-    number: addr.number.trim(),
-    complement: addr.complement?.trim() || undefined,
-    city: addr.city.trim(),
-    state: addr.state.trim().toUpperCase(),
-  };
+  order.address = cleanAddress;
   write(storageKeys.orders, [order, ...orders()]);
   write<CartItem[]>(storageKeys.cart, []);
   return order;
+}
+
+function createSubscription(
+  body: {
+    basketId: string;
+    frequency: 'weekly' | 'monthly';
+    address: Order['address'];
+    deliverySlotId?: string;
+  },
+  idempotencyKey?: string
+): Subscription {
+  const basket = currentBaskets().find((b) => b.id === body?.basketId);
+  if (!basket) throw new Error('Cesta fixa não encontrada.');
+  if (!['weekly', 'monthly'].includes(body?.frequency)) {
+    throw new Error('Escolha a frequência semanal ou mensal.');
+  }
+  const cleanAddress = validateAddress(body?.address);
+  const stocks = stockMap();
+  const available = stocks[basket.productId] ?? 0;
+  if (available < 1) {
+    throw new Error(
+      `Sem disponibilidade no lote atual para ${basket.name}.`
+    );
+  }
+
+  const currentSubs = subscriptions();
+  if (idempotencyKey) {
+    const existing = currentSubs.find((s) => s.id === idempotencyKey);
+    if (existing) return existing;
+  }
+
+  stocks[basket.productId] = Math.max(0, available - 1);
+  write(storageKeys.stock, stocks);
+
+  const now = new Date();
+  const nextDays = body.frequency === 'weekly' ? 7 : 30;
+  const nextDelivery = new Date(now.getTime() + nextDays * 86400000);
+  const nextBilling = new Date(
+    nextDelivery.getTime() - basket.cutoffHours * 3600000
+  );
+  const slot =
+    MOCK_DELIVERY_SLOTS.find((s) => s.id === body.deliverySlotId) ??
+    MOCK_DELIVERY_SLOTS[0];
+
+  const orderId = `AG-${Math.floor(1000 + Math.random() * 9000)}`;
+  const initialOrder = makeOrder(
+    orderId,
+    'Em preparação',
+    [[basket.productId, 1]],
+    now.toISOString(),
+    slot.id,
+    `sub-order-${orderId}`
+  );
+  initialOrder.address = cleanAddress;
+  write(storageKeys.orders, [initialOrder, ...orders()]);
+
+  const subId = `SUB-${Math.floor(2100 + Math.random() * 7800)}`;
+  const cycleKey = now.toISOString().slice(0, 10);
+  const initialCycle: SubscriptionCycle = {
+    id: `CYC-${Math.floor(200 + Math.random() * 800)}`,
+    cycleKey,
+    deliveryDate: slot.startsAt,
+    billingDate: now.toISOString(),
+    amountCents: basket.priceCents,
+    status: 'confirmed',
+    paymentStatus: 'approved',
+    orderId: initialOrder.id,
+    note: '1º ciclo confirmado na adesão (estoque reservado).',
+    createdAt: now.toISOString(),
+  };
+
+  const newSub: Subscription = enrichSubscriptionCutoff({
+    id: subId,
+    basketId: basket.id,
+    basketName: basket.name,
+    producer: basket.producer,
+    frequency: body.frequency,
+    priceCents: basket.priceCents,
+    status: 'active',
+    cutoffHours: basket.cutoffHours,
+    cutoffAt: nextBilling.toISOString(),
+    canModifyCurrentCycle: true,
+    nextBillingAt: nextBilling.toISOString(),
+    nextDeliveryAt: nextDelivery.toISOString(),
+    address: cleanAddress,
+    deliverySlot: {
+      id: slot.id,
+      label: slot.label,
+      startsAt: slot.startsAt,
+      endsAt: slot.endsAt,
+    },
+    items: basket.items,
+    cycles: [initialCycle],
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
+  });
+
+  write(storageKeys.subscriptions, [newSub, ...currentSubs]);
+  return newSub;
 }
 
 /** Browser & local test API simulator used when NEXT_PUBLIC_USE_MOCK_DATA is not "false". */
@@ -451,7 +861,7 @@ export async function mockApi(
     }
 
     const newUser: StoredUser = {
-      id: `user-${ users.length + 1 }`,
+      id: `user-${users.length + 1}`,
       email,
       cpf,
       password,
@@ -463,6 +873,299 @@ export async function mockApi(
 
   if (pathname === '/delivery-slots' && method === 'GET') {
     return { data: MOCK_DELIVERY_SLOTS };
+  }
+
+  if (pathname === '/baskets' && method === 'GET') {
+    return { data: currentBaskets() };
+  }
+
+  if (pathname.startsWith('/baskets/') && method === 'GET') {
+    const basket = currentBaskets().find(
+      (b) => b.id === pathname.replace('/baskets/', '')
+    );
+    if (!basket) throw new Error('Cesta fixa não encontrada.');
+    return basket;
+  }
+
+  if (pathname === '/subscriptions' && method === 'GET') {
+    return { data: subscriptions() };
+  }
+
+  if (pathname === '/subscriptions' && method === 'POST') {
+    const idempotencyKey = extractHeader(options.headers, 'x-idempotency-key');
+    return createSubscription(body, idempotencyKey);
+  }
+
+  if (
+    pathname.startsWith('/subscriptions/') &&
+    pathname.endsWith('/pause') &&
+    method === 'POST'
+  ) {
+    const subId = pathname
+      .replace('/subscriptions/', '')
+      .replace('/pause', '');
+    const list = subscriptions();
+    const index = list.findIndex((s) => s.id === subId);
+    if (index < 0) throw new Error('Assinatura não encontrada.');
+    const sub = list[index];
+    if (sub.status === 'cancelled') {
+      throw new Error('Assinatura cancelada não pode ser pausada.');
+    }
+    if (!sub.canModifyCurrentCycle) {
+      throw new Error(
+        `Prazo de alteração encerrado. Você só pode pausar até ${sub.cutoffHours}h antes da próxima entrega.`
+      );
+    }
+    sub.status = 'paused';
+    sub.updatedAt = new Date().toISOString();
+    list[index] = enrichSubscriptionCutoff(sub);
+    write(storageKeys.subscriptions, list);
+    return list[index];
+  }
+
+  if (
+    pathname.startsWith('/subscriptions/') &&
+    pathname.endsWith('/resume') &&
+    method === 'POST'
+  ) {
+    const subId = pathname
+      .replace('/subscriptions/', '')
+      .replace('/resume', '');
+    const list = subscriptions();
+    const index = list.findIndex((s) => s.id === subId);
+    if (index < 0) throw new Error('Assinatura não encontrada.');
+    const sub = list[index];
+    if (sub.status === 'cancelled') {
+      throw new Error(
+        'Assinatura cancelada não pode ser reativada. Inicie uma nova assinatura em Cestas.'
+      );
+    }
+    sub.status = 'active';
+    sub.updatedAt = new Date().toISOString();
+    list[index] = enrichSubscriptionCutoff(sub);
+    write(storageKeys.subscriptions, list);
+    return list[index];
+  }
+
+  if (
+    pathname.startsWith('/subscriptions/') &&
+    pathname.endsWith('/cancel') &&
+    method === 'POST'
+  ) {
+    const subId = pathname
+      .replace('/subscriptions/', '')
+      .replace('/cancel', '');
+    const list = subscriptions();
+    const index = list.findIndex((s) => s.id === subId);
+    if (index < 0) throw new Error('Assinatura não encontrada.');
+    const sub = list[index];
+    if (!sub.canModifyCurrentCycle) {
+      throw new Error(
+        `Prazo de cancelamento encerrado para o ciclo atual (limite de ${sub.cutoffHours}h antes da entrega).`
+      );
+    }
+    sub.status = 'cancelled';
+    sub.updatedAt = new Date().toISOString();
+    list[index] = enrichSubscriptionCutoff(sub);
+    write(storageKeys.subscriptions, list);
+    return list[index];
+  }
+
+  if (
+    pathname.startsWith('/subscriptions/') &&
+    pathname.endsWith('/generate-cycle') &&
+    method === 'POST'
+  ) {
+    const subId = pathname
+      .replace('/subscriptions/', '')
+      .replace('/generate-cycle', '');
+    const list = subscriptions();
+    const index = list.findIndex((s) => s.id === subId);
+    if (index < 0) throw new Error('Assinatura não encontrada.');
+    const sub = list[index];
+    if (sub.status !== 'active') {
+      throw new Error(
+        'Apenas assinaturas ativas podem gerar um novo ciclo de entrega.'
+      );
+    }
+
+    const cycleKey =
+      body?.cycleKey || sub.nextDeliveryAt.slice(0, 10) || 'next-cycle';
+    const existingCycle = sub.cycles.find((c) => c.cycleKey === cycleKey);
+    if (existingCycle) {
+      return sub;
+    }
+
+    const now = new Date();
+    const basket =
+      currentBaskets().find((b) => b.id === sub.basketId) ?? baseBaskets[0];
+
+    if (body?.simulatePaymentFailure) {
+      const failedCycle: SubscriptionCycle = {
+        id: `CYC-${Math.floor(200 + Math.random() * 800)}`,
+        cycleKey,
+        deliveryDate: sub.nextDeliveryAt,
+        billingDate: now.toISOString(),
+        amountCents: sub.priceCents,
+        status: 'payment_failed',
+        paymentStatus: 'failed',
+        orderId: null,
+        note: 'Falha na cobrança recorrente sandbox. Verifique o meio de pagamento.',
+        createdAt: now.toISOString(),
+      };
+      sub.status = 'payment_failed';
+      sub.cycles = [failedCycle, ...sub.cycles];
+      sub.updatedAt = now.toISOString();
+      list[index] = enrichSubscriptionCutoff(sub);
+      write(storageKeys.subscriptions, list);
+      return list[index];
+    }
+
+    const stocks = stockMap();
+    const available = stocks[basket.productId] ?? 0;
+    if (available < 1) {
+      const shortageCycle: SubscriptionCycle = {
+        id: `CYC-${Math.floor(200 + Math.random() * 800)}`,
+        cycleKey,
+        deliveryDate: sub.nextDeliveryAt,
+        billingDate: now.toISOString(),
+        amountCents: sub.priceCents,
+        status: 'stock_shortage',
+        paymentStatus: 'pending',
+        orderId: null,
+        note: 'Estoque insuficiente da cesta no lote da semana. Nenhuma cobrança efetuada.',
+        createdAt: now.toISOString(),
+      };
+      sub.cycles = [shortageCycle, ...sub.cycles];
+      sub.updatedAt = now.toISOString();
+      list[index] = enrichSubscriptionCutoff(sub);
+      write(storageKeys.subscriptions, list);
+      return list[index];
+    }
+
+    stocks[basket.productId] = available - 1;
+    write(storageKeys.stock, stocks);
+
+    const orderId = `AG-${Math.floor(1000 + Math.random() * 9000)}`;
+    const cycleOrder = makeOrder(
+      orderId,
+      'Em preparação',
+      [[basket.productId, 1]],
+      now.toISOString(),
+      sub.deliverySlot.id,
+      `cycle-${sub.id}-${cycleKey}`
+    );
+    cycleOrder.address = sub.address;
+    write(storageKeys.orders, [cycleOrder, ...orders()]);
+
+    const confirmedCycle: SubscriptionCycle = {
+      id: `CYC-${Math.floor(200 + Math.random() * 800)}`,
+      cycleKey,
+      deliveryDate: sub.nextDeliveryAt,
+      billingDate: now.toISOString(),
+      amountCents: sub.priceCents,
+      status: 'confirmed',
+      paymentStatus: 'approved',
+      orderId: cycleOrder.id,
+      note: 'Ciclo recorrente confirmado e estoque reservado.',
+      createdAt: now.toISOString(),
+    };
+
+    const stepDays = sub.frequency === 'weekly' ? 7 : 30;
+    const nextDelivery = new Date(
+      new Date(sub.nextDeliveryAt).getTime() + stepDays * 86400000
+    );
+    const nextBilling = new Date(
+      nextDelivery.getTime() - sub.cutoffHours * 3600000
+    );
+
+    sub.cycles = [confirmedCycle, ...sub.cycles];
+    sub.nextDeliveryAt = nextDelivery.toISOString();
+    sub.nextBillingAt = nextBilling.toISOString();
+    sub.updatedAt = now.toISOString();
+    list[index] = enrichSubscriptionCutoff(sub);
+    write(storageKeys.subscriptions, list);
+    return list[index];
+  }
+
+  if (pathname === '/account/profile' && method === 'GET') {
+    const addresses = read<SavedAddress[]>(
+      storageKeys.addresses,
+      defaultSavedAddresses()
+    );
+    const lgpdRequests = read<LgpdDeletionRequest[]>(
+      storageKeys.lgpdRequests,
+      []
+    );
+    const profile: AccountProfile = {
+      user: {
+        id: 'mock-consumer',
+        email: DEMO_CREDENTIALS.email,
+        role: 'consumer',
+      },
+      maskedCpf: maskCpf(DEMO_CPF),
+      paymentGatewayStatus: {
+        provider: 'Adapter Fake Sandbox (Mercado Pago não conectado)',
+        mode: 'sandbox',
+        storesCardData: false,
+        description:
+          'Nenhum dado bruto de cartão de crédito é armazenado pelo AgriTech. Cobranças avulsas e recorrentes operam em modo de simulação local.',
+      },
+      addresses,
+      lgpdRequests,
+    };
+    return profile;
+  }
+
+  if (pathname === '/account/addresses' && method === 'POST') {
+    const clean = validateAddress(body);
+    const label = body?.label?.trim() || 'Endereço adicional';
+    const addresses = read<SavedAddress[]>(
+      storageKeys.addresses,
+      defaultSavedAddresses()
+    );
+    const created: SavedAddress = {
+      id: `addr-${Date.now()}`,
+      label,
+      zoneName: resolveZoneName(clean.postalCode),
+      isDefault: addresses.length === 0,
+      ...clean,
+    };
+    const next = [...addresses, created];
+    write(storageKeys.addresses, next);
+    return { data: next };
+  }
+
+  if (pathname.startsWith('/account/addresses/') && method === 'DELETE') {
+    const id = pathname.replace('/account/addresses/', '');
+    const addresses = read<SavedAddress[]>(
+      storageKeys.addresses,
+      defaultSavedAddresses()
+    ).filter((a) => a.id !== id);
+    write(storageKeys.addresses, addresses);
+    return { data: addresses };
+  }
+
+  if (pathname === '/account/lgpd-deletion-request' && method === 'POST') {
+    const reason =
+      body?.reason?.trim() ||
+      'Solicitação de exclusão e anonimização de dados pessoais conforme LGPD.';
+    const existing = read<LgpdDeletionRequest[]>(storageKeys.lgpdRequests, []);
+    if (existing.some((r) => r.status === 'pending_review')) {
+      throw new Error(
+        'Já existe uma solicitação LGPD em análise para esta conta.'
+      );
+    }
+    const created: LgpdDeletionRequest = {
+      id: `lgpd-${Date.now()}`,
+      protocol: `LGPD-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      reason,
+      status: 'pending_review',
+      requestedAt: new Date().toISOString(),
+    };
+    const next = [created, ...existing];
+    write(storageKeys.lgpdRequests, next);
+    return created;
   }
 
   if (pathname === '/catalog' && method === 'GET') {

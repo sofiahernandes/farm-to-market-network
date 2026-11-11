@@ -76,12 +76,14 @@ export function Header({ app = false }: { app?: boolean }) {
           {app || user ? (
             <>
               <Link href="/catalogo">Explorar ofertas</Link>
-              <Link href="/app">Área do consumidor</Link>
+              <Link href="/cestas">Cestas fixas</Link>
+              <Link href="/app/assinaturas">Assinaturas</Link>
               <Link href="/app/pedidos">Meus pedidos</Link>
             </>
           ) : (
             <>
               <Link href="/catalogo">Ofertas da semana</Link>
+              <Link href="/cestas">Cestas fixas</Link>
               <Link href="/#como-funciona">Como funciona</Link>
               <Link href="/#produtores">Rede de produtores</Link>
             </>
@@ -98,7 +100,7 @@ export function Header({ app = false }: { app?: boolean }) {
             <>
               <Link
                 className="button button-small button-secondary hide-mobile"
-                href="/app"
+                href="/app/conta"
                 title={user.email}
               >
                 <UserIcon size={15} />
@@ -147,6 +149,7 @@ export function Footer() {
         <div>
           <h3>Navegação</h3>
           <Link href="/catalogo">Explorar ofertas</Link>
+          <Link href="/cestas">Cestas fixas e assinatura</Link>
           <Link href="/#como-funciona">Como funciona</Link>
           <Link href="/#produtores">Produtores parceiros</Link>
         </div>
@@ -154,7 +157,9 @@ export function Footer() {
           <h3>Conta</h3>
           <Link href="/entrar">Entrar no painel</Link>
           <Link href="/criar-conta">Cadastre-se</Link>
+          <Link href="/app/assinaturas">Minhas assinaturas</Link>
           <Link href="/app/pedidos">Histórico de pedidos</Link>
+          <Link href="/app/conta">Privacidade e LGPD</Link>
         </div>
         <div>
           <h3>Ambiente Seguro</h3>

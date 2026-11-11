@@ -5,15 +5,18 @@ import { useEffect, useState } from 'react';
 import { Header } from '@/components/ui';
 import {
   api,
+  formatDate,
   formatPrice,
   requireAuth,
   type Cart,
   type Order,
+  type Subscription,
 } from '@/lib/api';
 
 export default function AppHome() {
   const [cart, setCart] = useState<Cart | null>(null),
-    [orders, setOrders] = useState<Order[]>([]);
+    [orders, setOrders] = useState<Order[]>([]),
+    [subs, setSubs] = useState<Subscription[]>([]);
 
   useEffect(() => {
     if (!requireAuth()) return;
@@ -23,7 +26,12 @@ export default function AppHome() {
     api<{ data: Order[] }>('/orders')
       .then((x) => setOrders(x.data))
       .catch(() => {});
+    api<{ data: Subscription[] }>('/subscriptions')
+      .then((x) => setSubs(x.data))
+      .catch(() => {});
   }, []);
+
+  const activeSubs = subs.filter((s) => s.status === 'active');
 
   return (
     <>
@@ -32,11 +40,18 @@ export default function AppHome() {
         <div className="dashboard-intro">
           <div>
             <h1>Seu espaço de compras locais</h1>
-            <p className="lead">Acompanhe sua sacola ativa e o status dos seus pedidos aos produtores.</p>
+            <p className="lead">
+              Acompanhe sua sacola ativa, assinaturas de cestas fixas e o status dos seus pedidos aos produtores.
+            </p>
           </div>
-          <Link href="/catalogo" className="button button-primary">
-            Explorar ofertas
-          </Link>
+          <div className="hero-actions">
+            <Link href="/catalogo" className="button button-primary">
+              Explorar ofertas
+            </Link>
+            <Link href="/cestas" className="button button-secondary">
+              Cestas fixas
+            </Link>
+          </div>
         </div>
         <div className="metric-grid">
           <div className="metric-card">
@@ -47,23 +62,42 @@ export default function AppHome() {
             <small>{cart ? formatPrice(cart.totalCents) : 'Carregando'}</small>
           </div>
           <div className="metric-card">
+            <span className="metric-label">Assinaturas ativas</span>
+            <strong>{activeSubs.length}</strong>
+            <small>
+              {activeSubs[0]
+                ? `Próxima entrega: ${formatDate(activeSubs[0].nextDeliveryAt)}`
+                : 'Nenhuma cesta recorrente ativa'}
+            </small>
+          </div>
+          <div className="metric-card">
             <span className="metric-label">Pedidos confirmados</span>
             <strong>{orders.length}</strong>
             <small>Histórico da sua conta</small>
+          </div>
+          <div className="metric-card">
+            <span className="metric-label">Privacidade e Conta</span>
+            <strong>LGPD</strong>
+            <small>Endereços, zona e dados protegidos</small>
           </div>
         </div>
         <section className="dashboard-card">
           <h2>Próximas ações</h2>
           <p className="muted">
-            Consulte as ofertas persistidas no catálogo, finalize os itens da sacola ou visualize
-            os detalhes de entrega dos pedidos em andamento.
+            Consulte as ofertas persistidas no catálogo, gerencie suas cestas recorrentes, finalize os itens da sacola ou visualize os detalhes de entrega dos pedidos em andamento.
           </p>
-          <div className="hero-actions">
+          <div className="hero-actions" style={{ flexWrap: 'wrap' }}>
             <Link href="/app/carrinho" className="button button-primary">
               Ver sacola
             </Link>
+            <Link href="/app/assinaturas" className="button button-secondary">
+              Minhas assinaturas
+            </Link>
             <Link href="/app/pedidos" className="button button-secondary">
               Histórico de pedidos
+            </Link>
+            <Link href="/app/conta" className="button button-secondary">
+              Minha conta e LGPD
             </Link>
           </div>
         </section>

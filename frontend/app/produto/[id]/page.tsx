@@ -105,9 +105,46 @@ export default function ProductDetail() {
                   </span>
                   <div>
                     <strong>{product.producer.name}</strong>
-                    <span>Produtor regional parceiro · {product.unit}</span>
+                    <span>
+                      Produtor regional parceiro · {product.unit}
+                      {product.seasonality ? ` · ${product.seasonality}` : ''}
+                    </span>
                   </div>
                 </div>
+                {product.basketItems && product.basketItems.length > 0 && (
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      background: 'var(--surface)',
+                      border: '1px solid var(--line)',
+                      borderRadius: 'var(--radius-md)',
+                    }}
+                  >
+                    <strong
+                      style={{
+                        fontSize: '13px',
+                        color: 'var(--forest)',
+                        display: 'block',
+                        marginBottom: '6px',
+                      }}
+                    >
+                      Itens fixos inclusos nesta cesta ({product.basketItems.length}):
+                    </strong>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '13px' }}>
+                      {product.basketItems.map((bi, idx) => (
+                        <div
+                          key={idx}
+                          style={{ display: 'flex', justifyContent: 'space-between' }}
+                        >
+                          <span>{bi.name}</span>
+                          <span className="count-tag">
+                            {bi.quantity} · {bi.origin}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="detail-price-box">
                   <div className="detail-price">
                     <strong>{formatPrice(product.priceCents)}</strong>
@@ -151,6 +188,15 @@ export default function ProductDetail() {
                     <span>Adicionar à sacola</span>
                     <ArrowRightIcon size={18} />
                   </button>
+                  {isCesta && (
+                    <Link
+                      href="/cestas"
+                      className="button button-secondary button-full"
+                    >
+                      <span>Assinar esta cesta fixa (semanal ou mensal)</span>
+                      <ArrowRightIcon size={16} />
+                    </Link>
+                  )}
                 </div>
                 {message && (
                   <p className="status status-success status-message" role="status">

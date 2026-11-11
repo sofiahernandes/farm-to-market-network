@@ -4,16 +4,23 @@ import {
   DEMO_CPF,
   DEMO_CREDENTIALS,
   MOCK_DELIVERY_SLOTS,
+  isBeforeCutoff,
   isValidCpf,
+  maskCpf,
   mockApi,
   resetMockState,
 } from '../mock-data.ts';
 import type {
+  AccountProfile,
   AuthResponse,
+  Basket,
   Cart,
   CatalogResponse,
+  LgpdDeletionRequest,
   Order,
   Product,
+  SavedAddress,
+  Subscription,
 } from '../api.ts';
 
 describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
@@ -21,30 +28,38 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
     resetMockState();
   });
 
-  describe('CPF Validation', () => {
-    it('validates mathematically valid CPFs and rejects invalid ones', () => {
+  describe('CPF Validation & Masking', () => {
+    it('validates mathematically valid CPFs, rejects invalid ones, and masks CPF', () => {
       assert.equal(isValidCpf(DEMO_CPF), true);
       assert.equal(isValidCpf('52998224725'), true);
       assert.equal(isValidCpf('111.111.111-11'), false);
       assert.equal(isValidCpf('123.456.789-00'), false);
       assert.equal(isValidCpf('123'), false);
+      assert.equal(maskCpf(DEMO_CPF), '***.982.247-25');
     });
   });
 
   describe('Catalog & Product Detail', () => {
-    it('lists all mock products with stock and producer metadata', async () => {
+    it('lists all mock products (including 3 fixed baskets) with stock and producer metadata', async () => {
       const res = (await mockApi('/catalog')) as CatalogResponse;
-      assert.equal(res.data.length, 6);
-      assert.equal(res.pagination.count, 6);
+      assert.equal(res.data.length, 8);
+      assert.equal(res.pagination.count, 8);
       assert.ok(res.data.some((p) => p.category === 'Frutas'));
+      const cesta = res.data.find((p) => p.id === 'mock-cesta');
+      assert.ok(cesta?.basketItems && cesta.basketItems.length === 7);
     });
 
-    it('filters catalog by category (including Frutas) and search query', async () => {
+    it('filters catalog by category (including Frutas and Cestas) and search query', async () => {
       const frutas = (await mockApi(
         '/catalog?category=Frutas'
       )) as CatalogResponse;
       assert.equal(frutas.data.length, 1);
       assert.equal(frutas.data[0].id, 'mock-morango');
+
+      const cestas = (await mockApi(
+        '/catalog?category=Cestas'
+      )) as CatalogResponse;
+      assert.equal(cestas.data.length, 3);
 
       const search = (await mockApi(
         '/catalog?search=sítio verde'
@@ -141,14 +156,12 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       const initial = (await mockApi('/cart')) as Cart;
       assert.equal(initial.data.length, 2);
 
-      // Add 2 more of mock-morango (stock = 9)
       const afterAdd = (await mockApi('/cart/items', {
         method: 'POST',
         body: JSON.stringify({ productId: 'mock-morango', quantity: 2 }),
       })) as Cart;
       assert.equal(afterAdd.data.length, 3);
 
-      // Update quantity via PATCH
       const afterPatch = (await mockApi('/cart/items/mock-morango', {
         method: 'PATCH',
         body: JSON.stringify({ quantity: 5 }),
@@ -159,7 +172,6 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       assert.equal(morango?.quantity, 5);
       assert.equal(morango?.subtotalCents, 5 * 1290);
 
-      // Exceeding stock (9 available) throws error
       await assert.rejects(
         () =>
           mockApi('/cart/items/mock-morango', {
@@ -169,7 +181,6 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
         /Quantidade máxima disponível/
       );
 
-      // Remove item
       const afterDelete = (await mockApi('/cart/items/mock-morango', {
         method: 'DELETE',
       })) as Cart;
@@ -204,15 +215,12 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       assert.equal(order1.deliverySlot.id, MOCK_DELIVERY_SLOTS[1].id);
       assert.equal(order1.totalCents, 6490 + 2 * 1490);
 
-      // Stock of mock-cesta should be decremented from 12 to 11
       const afterProduct = (await mockApi('/catalog/mock-cesta')) as Product;
       assert.equal(afterProduct.stock.available, 11);
 
-      // Cart should now be empty
       const emptyCart = (await mockApi('/cart')) as Cart;
       assert.equal(emptyCart.data.length, 0);
 
-      // Repeating checkout with same idempotency key returns identical order without error
       const orderDuplicate = (await mockApi('/checkout', {
         method: 'POST',
         headers: { 'x-idempotency-key': 'idem-key-123' },
@@ -220,7 +228,6 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
       })) as Order;
       assert.equal(orderDuplicate.id, order1.id);
 
-      // Confirming delivery transitions order status to Entregue
       const confirmed = (await mockApi(
         `/orders/${order1.id}/confirm-delivery`,
         {
@@ -233,6 +240,167 @@ describe('AgriTech Mock API & Consumer Slice Domain Rules', () => {
         confirmed.statusHistory.some((h) =>
           h.toStatus.includes('confirmado pelo consumidor')
         )
+      );
+    });
+  });
+
+  describe('Fixed Baskets & Subscriptions (Weekly/Monthly, Cutoff, Idempotent Cycles)', () => {
+    it('lists fixed baskets with items, frequencies, and cutoff hours', async () => {
+      const res = (await mockApi('/baskets')) as { data: Basket[] };
+      assert.equal(res.data.length, 3);
+      const compacta = (await mockApi('/baskets/basket-compacta')) as Basket;
+      assert.equal(compacta.priceCents, 4290);
+      assert.equal(compacta.items.length, 5);
+      assert.deepEqual(compacta.frequencies, ['weekly', 'monthly']);
+    });
+
+    it('creates a subscription, reserves stock, and generates an initial order', async () => {
+      const before = (await mockApi('/baskets/basket-pomar')) as Basket;
+      assert.equal(before.stock.available, 10);
+
+      const created = (await mockApi('/subscriptions', {
+        method: 'POST',
+        body: JSON.stringify({
+          basketId: 'basket-pomar',
+          frequency: 'monthly',
+          deliverySlotId: MOCK_DELIVERY_SLOTS[2].id,
+          address: {
+            postalCode: '01310-100',
+            street: 'Rua Augusta',
+            number: '500',
+            city: 'São Paulo',
+            state: 'SP',
+          },
+        }),
+      })) as Subscription;
+
+      assert.equal(created.basketId, 'basket-pomar');
+      assert.equal(created.frequency, 'monthly');
+      assert.equal(created.status, 'active');
+      assert.equal(created.cycles.length, 1);
+      assert.ok(created.cycles[0].orderId);
+
+      const after = (await mockApi('/baskets/basket-pomar')) as Basket;
+      assert.equal(after.stock.available, 9);
+    });
+
+    it('pauses, resumes, and cancels subscriptions within the cutoff window', async () => {
+      assert.equal(
+        isBeforeCutoff(
+          new Date('2026-11-10T10:00:00Z'),
+          new Date('2026-11-12T10:00:00Z'),
+          36
+        ),
+        true
+      );
+      assert.equal(
+        isBeforeCutoff(
+          new Date('2026-11-11T10:00:00Z'),
+          new Date('2026-11-12T10:00:00Z'),
+          36
+        ),
+        false
+      );
+
+      const paused = (await mockApi('/subscriptions/SUB-2041/pause', {
+        method: 'POST',
+      })) as Subscription;
+      assert.equal(paused.status, 'paused');
+
+      const resumed = (await mockApi('/subscriptions/SUB-2041/resume', {
+        method: 'POST',
+      })) as Subscription;
+      assert.equal(resumed.status, 'active');
+
+      const cancelled = (await mockApi('/subscriptions/SUB-2041/cancel', {
+        method: 'POST',
+      })) as Subscription;
+      assert.equal(cancelled.status, 'cancelled');
+
+      await assert.rejects(
+        () =>
+          mockApi('/subscriptions/SUB-2041/resume', {
+            method: 'POST',
+          }),
+        /Assinatura cancelada não pode ser reativada/
+      );
+    });
+
+    it('generates cycles idempotently and handles payment failures cleanly', async () => {
+      const cycle1 = (await mockApi('/subscriptions/SUB-2041/generate-cycle', {
+        method: 'POST',
+        body: JSON.stringify({ cycleKey: '2026-11-17' }),
+      })) as Subscription;
+      assert.equal(cycle1.cycles.length, 2);
+      assert.equal(cycle1.cycles[0].cycleKey, '2026-11-17');
+      assert.equal(cycle1.cycles[0].status, 'confirmed');
+
+      const stockAfterFirst = (await mockApi(
+        '/baskets/basket-familiar'
+      )) as Basket;
+      assert.equal(stockAfterFirst.stock.available, 11);
+
+      // Calling generate-cycle with the same cycleKey is idempotent
+      const cycleDuplicate = (await mockApi(
+        '/subscriptions/SUB-2041/generate-cycle',
+        {
+          method: 'POST',
+          body: JSON.stringify({ cycleKey: '2026-11-17' }),
+        }
+      )) as Subscription;
+      assert.equal(cycleDuplicate.cycles.length, 2);
+      const stockAfterDuplicate = (await mockApi(
+        '/baskets/basket-familiar'
+      )) as Basket;
+      assert.equal(stockAfterDuplicate.stock.available, 11);
+
+      // Simulate billing failure
+      const failed = (await mockApi('/subscriptions/SUB-2041/generate-cycle', {
+        method: 'POST',
+        body: JSON.stringify({
+          cycleKey: '2026-11-24',
+          simulatePaymentFailure: true,
+        }),
+      })) as Subscription;
+      assert.equal(failed.status, 'payment_failed');
+      assert.equal(failed.cycles[0].status, 'payment_failed');
+    });
+  });
+
+  describe('Consumer Account Profile, Saved Addresses & LGPD Requests', () => {
+    it('returns masked CPF, zero stored card data, manages addresses, and logs LGPD deletion requests', async () => {
+      const profile = (await mockApi('/account/profile')) as AccountProfile;
+      assert.equal(profile.maskedCpf, '***.982.247-25');
+      assert.equal(profile.paymentGatewayStatus.storesCardData, false);
+      assert.equal(profile.addresses.length, 1);
+
+      const addedAddr = (await mockApi('/account/addresses', {
+        method: 'POST',
+        body: JSON.stringify({
+          label: 'Escritório',
+          postalCode: '04538-132',
+          street: 'Av. Faria Lima',
+          number: '3000',
+          city: 'São Paulo',
+          state: 'SP',
+        }),
+      })) as { data: SavedAddress[] };
+      assert.equal(addedAddr.data.length, 2);
+
+      const lgpd = (await mockApi('/account/lgpd-deletion-request', {
+        method: 'POST',
+        body: JSON.stringify({ reason: 'Encerrar conta de teste' }),
+      })) as LgpdDeletionRequest;
+      assert.ok(lgpd.protocol.startsWith('LGPD-2026-'));
+      assert.equal(lgpd.status, 'pending_review');
+
+      await assert.rejects(
+        () =>
+          mockApi('/account/lgpd-deletion-request', {
+            method: 'POST',
+            body: JSON.stringify({ reason: 'Duplicada' }),
+          }),
+        /Já existe uma solicitação LGPD em análise/
       );
     });
   });

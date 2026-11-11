@@ -17,6 +17,13 @@ export type AuthResponse = {
   user: User;
 };
 
+export type BasketItem = {
+  productId?: string;
+  name: string;
+  quantity: string;
+  origin: string;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -25,9 +32,91 @@ export type Product = {
   unit: string;
   priceCents: number;
   producer: { id: string; name: string };
-
   stock: { available: number; deliveryDate: string | null };
+  seasonality?: string;
+  basketId?: string;
+  basketItems?: BasketItem[];
+};
 
+export type Basket = {
+  id: string;
+  productId: string;
+  name: string;
+  description: string;
+  priceCents: number;
+  producer: { id: string; name: string };
+  frequencies: ('weekly' | 'monthly')[];
+  cutoffHours: number;
+  stock: { available: number; deliveryDate: string };
+  items: BasketItem[];
+  seasonality: string;
+};
+
+export type SubscriptionCycle = {
+  id: string;
+  cycleKey: string;
+  deliveryDate: string;
+  billingDate: string;
+  amountCents: number;
+  status:
+    | 'scheduled'
+    | 'confirmed'
+    | 'stock_shortage'
+    | 'payment_failed'
+    | 'skipped';
+  paymentStatus: 'approved' | 'pending' | 'failed';
+  orderId: string | null;
+  note?: string;
+  createdAt: string;
+};
+
+export type Subscription = {
+  id: string;
+  basketId: string;
+  basketName: string;
+  producer: { id: string; name: string };
+  frequency: 'weekly' | 'monthly';
+  priceCents: number;
+  status: 'active' | 'paused' | 'cancelled' | 'payment_failed';
+  cutoffHours: number;
+  cutoffAt: string;
+  canModifyCurrentCycle: boolean;
+  nextBillingAt: string;
+  nextDeliveryAt: string;
+  address: Order['address'];
+  deliverySlot: Order['deliverySlot'] & { label?: string };
+  items: BasketItem[];
+  cycles: SubscriptionCycle[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type SavedAddress = Order['address'] & {
+  id: string;
+  label: string;
+  zoneName: string;
+  isDefault?: boolean;
+};
+
+export type LgpdDeletionRequest = {
+  id: string;
+  protocol: string;
+  reason: string;
+  status: 'pending_review' | 'completed';
+  requestedAt: string;
+};
+
+export type AccountProfile = {
+  user: User;
+  maskedCpf: string;
+  paymentGatewayStatus: {
+    provider: string;
+    mode: 'sandbox';
+    storesCardData: false;
+    description: string;
+  };
+  addresses: SavedAddress[];
+  lgpdRequests: LgpdDeletionRequest[];
 };
 
 export type Cart = { data: CartItem[]; totalCents: number; currency: string };
@@ -53,9 +142,7 @@ export type Order = {
     unitPriceCents: number;
   }[];
   payment: { provider: string; status: string };
-
   delivery: { status: string; confirmedAt: string | null };
-
   address: {
     postalCode: string;
     street: string;
@@ -64,9 +151,7 @@ export type Order = {
     city: string;
     state: string;
   };
-
   deliverySlot: { id: string; startsAt: string; endsAt: string };
-
   statusHistory: { toStatus: string; createdAt: string }[];
 };
 
@@ -154,6 +239,15 @@ export function formatDate(value: string | null) {
     : 'Data a confirmar';
 }
 
+export function formatDateTime(value: string | null) {
+  return value
+    ? new Date(value).toLocaleString('pt-BR', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      })
+    : 'Horário a confirmar';
+}
+
 export async function api<T>(
   path: string,
   options: RequestInit = {}
@@ -169,7 +263,7 @@ export async function api<T>(
   const t = token();
   if (t) headers.set('Authorization', `Bearer ${t}`);
   const response = await fetch(`${API_URL}${path}`, { ...options, headers });
-  
+
   if (response.status === 401) {
     clearSession();
     if (typeof window !== 'undefined')
@@ -204,4 +298,3 @@ export const auth = {
       body: JSON.stringify(data),
     }),
 };
-
