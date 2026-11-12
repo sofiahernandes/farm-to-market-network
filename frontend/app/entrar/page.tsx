@@ -7,7 +7,6 @@ import { Header } from '@/components/ui';
 import { auth, saveSession } from '@/lib/api';
 import {
   DEMO_CREDENTIALS,
-  DEMO_OPERATIONS_CREDENTIALS,
   DEMO_PRODUCER_CREDENTIALS,
 } from '@/lib/mock-data';
 
@@ -31,8 +30,6 @@ export default function Entrar() {
         router.push(next);
       } else if (session.user.role === 'producer') {
         router.push('/produtor');
-      } else if (session.user.role === 'operations') {
-        router.push('/admin');
       } else {
         router.push('/catalogo');
       }
@@ -49,8 +46,9 @@ export default function Entrar() {
       <main className="page-main container">
         <section className="auth-card dashboard-card">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <h1>Acesse sua conta AgriTech</h1>
             <p className="sandbox-notice" role="note" style={{ marginTop: 0 }}>
-              Contas de demonstração local (senha: <strong>{DEMO_CREDENTIALS.password}</strong>):
+              Demonstração local (senha {DEMO_CREDENTIALS.password}):
             </p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               <button
@@ -61,7 +59,7 @@ export default function Entrar() {
                 }}
                 className="button button-small button-secondary"
               >
-                Preencher Consumidor ({DEMO_CREDENTIALS.email})
+                Consumidor
               </button>
               <button
                 type="button"
@@ -71,24 +69,10 @@ export default function Entrar() {
                 }}
                 className="button button-small button-secondary"
               >
-                Preencher Produtor ({DEMO_PRODUCER_CREDENTIALS.email})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail(DEMO_OPERATIONS_CREDENTIALS.email);
-                  setPassword(DEMO_OPERATIONS_CREDENTIALS.password);
-                }}
-                className="button button-small button-secondary"
-              >
-                Preencher Operações ({DEMO_OPERATIONS_CREDENTIALS.email})
+                Produtor
               </button>
             </div>
           </div>
-          <h1>Acesse sua conta AgriTech</h1>
-          <p className="lead">
-            Gerencie suas compras locais, sacola ativa ou o painel da sua propriedade rural.
-          </p>
           <form className="checkout-form" onSubmit={submit}>
             <label>
               Email

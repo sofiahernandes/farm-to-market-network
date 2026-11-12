@@ -40,13 +40,7 @@ export default function CriarConta() {
       <Header />
       <main className="page-main container">
         <section className="auth-card dashboard-card">
-          <p className="sandbox-notice" role="note">
-            CPF de teste válido pré-preenchido: <strong>{DEMO_CPF}</strong>
-          </p>
           <h1>Cadastre-se no AgriTech</h1>
-          <p className="lead">
-            Escolha seu perfil para comprar direto da colheita ou comercializar a produção do seu sítio.
-          </p>
           <form className="checkout-form" onSubmit={submit}>
             <label>
               Perfil da conta
