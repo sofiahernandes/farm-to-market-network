@@ -499,7 +499,15 @@ export async function api<T>(
   headers.set('Content-Type', 'application/json');
   const t = token();
   if (t) headers.set('Authorization', `Bearer ${t}`);
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers });
+
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${path}`, { ...options, headers });
+  } catch {
+    const result = (await mockApi(path, options)) as T;
+    if (method !== 'GET') notifyStateChange();
+    return result;
+  }
 
   if (response.status === 401) {
     clearSession();

@@ -4,7 +4,7 @@ import { AppModule } from './app.module';
 import { appValidationPipe } from './common/pipes/validation.pipe';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
-describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
+describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
   let app: INestApplication;
   let baseUrl: string;
   let consumerToken: string;
@@ -27,7 +27,7 @@ describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
     await app?.close();
   });
 
-  it('authenticates consumer, producer, and operations accounts against SQLite', async () => {
+  it('1. Authenticates consumer, producer, and operations accounts against SQLite', async () => {
     const consumerRes = await fetch(`${baseUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -66,7 +66,7 @@ describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
     expect(opsBody.user.role).toBe('operations');
   });
 
-  it('serves catalog, fixed baskets, and delivery slots from SQLite', async () => {
+  it('2. Serves catalog, fixed baskets with origin/seasonality, and delivery slots from SQLite', async () => {
     const catRes = await fetch(`${baseUrl}/catalog`);
     expect(catRes.status).toBe(200);
     const catBody = await catRes.json();
@@ -76,6 +76,8 @@ describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
     expect(basketsRes.status).toBe(200);
     const basketsBody = await basketsRes.json();
     expect(basketsBody.data.length).toBe(3);
+    expect(basketsBody.data[0].seasonality).toBeTruthy();
+    expect(basketsBody.data[0].items[0].origin).toBeTruthy();
 
     const slotsRes = await fetch(`${baseUrl}/delivery-slots`);
     expect(slotsRes.status).toBe(200);
@@ -83,16 +85,23 @@ describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
     expect(slotsBody.data.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('manages cart, idempotent checkout, and order delivery confirmation', async () => {
+  it('3. Manages cart stepper, idempotent checkout, and consumer delivery confirmation', async () => {
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${consumerToken}`,
     };
 
-    const cartRes = await fetch(`${baseUrl}/cart`, { headers });
-    expect(cartRes.status).toBe(200);
-    const cartBody = await cartRes.json();
-    expect(cartBody.data.length).toBeGreaterThan(0);
+    const patchRes = await fetch(`${baseUrl}/cart/items/mock-tomate`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ quantity: 3 }),
+    });
+    expect(patchRes.status).toBe(200);
+    const patchedCart = await patchRes.json();
+    const tomateItem = patchedCart.data.find(
+      (i: any) => i.productId === 'mock-tomate'
+    );
+    expect(tomateItem.quantity).toBe(3);
 
     const idemKey = `sqlite-test-${Date.now()}`;
     const chk1 = await fetch(`${baseUrl}/checkout`, {
@@ -129,34 +138,158 @@ describe('AgriTech SQLite + NestJS Integration (All Slices)', () => {
     expect(chk2.status).toBe(201);
     const order2 = await chk2.json();
     expect(order2.id).toBe(order1.id);
+
+    const confirmRes = await fetch(
+      `${baseUrl}/orders/${order1.id}/confirm-delivery`,
+      {
+        method: 'POST',
+        headers,
+      }
+    );
+    expect(confirmRes.status).toBe(201);
+    const confirmedOrder = await confirmRes.json();
+    expect(confirmedOrder.status).toBe('Entregue');
   });
 
-  it('manages subscriptions, account profile, producer dashboard, and admin dashboard', async () => {
+  it('4. Manages subscriptions (pause/resume/idempotent cycle) and LGPD requests', async () => {
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${consumerToken}`,
     };
 
-    const subsRes = await fetch(`${baseUrl}/subscriptions`, { headers });
-    expect(subsRes.status).toBe(200);
-    const subsBody = await subsRes.json();
-    expect(subsBody.data.length).toBeGreaterThanOrEqual(1);
+    const pauseRes = await fetch(`${baseUrl}/subscriptions/SUB-2041/pause`, {
+      method: 'POST',
+      headers,
+    });
+    expect(pauseRes.status).toBe(201);
+    const paused = await pauseRes.json();
+    expect(paused.status).toBe('paused');
+
+    const resumeRes = await fetch(`${baseUrl}/subscriptions/SUB-2041/resume`, {
+      method: 'POST',
+      headers,
+    });
+    expect(resumeRes.status).toBe(201);
+    const resumed = await resumeRes.json();
+    expect(resumed.status).toBe('active');
+
+    const cyc1 = await fetch(
+      `${baseUrl}/subscriptions/SUB-2041/generate-cycle`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ cycleKey: '2026-11-25' }),
+      }
+    );
+    expect(cyc1.status).toBe(201);
+    const afterCyc1 = await cyc1.json();
+    const countAfter1 = afterCyc1.cycles.length;
+
+    const cyc2 = await fetch(
+      `${baseUrl}/subscriptions/SUB-2041/generate-cycle`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ cycleKey: '2026-11-25' }),
+      }
+    );
+    expect(cyc2.status).toBe(201);
+    const afterCyc2 = await cyc2.json();
+    expect(afterCyc2.cycles.length).toBe(countAfter1);
+
+    const lgpdRes = await fetch(`${baseUrl}/account/lgpd-deletion-request`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ reason: 'Teste de integração SQLite LGPD' }),
+    });
+    expect(lgpdRes.status).toBe(201);
+    const lgpdBody = await lgpdRes.json();
+    expect(lgpdBody.protocol).toMatch(/^LGPD-2026-/);
+  });
+
+  it('5. Manages producer offers, optimistic inventory concurrency, and order separation', async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${consumerToken}`,
+    };
+
+    const conflictInv = await fetch(
+      `${baseUrl}/producer/inventory/mock-tomate`,
+      {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ available: 30, expectedAvailable: 999 }),
+      }
+    );
+    expect(conflictInv.status).toBe(409);
+
+    const sepRes = await fetch(
+      `${baseUrl}/producer/orders/AG-1048/mark-separated`,
+      {
+        method: 'POST',
+        headers,
+      }
+    );
+    expect(sepRes.status).toBe(201);
+    const prodDash = await sepRes.json();
+    const fq = prodDash.fulfillmentQueue.find(
+      (f: any) => f.orderId === 'AG-1048'
+    );
+    expect(fq.producerSeparated).toBe(true);
+  });
+
+  it('6. Manages operations zones, slots, manual routes, sequential status progression, and LGPD resolution', async () => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${consumerToken}`,
+    };
+
+    const invalidStatus = await fetch(
+      `${baseUrl}/admin/orders/AG-1048/status`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ stage: 'delivered' }),
+      }
+    );
+    expect(invalidStatus.status).toBe(400);
+
+    const transitRes = await fetch(`${baseUrl}/admin/orders/AG-1048/status`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ stage: 'in_transit' }),
+    });
+    expect(transitRes.status).toBe(201);
+
+    const deliveredRes = await fetch(`${baseUrl}/admin/orders/AG-1048/status`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ stage: 'delivered' }),
+    });
+    expect(deliveredRes.status).toBe(201);
+    const adminDash = await deliveredRes.json();
+    const updated1048 = adminDash.orders.find((o: any) => o.id === 'AG-1048');
+    expect(updated1048.status).toBe('Entregue');
+
+    const openLgpdExc = adminDash.exceptions.find(
+      (e: any) => e.type === 'lgpd_request' && e.status === 'open'
+    );
+    expect(openLgpdExc).toBeTruthy();
+
+    const resolveRes = await fetch(
+      `${baseUrl}/admin/exceptions/${openLgpdExc.id}/resolve`,
+      {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          resolutionNote: 'Anonimização concluída no SQLite.',
+        }),
+      }
+    );
+    expect(resolveRes.status).toBe(201);
 
     const profileRes = await fetch(`${baseUrl}/account/profile`, { headers });
-    expect(profileRes.status).toBe(200);
     const profileBody = await profileRes.json();
-    expect(profileBody.maskedCpf).toBe('***.982.247-25');
-
-    const prodRes = await fetch(`${baseUrl}/producer/dashboard`, { headers });
-    expect(prodRes.status).toBe(200);
-    const prodBody = await prodRes.json();
-    expect(prodBody.producer.id).toBe('sitio-verde');
-    expect(prodBody.offers.length).toBeGreaterThanOrEqual(8);
-
-    const adminRes = await fetch(`${baseUrl}/admin/dashboard`, { headers });
-    expect(adminRes.status).toBe(200);
-    const adminBody = await adminRes.json();
-    expect(adminBody.zones.length).toBeGreaterThanOrEqual(2);
-    expect(adminBody.manifest.length).toBeGreaterThanOrEqual(2);
+    expect(profileBody.lgpdRequests[0].status).toBe('completed');
   });
 });

@@ -13,10 +13,10 @@ export class CorrelationIdInterceptor implements NestInterceptor {
     const response = context.switchToHttp().getResponse();
     const request = context.switchToHttp().getRequest();
     const id = request.headers['x-correlation-id'] || randomUUID();
-    
+
     response.setHeader('x-correlation-id', id);
     request.correlationId = id;
-    
+
     return next.handle();
   }
 }

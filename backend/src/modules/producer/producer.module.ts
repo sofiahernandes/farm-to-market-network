@@ -330,7 +330,7 @@ class ProducerService {
     }
 
     const newId = `prod-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const deliveryDate = new Date('2099-01-01T00:00:00.000Z');
+    const deliveryDate = new Date('2026-11-18T11:00:00.000Z');
     const lowStockThreshold = Number(body?.lowStockThreshold ?? 5);
 
     const created = await this.db.product.create({
@@ -514,7 +514,7 @@ class ProducerService {
       await this.db.inventory.create({
         data: {
           productId,
-          deliveryDate: new Date('2099-01-01T00:00:00.000Z'),
+          deliveryDate: new Date('2026-11-18T11:00:00.000Z'),
           available: nextAvailable,
           reserved: 0,
           lowStockThreshold:

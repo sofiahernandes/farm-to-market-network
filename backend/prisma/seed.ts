@@ -236,33 +236,33 @@ async function main() {
 
   // 5. Products & Weekly Inventory
   const familiarItems = [
-    { name: 'Alface crespa hidropônica', quantity: '2 maços', category: 'Hortaliças' },
-    { name: 'Couve manteiga orgânica', quantity: '1 maço', category: 'Hortaliças' },
-    { name: 'Tomate italiano maduro', quantity: '1 kg', category: 'Hortaliças' },
-    { name: 'Cenoura orgânica com rama', quantity: '700 g', category: 'Raízes' },
-    { name: 'Batata-doce rosada', quantity: '800 g', category: 'Raízes' },
-    { name: 'Banana prata climatizada', quantity: '1 dúzia', category: 'Frutas' },
-    { name: 'Cheiro-verde (salsinha e cebolinha)', quantity: '1 maço', category: 'Temperos' },
-    { name: 'Ovos caipiras de galinhas livres', quantity: '1 dúzia', category: 'Granja' },
+    { name: 'Alface crespa hidropônica', quantity: '2 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Couve manteiga orgânica', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Tomate italiano maduro', quantity: '1 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Cenoura orgânica com rama', quantity: '700 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
+    { name: 'Batata-doce rosada', quantity: '800 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
+    { name: 'Banana prata climatizada', quantity: '1 dúzia', origin: 'Chácara Sol · Piedade/SP', category: 'Frutas' },
+    { name: 'Cheiro-verde (salsinha e cebolinha)', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Temperos' },
+    { name: 'Ovos caipiras de galinhas livres', quantity: '1 dúzia', origin: 'Granja Livre · São Roque/SP', category: 'Granja' },
   ];
 
   const individualItems = [
-    { name: 'Alface americana orgânica', quantity: '1 pé', category: 'Hortaliças' },
-    { name: 'Rúcula selvagem', quantity: '1 maço', category: 'Hortaliças' },
-    { name: 'Tomate cereja doce', quantity: '400 g', category: 'Hortaliças' },
-    { name: 'Cenoura baby orgânica', quantity: '500 g', category: 'Raízes' },
-    { name: 'Morango fresco de estufa', quantity: '1 bandeja (300 g)', category: 'Frutas' },
+    { name: 'Alface americana orgânica', quantity: '1 pé', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Rúcula selvagem', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Tomate cereja doce', quantity: '400 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Cenoura baby orgânica', quantity: '500 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
+    { name: 'Morango fresco de estufa', quantity: '1 bandeja (300 g)', origin: 'Vale Fértil · Atibaia/SP', category: 'Frutas' },
   ];
 
   const agroItems = [
-    { name: 'Mix de folhas (alface, rúcula e agrião)', quantity: '3 maços', category: 'Hortaliças' },
-    { name: 'Brócolis ninja', quantity: '2 cabeças', category: 'Hortaliças' },
-    { name: 'Tomate italiano de rama', quantity: '1,5 kg', category: 'Hortaliças' },
-    { name: 'Mandioca descascada a vácuo', quantity: '1 kg', category: 'Raízes' },
-    { name: 'Beterraba e cenoura orgânicas', quantity: '1,2 kg', category: 'Raízes' },
-    { name: 'Morango e frutas cítricas da época', quantity: '1,2 kg', category: 'Frutas' },
-    { name: 'Ovos caipiras vermelhos', quantity: '1 dúzia', category: 'Granja' },
-    { name: 'Ervas frescas (manjericão, alecrim e hortelã)', quantity: '2 maços', category: 'Temperos' },
+    { name: 'Mix de folhas (alface, rúcula e agrião)', quantity: '3 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Brócolis ninja', quantity: '2 cabeças', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Tomate italiano de rama', quantity: '1,5 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
+    { name: 'Mandioca descascada a vácuo', quantity: '1 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
+    { name: 'Beterraba e cenoura orgânicas', quantity: '1,2 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
+    { name: 'Morango e frutas cítricas da época', quantity: '1,2 kg', origin: 'Vale Fértil · Atibaia/SP', category: 'Frutas' },
+    { name: 'Ovos caipiras vermelhos', quantity: '1 dúzia', origin: 'Granja Livre · São Roque/SP', category: 'Granja' },
+    { name: 'Ervas frescas (manjericão, alecrim e hortelã)', quantity: '2 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Temperos' },
   ];
 
   const productSeeds = [
@@ -380,7 +380,7 @@ async function main() {
     },
   ];
 
-  const deliveryRefDate = new Date('2099-01-01T00:00:00.000Z');
+  const deliveryRefDate = new Date('2026-11-18T11:00:00.000Z');
   for (const p of productSeeds) {
     await db.product.upsert({
       where: { id: p.id },

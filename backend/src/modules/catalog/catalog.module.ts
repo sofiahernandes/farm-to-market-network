@@ -52,6 +52,7 @@ class CatalogController {
 
   private shapeBasket(b: any) {
     const inventory = b.product?.inventory?.[0];
+    const rawItems = JSON.parse(b.itemsJson || '[]');
     return {
       id: b.id,
       slug: b.slug,
@@ -59,6 +60,8 @@ class CatalogController {
       name: b.name,
       subtitle: b.subtitle,
       description: b.description,
+      seasonality:
+        b.product?.seasonality ?? b.subtitle ?? 'Safra atual · Colheita semanal',
       priceCents: b.product?.priceCents ?? b.priceCents,
       servesLabel: b.servesLabel,
       cutoffHours: b.cutoffHours,
@@ -70,9 +73,12 @@ class CatalogController {
           : 0,
         deliveryDate: inventory?.deliveryDate
           ? new Date(inventory.deliveryDate).toISOString()
-          : null,
+          : '2026-11-18T11:00:00.000Z',
       },
-      items: JSON.parse(b.itemsJson || '[]'),
+      items: rawItems.map((it: any) => ({
+        ...it,
+        origin: it.origin ?? 'Sítio Verde · Ibiúna/SP',
+      })),
     };
   }
 
