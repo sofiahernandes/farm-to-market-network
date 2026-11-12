@@ -1,8 +1,8 @@
 import { ValidationPipe } from '@nestjs/common';
 
 export const appValidationPipe = new ValidationPipe({
-  whitelist: true,
+  whitelist: false,
   transform: true,
-  forbidNonWhitelisted: true,
+  forbidNonWhitelisted: false,
   errorHttpStatusCode: 422,
 });
