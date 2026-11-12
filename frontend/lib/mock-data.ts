@@ -1043,7 +1043,6 @@ function buildProducerDashboard(): ProducerDashboardData {
       paymentAccountConnected: pState.paymentAccountConnected,
       splitFeatureFlagEnabled: pState.splitFeatureFlagEnabled,
       platformFeePercent: pState.platformFeePercent,
-      pendingTasksCount: pendingReasons.length,
       pendingReasons,
       certifications: pState.certifications,
     },

@@ -89,10 +89,6 @@ export default function Checkout() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/app/carrinho">Sacola</Link>
-          <span>/</span>Checkout
-        </div>
         <h1>Endereço e janela de entrega</h1>
         <p className="lead">
           Informe o local onde você deseja receber seus alimentos frescos.

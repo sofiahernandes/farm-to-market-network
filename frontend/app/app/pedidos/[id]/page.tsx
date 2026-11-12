@@ -45,10 +45,6 @@ export default function PedidoDetalhe() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/app/pedidos">Pedidos</Link>
-          <span>/</span>Detalhe
-        </div>
         {error && <p className="danger-text">{error}</p>}
         {!order && !error && <p className="loading-indicator">Carregando pedido…</p>}
         {order && (

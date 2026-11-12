@@ -45,12 +45,6 @@ export default function AdminDashboardPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <span>Operações</span>
-        </div>
-
         <SectionHeading
           eyebrow="Central de Operações e Logística"
           title="Coordenação de zonas, janelas, rotas e entregas"

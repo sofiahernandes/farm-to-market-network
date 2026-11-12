@@ -2,12 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Header, StatusBadge } from '@/components/ui';
+import { Footer, Header, StatusBadge } from '@/components/ui';
 import {
   CheckIcon,
   PinIcon,
-  ShieldCheckIcon,
-  UserIcon,
+  PlusIcon,
 } from '@/components/icons';
 import {
   api,
@@ -18,21 +17,25 @@ import {
   type SavedAddress,
 } from '@/lib/api';
 
+const EMPTY_ADDRESS_FORM = {
+  label: '',
+  postalCode: '',
+  street: '',
+  number: '',
+  complement: '',
+  city: 'São Paulo',
+  state: 'SP',
+};
+
 export default function ContaPage() {
   const [profile, setProfile] = useState<AccountProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  const [addrForm, setAddrForm] = useState({
-    label: 'Trabalho',
-    postalCode: '04538-132',
-    street: 'Avenida Brigadeiro Faria Lima',
-    number: '3477',
-    complement: '10º andar',
-    city: 'São Paulo',
-    state: 'SP',
-  });
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addrForm, setAddrForm] = useState(EMPTY_ADDRESS_FORM);
+  const [showLgpdForm, setShowLgpdForm] = useState(false);
   const [lgpdReason, setLgpdReason] = useState('');
 
   useEffect(() => {
@@ -53,7 +56,9 @@ export default function ContaPage() {
         body: JSON.stringify(addrForm),
       });
       if (profile) setProfile({ ...profile, addresses: res.data });
-      setMessage('Endereço cadastrado e associado à zona de atendimento.');
+      setAddrForm(EMPTY_ADDRESS_FORM);
+      setShowAddressForm(false);
+      setMessage('Endereço salvo com sucesso.');
     } catch (e) {
       setError((e as Error).message);
     }
@@ -82,7 +87,7 @@ export default function ContaPage() {
         '/account/lgpd-deletion-request',
         {
           method: 'POST',
-          body: JSON.stringify({ reason: lgpdReason }),
+          body: JSON.stringify({ reason: lgpdReason || 'Solicitação do titular' }),
         }
       );
       if (profile) {
@@ -91,9 +96,9 @@ export default function ContaPage() {
           lgpdRequests: [created, ...profile.lgpdRequests],
         });
       }
-      setMessage(
-        `Solicitação LGPD registrada com protocolo ${created.protocol}.`
-      );
+      setLgpdReason('');
+      setShowLgpdForm(false);
+      setMessage(`Solicitação registrada (protocolo ${created.protocol}).`);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -103,14 +108,9 @@ export default function ContaPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/app">Área do consumidor</Link>
-          <span>/</span>Minha conta e privacidade
-        </div>
-
-        <h1>Minha conta e endereços</h1>
+        <h1>Minha conta</h1>
         <p className="lead">
-          Gerencie seus endereços por zona de atendimento, transparência de pagamentos e direitos de titular de dados.
+          Seus dados de acesso e endereços salvos para entrega.
         </p>
 
         {message && (
@@ -129,29 +129,27 @@ export default function ContaPage() {
         {loading && <p className="loading-indicator">Carregando dados da conta…</p>}
 
         {profile && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
             <section className="dashboard-card">
               <div className="card-heading">
-                <div>
-                  <h2>Identificação e proteção de dados</h2>
-                  <p className="muted">
-                    Por privacidade padrão, seu CPF nunca é exibido por completo após o cadastro e é armazenado como hash.
-                  </p>
+                <h2>Dados pessoais</h2>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <Link href="/app/pedidos" className="button button-small button-secondary">
+                    <span>Meus pedidos</span>
+                  </Link>
+                  <Link href="/app/assinaturas" className="button button-small button-secondary">
+                    <span>Minhas assinaturas</span>
+                  </Link>
                 </div>
-                <StatusBadge tone="success">Papel: {profile.user.role}</StatusBadge>
               </div>
               <div className="delivery-info">
                 <div>
-                  <span>Email da conta</span>
+                  <span>E-mail</span>
                   <strong>{profile.user.email}</strong>
                 </div>
                 <div>
-                  <span>CPF mascarado</span>
+                  <span>CPF</span>
                   <strong>{profile.maskedCpf}</strong>
-                </div>
-                <div>
-                  <span>Armazenamento de cartão</span>
-                  <strong>Desativado (0 cartões salvos)</strong>
                 </div>
               </div>
             </section>
@@ -159,129 +157,163 @@ export default function ContaPage() {
             <section className="dashboard-card">
               <div className="card-heading">
                 <div>
-                  <h2>Meio de pagamento e transparência sandbox</h2>
-                  <p className="muted">{profile.paymentGatewayStatus.description}</p>
+                  <h2>Endereços de entrega</h2>
+                  <p className="muted">
+                    Endereços utilizados para calcular a zona e janela de entrega.
+                  </p>
                 </div>
-                <StatusBadge tone="info">Modo Sandbox</StatusBadge>
+                <button
+                  type="button"
+                  className="button button-small button-secondary"
+                  onClick={() => setShowAddressForm((prev) => !prev)}
+                >
+                  {!showAddressForm && <PlusIcon size={14} />}
+                  <span>{showAddressForm ? 'Cancelar' : 'Novo endereço'}</span>
+                </button>
               </div>
-              <div className="sandbox-notice" style={{ marginTop: '12px' }}>
-                <ShieldCheckIcon size={16} />
-                <span>
-                  Provedor: <strong>{profile.paymentGatewayStatus.provider}</strong>
-                </span>
-              </div>
-            </section>
 
-            <section className="dashboard-card">
-              <h2>Endereços salvos e zona de entrega</h2>
-              <p className="muted" style={{ marginBottom: '16px' }}>
-                Cada CEP é associado a uma zona de serviço para validar disponibilidade e janelas de entrega.
-              </p>
-
-              <div className="status-history-list" style={{ marginBottom: '20px' }}>
-                {profile.addresses.map((addr) => (
-                  <div
-                    className="order-row"
-                    key={addr.id}
-                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                      <PinIcon size={18} />
-                      <div>
-                        <strong>
-                          {addr.label} · {addr.street}, {addr.number}
-                          {addr.complement ? ` (${addr.complement})` : ''}
-                        </strong>
-                        <span style={{ display: 'block', fontSize: '13px' }}>
-                          CEP {addr.postalCode} · {addr.city}/{addr.state} ·{' '}
-                          <strong>{addr.zoneName}</strong>
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeAddress(addr.id)}
-                      className="text-button danger-text"
+              {profile.addresses.length === 0 ? (
+                <p className="muted" style={{ marginTop: '8px' }}>
+                  Nenhum endereço salvo ainda.
+                </p>
+              ) : (
+                <div className="status-history-list" style={{ marginTop: '12px' }}>
+                  {profile.addresses.map((addr) => (
+                    <div
+                      className="order-row"
+                      key={addr.id}
+                      style={{ justifyContent: 'space-between', alignItems: 'center' }}
                     >
-                      Remover
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                        <PinIcon size={18} />
+                        <div>
+                          <strong>
+                            {addr.label} · {addr.street}, {addr.number}
+                            {addr.complement ? ` (${addr.complement})` : ''}
+                          </strong>
+                          <span style={{ display: 'block', fontSize: '13px' }}>
+                            CEP {addr.postalCode} · {addr.city}/{addr.state} ·{' '}
+                            <strong>{addr.zoneName}</strong>
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeAddress(addr.id)}
+                        className="text-button danger-text"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {showAddressForm && (
+                <form
+                  className="checkout-form"
+                  onSubmit={addAddress}
+                  style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--line)' }}
+                >
+                  <div className="form-group-grid">
+                    <label>
+                      Identificação
+                      <input
+                        required
+                        placeholder="Ex: Casa, Trabalho"
+                        value={addrForm.label}
+                        onChange={(e) => setAddrForm({ ...addrForm, label: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      CEP
+                      <input
+                        required
+                        placeholder="00000-000"
+                        value={addrForm.postalCode}
+                        onChange={(e) => setAddrForm({ ...addrForm, postalCode: e.target.value })}
+                      />
+                    </label>
+                  </div>
+                  <div className="form-group-street">
+                    <label>
+                      Rua / Logradouro
+                      <input
+                        required
+                        placeholder="Nome da rua ou avenida"
+                        value={addrForm.street}
+                        onChange={(e) => setAddrForm({ ...addrForm, street: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      Número
+                      <input
+                        required
+                        placeholder="Nº"
+                        value={addrForm.number}
+                        onChange={(e) => setAddrForm({ ...addrForm, number: e.target.value })}
+                      />
+                    </label>
+                  </div>
+                  <div className="form-group-grid">
+                    <label>
+                      Complemento (opcional)
+                      <input
+                        placeholder="Apto, bloco, referência"
+                        value={addrForm.complement}
+                        onChange={(e) => setAddrForm({ ...addrForm, complement: e.target.value })}
+                      />
+                    </label>
+                    <label>
+                      Cidade / UF
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '8px' }}>
+                        <input
+                          required
+                          placeholder="Cidade"
+                          value={addrForm.city}
+                          onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })}
+                        />
+                        <input
+                          required
+                          maxLength={2}
+                          placeholder="UF"
+                          value={addrForm.state}
+                          onChange={(e) => setAddrForm({ ...addrForm, state: e.target.value.toUpperCase() })}
+                        />
+                      </div>
+                    </label>
+                  </div>
+                  <div>
+                    <button type="submit" className="button button-primary">
+                      <CheckIcon size={15} />
+                      <span>Salvar endereço</span>
                     </button>
                   </div>
-                ))}
-              </div>
-
-              <form className="checkout-form" onSubmit={addAddress}>
-                <h3 style={{ fontSize: '16px' }}>Adicionar novo endereço</h3>
-                <div className="form-group-grid">
-                  <label>
-                    Identificação (ex: Casa, Trabalho)
-                    <input
-                      required
-                      value={addrForm.label}
-                      onChange={(e) => setAddrForm({ ...addrForm, label: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    CEP
-                    <input
-                      required
-                      value={addrForm.postalCode}
-                      onChange={(e) => setAddrForm({ ...addrForm, postalCode: e.target.value })}
-                    />
-                  </label>
-                </div>
-                <div className="form-group-street">
-                  <label>
-                    Rua / Logradouro
-                    <input
-                      required
-                      value={addrForm.street}
-                      onChange={(e) => setAddrForm({ ...addrForm, street: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Número
-                    <input
-                      required
-                      value={addrForm.number}
-                      onChange={(e) => setAddrForm({ ...addrForm, number: e.target.value })}
-                    />
-                  </label>
-                </div>
-                <div className="form-group-grid">
-                  <label>
-                    Cidade
-                    <input
-                      required
-                      value={addrForm.city}
-                      onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Estado (UF)
-                    <input
-                      required
-                      value={addrForm.state}
-                      onChange={(e) => setAddrForm({ ...addrForm, state: e.target.value })}
-                    />
-                  </label>
-                </div>
-                <div>
-                  <button type="submit" className="button button-secondary">
-                    <CheckIcon size={15} />
-                    <span>Salvar endereço na conta</span>
-                  </button>
-                </div>
-              </form>
+                </form>
+              )}
             </section>
 
             <section className="dashboard-card">
-              <h2>Privacidade e solicitação de exclusão de dados</h2>
-              <p className="muted" style={{ marginBottom: '16px' }}>
-                Você pode solicitar a exclusão e anonimização dos seus dados pessoais a qualquer momento. A solicitação gera um protocolo rastreável na trilha de auditoria.
-              </p>
+              <div className="card-heading" style={{ marginBottom: profile.lgpdRequests.length > 0 || showLgpdForm ? '12px' : 0 }}>
+                <div>
+                  <h2>Privacidade da conta</h2>
+                  <p className="muted">
+                    Solicitação de encerramento e exclusão de dados pessoais (LGPD).
+                  </p>
+                </div>
+                {!showLgpdForm && (
+                  <button
+                    type="button"
+                    className="text-button danger-text"
+                    onClick={() => setShowLgpdForm(true)}
+                  >
+                    Solicitar exclusão de dados
+                  </button>
+                )}
+              </div>
 
               {profile.lgpdRequests.length > 0 && (
-                <div className="status-history-list" style={{ marginBottom: '16px' }}>
+                <div className="status-history-list">
                   {profile.lgpdRequests.map((req) => (
                     <div
                       className="order-row"
@@ -291,35 +323,44 @@ export default function ContaPage() {
                       <div>
                         <strong>Protocolo {req.protocol}</strong>
                         <span style={{ display: 'block', fontSize: '13px' }}>
-                          {req.reason} · Solicitado em {formatDateTime(req.requestedAt)}
+                          Solicitado em {formatDateTime(req.requestedAt)}
                         </span>
                       </div>
-                      <StatusBadge tone="warning">Em análise operacional</StatusBadge>
+                      <StatusBadge tone="warning">Em análise</StatusBadge>
                     </div>
                   ))}
                 </div>
               )}
 
-              <form className="checkout-form" onSubmit={requestLgpdDeletion}>
-                <label>
-                  Observação opcional para a solicitação LGPD
-                  <input
-                    value={lgpdReason}
-                    onChange={(e) => setLgpdReason(e.target.value)}
-                    placeholder="Ex: Encerramento de uso no município piloto"
-                  />
-                </label>
-                <div>
-                  <button type="submit" className="button button-secondary danger-text">
-                    <UserIcon size={15} />
-                    <span>Solicitar exclusão dos meus dados</span>
-                  </button>
-                </div>
-              </form>
+              {showLgpdForm && (
+                <form className="checkout-form" onSubmit={requestLgpdDeletion} style={{ marginTop: '12px' }}>
+                  <label>
+                    Motivo ou observação (opcional)
+                    <input
+                      value={lgpdReason}
+                      onChange={(e) => setLgpdReason(e.target.value)}
+                      placeholder="Ex: Encerramento de conta"
+                    />
+                  </label>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button type="submit" className="button button-small button-secondary danger-text">
+                      <span>Confirmar solicitação</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="text-button"
+                      onClick={() => setShowLgpdForm(false)}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              )}
             </section>
           </div>
         )}
       </main>
+      <Footer />
     </>
   );
 }

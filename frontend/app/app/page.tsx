@@ -46,10 +46,10 @@ export default function AppHome() {
           </div>
           <div className="hero-actions">
             <Link href="/catalogo" className="button button-primary">
-              Explorar ofertas
+              Catálogo
             </Link>
             <Link href="/cestas" className="button button-secondary">
-              Cestas fixas
+              Cestas 
             </Link>
           </div>
         </div>

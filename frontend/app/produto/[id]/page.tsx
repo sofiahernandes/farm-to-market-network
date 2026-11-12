@@ -75,11 +75,6 @@ export default function ProductDetail() {
         )}
         {product && (
           <>
-            <div className="breadcrumb">
-              <Link href="/catalogo">Catálogo</Link>
-              <span>/</span>
-              {product.name}
-            </div>
             <div className="detail-grid">
               <div className="detail-art">
                 <div className="detail-art-inner">

@@ -28,20 +28,22 @@ export default function Pedidos() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/app">Área do consumidor</Link>
-          <span>/</span>Pedidos
-        </div>
         <h1>Seus pedidos e entregas</h1>
-        <p className="lead">Acompanhe a confirmação e o envio dos pedidos realizados diretamente aos produtores.</p>
+        <p className="lead">
+          Acompanhe a confirmação e o envio dos pedidos realizados diretamente
+          aos produtores.
+        </p>
         {loading && <p className="loading-indicator">Carregando pedidos…</p>}
         {error && <p className="danger-text">{error}</p>}
         {!loading && !error && !orders.length && (
           <section className="dashboard-card empty-card">
             <h2>Você ainda não tem pedidos realizados.</h2>
-            <p className="muted">Descubra os produtos da safra semanal e monte a sua primeira sacola.</p>
+            <p className="muted">
+              Descubra os produtos da safra semanal e monte a sua primeira
+              sacola.
+            </p>
             <Link href="/catalogo" className="button button-primary">
-              Explorar ofertas
+              Catálogo
             </Link>
           </section>
         )}

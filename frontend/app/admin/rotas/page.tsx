@@ -85,14 +85,6 @@ export default function AdminRotasPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <Link href="/admin">Operações</Link>
-          <span>/</span>
-          <span>Rotas manuais</span>
-        </div>
-
         <SectionHeading
           eyebrow="Planejamento Logístico por Zona"
           title="Agrupamento manual de rotas e mapa de entregas"

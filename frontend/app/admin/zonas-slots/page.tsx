@@ -130,14 +130,6 @@ export default function AdminZonasSlotsPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <Link href="/admin">Operações</Link>
-          <span>/</span>
-          <span>Zonas e janelas</span>
-        </div>
-
         <SectionHeading
           eyebrow="Cobertura Geográfica e Capacidade"
           title="Zonas de atendimento e janelas de entrega"

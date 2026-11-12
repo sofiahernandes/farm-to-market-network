@@ -96,16 +96,8 @@ export default function ProdutorNovaOfertaPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/produtor">Painel do produtor</Link>
-          <span>/</span>
-          <Link href="/produtor/catalogo">Produtos e cestas</Link>
-          <span>/</span>Nova oferta
-        </div>
-
         <ProducerSubnav
           active="novo"
-          pendingTasksCount={dashboard?.producer.pendingTasksCount ?? 0}
           onboardingApproved={
             dashboard?.producer.onboardingStatus === 'approved'
           }

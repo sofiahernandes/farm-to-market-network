@@ -35,14 +35,8 @@ export default function ProdutorFinanceiroPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/produtor">Painel do produtor</Link>
-          <span>/</span>Financeiro e repasses
-        </div>
-
         <ProducerSubnav
           active="financeiro"
-          pendingTasksCount={data?.producer.pendingTasksCount ?? 0}
           onboardingApproved={data?.producer.onboardingStatus === 'approved'}
           paymentConnected={data?.producer.paymentAccountConnected ?? true}
         />

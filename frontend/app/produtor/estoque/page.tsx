@@ -70,14 +70,8 @@ export default function ProdutorEstoquePage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/produtor">Painel do produtor</Link>
-          <span>/</span>Estoque semanal
-        </div>
-
         <ProducerSubnav
           active="estoque"
-          pendingTasksCount={data?.producer.pendingTasksCount ?? 0}
           onboardingApproved={data?.producer.onboardingStatus === 'approved'}
           paymentConnected={data?.producer.paymentAccountConnected ?? true}
         />

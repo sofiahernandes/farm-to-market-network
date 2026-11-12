@@ -225,7 +225,6 @@ class ProducerService {
         paymentAccountConnected: producer.paymentAccountConnected,
         splitFeatureFlagEnabled: producer.splitFeatureFlagEnabled,
         platformFeePercent: producer.platformFeePercent,
-        pendingTasksCount: pendingReasons.length,
         pendingReasons,
         certifications: producer.certifications.map((c) => ({
           id: c.id,

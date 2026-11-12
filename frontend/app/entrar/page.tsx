@@ -47,10 +47,6 @@ export default function Entrar() {
     <>
       <Header />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>Entrar
-        </div>
         <section className="auth-card dashboard-card">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <p className="sandbox-notice" role="note" style={{ marginTop: 0 }}>

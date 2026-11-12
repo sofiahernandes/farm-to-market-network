@@ -39,10 +39,6 @@ export default function CriarConta() {
     <>
       <Header />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>Criar conta
-        </div>
         <section className="auth-card dashboard-card">
           <p className="sandbox-notice" role="note">
             CPF de teste válido pré-preenchido: <strong>{DEMO_CPF}</strong>

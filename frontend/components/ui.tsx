@@ -34,7 +34,8 @@ export function Logo() {
   );
 }
 
-export function Header({ app = false }: { app?: boolean }) {
+export function Header(_props: { app?: boolean } = {}) {
+  void _props;
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [cartCount, setCartCount] = useState<number | null>(null);
@@ -73,21 +74,31 @@ export function Header({ app = false }: { app?: boolean }) {
       <div className="container nav-wrap">
         <Logo />
         <nav className="main-nav" aria-label="Navegação principal">
-          {app || user ? (
+          {user ? (
             <>
-              <Link href="/catalogo">Explorar ofertas</Link>
-              <Link href="/cestas">Cestas fixas</Link>
-              <Link href="/app/assinaturas">Assinaturas</Link>
-              <Link href="/app/pedidos">Meus pedidos</Link>
-              <Link href="/produtor">Produtor</Link>
-              <Link href="/admin">Operações</Link>
+              <Link href="/catalogo" className="font-semibold!">
+                Catálogo
+              </Link>
+              <Link href="/cestas" className="font-semibold!">
+                Cestas
+              </Link>
+              {user.role === 'consumer' && (
+                <>
+                  <Link href="/app/assinaturas">Assinaturas</Link>
+                  <Link href="/app/pedidos">Meus pedidos</Link>
+                </>
+              )}
+              {user.role === 'producer' && (
+                <Link href="/produtor">Produtor</Link>
+              )}
+              {user.role === 'operations' && (
+                <Link href="/admin">Operações</Link>
+              )}
             </>
           ) : (
             <>
               <Link href="/catalogo">Ofertas da semana</Link>
-              <Link href="/cestas">Cestas fixas</Link>
-              <Link href="/produtor">Para produtores</Link>
-              <Link href="/admin">Operações</Link>
+              <Link href="/cestas">Cestas</Link>
               <Link href="/#como-funciona">Como funciona</Link>
             </>
           )}
@@ -96,14 +107,21 @@ export function Header({ app = false }: { app?: boolean }) {
           <Link className="cart-link" href="/app/carrinho">
             <BasketIcon size={18} />
             <span>
-              Sacola{cartCount !== null && cartCount > 0 ? ` (${cartCount})` : ''}
+              Sacola
+              {cartCount !== null && cartCount > 0 ? ` (${cartCount})` : ''}
             </span>
           </Link>
           {user ? (
             <>
               <Link
                 className="button button-small button-secondary hide-mobile"
-                href="/app/conta"
+                href={
+                  user.role === 'producer'
+                    ? '/produtor'
+                    : user.role === 'operations'
+                    ? '/admin'
+                    : '/app/conta'
+                }
                 title={user.email}
               >
                 <UserIcon size={15} />
@@ -146,13 +164,14 @@ export function Footer() {
         <div className="footer-brand-col">
           <Logo />
           <p className="footer-copy">
-            Alimentos frescos de pequenos produtores rurais, direto do campo para a sua mesa com procedência transparente.
+            Alimentos frescos de pequenos produtores rurais, direto do campo
+            para a sua mesa com procedência transparente.
           </p>
         </div>
         <div>
           <h3>Navegação</h3>
-          <Link href="/catalogo">Explorar ofertas</Link>
-          <Link href="/cestas">Cestas fixas e assinatura</Link>
+          <Link href="/catalogo">Catálogo</Link>
+          <Link href="/cestas">Cestas e assinatura</Link>
           <Link href="/produtor">Painel do produtor</Link>
           <Link href="/admin">Painel de operações</Link>
           <Link href="/#como-funciona">Como funciona</Link>
@@ -168,12 +187,16 @@ export function Footer() {
         <div>
           <h3>Ambiente Seguro</h3>
           <span className="footer-meta">Gateway sandbox para demonstração</span>
-          <span className="footer-meta">Dados persistidos via SQLite local</span>
+          <span className="footer-meta">
+            Dados persistidos via SQLite local
+          </span>
         </div>
       </div>
       <div className="container footer-bottom">
         <span>© 2026 AgriTech · Rede de Agricultura Local</span>
-        <span className="footer-sandbox-tag">Ambiente de Demonstração Sandbox</span>
+        <span className="footer-sandbox-tag">
+          Ambiente de Demonstração Sandbox
+        </span>
       </div>
     </footer>
   );
@@ -262,7 +285,6 @@ export function SectionHeading({
 
 export function ProducerSubnav({
   active,
-  pendingTasksCount = 0,
   onboardingApproved = true,
   paymentConnected = true,
 }: {
@@ -275,23 +297,34 @@ export function ProducerSubnav({
     | 'pedidos'
     | 'financeiro'
     | 'conta';
-  pendingTasksCount?: number;
   onboardingApproved?: boolean;
   paymentConnected?: boolean;
 }) {
   const items: { key: typeof active; label: string; href: string }[] = [
     { key: 'painel', label: 'Painel', href: '/produtor' },
-    { key: 'onboarding', label: 'Onboarding e aprovação', href: '/produtor/onboarding' },
-    { key: 'catalogo', label: 'Produtos e cestas', href: '/produtor/catalogo' },
-    { key: 'novo', label: 'Nova oferta', href: '/produtor/catalogo/novo' },
-    { key: 'estoque', label: 'Estoque semanal', href: '/produtor/estoque' },
     { key: 'pedidos', label: 'Pedidos a atender', href: '/produtor/pedidos' },
-    { key: 'financeiro', label: 'Financeiro e repasse', href: '/produtor/financeiro' },
-    { key: 'conta', label: 'Propriedade e auditoria', href: '/produtor/conta' },
+    { key: 'catalogo', label: 'Produtos e Cestas', href: '/produtor/catalogo' },
+    {
+      key: 'onboarding',
+      label: 'Documentos',
+      href: '/produtor/documentos',
+    },
+    {
+      key: 'financeiro',
+      label: 'Financeiro',
+      href: '/produtor/financeiro',
+    },
   ];
 
   return (
-    <div style={{ marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <div
+      style={{
+        marginBottom: '28px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '14px',
+      }}
+    >
       <nav
         aria-label="Menu do produtor"
         style={{
@@ -322,18 +355,15 @@ export function ProducerSubnav({
             </Link>
           );
         })}
-        {pendingTasksCount > 0 && (
-          <span style={{ marginLeft: 'auto' }}>
-            <StatusBadge tone="warning">
-              {pendingTasksCount}{' '}
-              {pendingTasksCount === 1 ? 'pendência' : 'pendências'}
-            </StatusBadge>
-          </span>
-        )}
       </nav>
 
       {(!onboardingApproved || !paymentConnected) && (
-        <div className="info-alert" role="region" aria-label="Alerta de pré-requisito do produtor" style={{ marginBottom: 0 }}>
+        <div
+          className="info-alert"
+          role="region"
+          aria-label="Alerta de pré-requisito do produtor"
+          style={{ marginBottom: 0 }}
+        >
           <div style={{ flex: 1 }}>
             <strong>
               Publicação de novas ofertas bloqueada: pré-requisito pendente
@@ -347,7 +377,10 @@ export function ProducerSubnav({
                 : ''}
             </p>
           </div>
-          <Link href="/produtor/onboarding" className="button button-small button-primary">
+          <Link
+            href="/produtor/documentos"
+            className="button button-small button-primary"
+          >
             Ver pendências
           </Link>
         </div>
@@ -372,14 +405,25 @@ export function AdminSubnav({
   const items: { key: typeof active; label: string; href: string }[] = [
     { key: 'visao-geral', label: 'Visão geral', href: '/admin' },
     { key: 'pedidos', label: 'Pedidos e exceções', href: '/admin/pedidos' },
-    { key: 'zonas-slots', label: 'Zonas e janelas', href: '/admin/zonas-slots' },
+    {
+      key: 'zonas-slots',
+      label: 'Zonas e janelas',
+      href: '/admin/zonas-slots',
+    },
     { key: 'rotas', label: 'Rotas manuais', href: '/admin/rotas' },
     { key: 'entregas', label: 'Status de entregas', href: '/admin/entregas' },
     { key: 'romaneio', label: 'Romaneio diário', href: '/admin/romaneio' },
   ];
 
   return (
-    <div style={{ marginBottom: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+    <div
+      style={{
+        marginBottom: '28px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '14px',
+      }}
+    >
       <nav
         aria-label="Menu de operações"
         style={{

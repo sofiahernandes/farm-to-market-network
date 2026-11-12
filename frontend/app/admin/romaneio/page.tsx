@@ -91,14 +91,6 @@ export default function AdminRomaneioPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <Link href="/admin">Operações</Link>
-          <span>/</span>
-          <span>Romaneio diário</span>
-        </div>
-
         <SectionHeading
           eyebrow="Conferência de Coleta e Expedição"
           title="Romaneio operacional diário (paginado e exportável em CSV)"

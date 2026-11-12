@@ -95,14 +95,6 @@ export default function AdminEntregasPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <Link href="/admin">Operações</Link>
-          <span>/</span>
-          <span>Status de entregas</span>
-        </div>
-
         <SectionHeading
           eyebrow="Progressão Sequencial de Entregas"
           title="Atualização operacional: Confirmado → Em preparação → A caminho → Entregue"

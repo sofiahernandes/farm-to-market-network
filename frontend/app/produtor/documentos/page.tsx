@@ -11,6 +11,7 @@ import {
 import { CheckIcon, ShieldCheckIcon } from '@/components/icons';
 import {
   api,
+  formatDate,
   type ProducerDashboardData,
 } from '@/lib/api';
 
@@ -76,17 +77,82 @@ export default function ProdutorOnboardingPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/produtor">Painel do produtor</Link>
-          <span>/</span>Onboarding e aprovação
-        </div>
-
         <ProducerSubnav
           active="onboarding"
-          pendingTasksCount={data?.producer.pendingTasksCount ?? 0}
           onboardingApproved={data?.producer.onboardingStatus === 'approved'}
           paymentConnected={data?.producer.paymentAccountConnected ?? true}
         />
+
+        <h1>Dados da propriedade</h1>
+        <p className="lead">
+          Informações cadastrais e certificações ativas do produtor parceiro.
+        </p>
+
+        {loading && <p className="loading-indicator">Carregando dados…</p>}
+        {error && (
+          <div className="info-alert" role="alert">
+            <strong>Erro ao carregar dados.</strong>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {data && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+            <section className="dashboard-card">
+              <div className="card-heading">
+                <div>
+                  <h2>{data.producer.displayName}</h2>
+                  <p className="muted">{data.producer.story}</p>
+                </div>
+                <StatusBadge tone="success">Produtor Parceiro</StatusBadge>
+              </div>
+              <div className="delivery-info">
+                <div>
+                  <span>Localização</span>
+                  <strong>
+                    {data.producer.city}/{data.producer.state}
+                  </strong>
+                </div>
+                <div>
+                  <span>Identificação</span>
+                  <strong>{data.producer.legalIdMasked}</strong>
+                </div>
+                <div>
+                  <span>Repasse</span>
+                  <strong>{data.producer.paymentAccountConnected ? 'Conta conectada' : 'Pendente'}</strong>
+                </div>
+              </div>
+            </section>
+
+            <section className="dashboard-card">
+              <div className="card-heading">
+                <h2>Certificações ({data.producer.certifications.length})</h2>
+                <Link href="/produtor/documentos" className="button button-small button-secondary">
+                  <span>Gerenciar documentos</span>
+                </Link>
+              </div>
+              <div className="status-history-list">
+                {data.producer.certifications.map((cert) => (
+                  <div
+                    className="order-row"
+                    key={cert.id}
+                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                    <div>
+                      <strong>{cert.name}</strong>
+                      <span className="muted" style={{ display: 'block', fontSize: '13px' }}>
+                        {cert.issuer} · Válido até {formatDate(cert.validUntil)}
+                      </span>
+                    </div>
+                    <StatusBadge tone={cert.status === 'valid' ? 'success' : 'warning'}>
+                      {cert.status === 'valid' ? 'Válida' : 'A vencer'}
+                    </StatusBadge>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
 
         <h1>Onboarding, certificações e conta de repasse</h1>
         <p className="lead">

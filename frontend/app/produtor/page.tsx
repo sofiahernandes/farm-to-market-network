@@ -45,14 +45,8 @@ export default function ProdutorDashboardPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>Painel do produtor
-        </div>
-
         <ProducerSubnav
           active="painel"
-          pendingTasksCount={data?.producer.pendingTasksCount ?? 0}
           onboardingApproved={data?.producer.onboardingStatus === 'approved'}
           paymentConnected={data?.producer.paymentAccountConnected ?? true}
         />
@@ -88,7 +82,7 @@ export default function ProdutorDashboardPage() {
                   </Link>
                 ) : (
                   <Link
-                    href="/produtor/onboarding"
+                    href="/produtor/documentos"
                     className="button button-primary"
                   >
                     <span>Concluir pré-requisitos</span>
@@ -144,9 +138,6 @@ export default function ProdutorDashboardPage() {
                       Itens que exigem atenção antes do fechamento da janela semanal.
                     </p>
                   </div>
-                  <StatusBadge tone="warning">
-                    {data.producer.pendingTasksCount} pendência(s)
-                  </StatusBadge>
                 </div>
                 <div className="status-history-list" style={{ marginTop: '12px' }}>
                   {data.producer.pendingReasons.map((reason, idx) => (
@@ -274,7 +265,7 @@ export default function ProdutorDashboardPage() {
                     Toda mudança de preço, estoque, oferta ou status gera registro imutável.
                   </p>
                 </div>
-                <Link href="/produtor/conta" className="text-link">
+                <Link href="/produtor" className="text-link">
                   Ver trilha completa →
                 </Link>
               </div>

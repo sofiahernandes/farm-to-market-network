@@ -28,7 +28,7 @@ export default function Home() {
               </p>
               <div className="hero-actions">
                 <Link className="button button-primary" href="/catalogo">
-                  <span>Explorar ofertas da semana</span>
+                  <span>Catálogo da semana</span>
                   <ArrowRightIcon size={16} />
                 </Link>
                 <Link className="button button-secondary" href="#como-funciona">
@@ -204,7 +204,7 @@ export default function Home() {
             </div>
             <div className="cta-actions">
               <Link className="button button-light" href="/catalogo">
-                <span>Explorar ofertas</span>
+                <span>Catálogo</span>
                 <ArrowRightIcon size={16} />
               </Link>
             </div>

@@ -71,14 +71,6 @@ export default function AdminPedidosPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>
-          <Link href="/admin">Operações</Link>
-          <span>/</span>
-          <span>Pedidos e exceções</span>
-        </div>
-
         <SectionHeading
           eyebrow="Monitoramento e Tratamento de Incidentes"
           title="Pedidos consolidados e fila de exceções"

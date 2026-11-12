@@ -111,7 +111,6 @@ export type ProducerDashboardData = {
     paymentAccountConnected: boolean;
     splitFeatureFlagEnabled: boolean;
     platformFeePercent: number;
-    pendingTasksCount: number;
     pendingReasons: string[];
     certifications: ProducerCertification[];
   };
@@ -420,7 +419,7 @@ export function formatPrice(cents: number) {
 
 export function formatDate(value: string | null) {
   return value
-    ? new Date(value).toLocaleDateString('pt-BR', { dateStyle: 'medium' })
+    ? new Date(value).toLocaleDateString('pt-BR')
     : 'Data a confirmar';
 }
 

@@ -9,7 +9,6 @@ import {
   CalendarIcon,
   CheckIcon,
   ClockIcon,
-  PackageIcon,
   ShieldCheckIcon,
   SproutIcon,
 } from '@/components/icons';
@@ -75,9 +74,7 @@ export default function CestasPage() {
         method: 'POST',
         body: JSON.stringify({ productId: basket.productId, quantity: 1 }),
       });
-      setMessage(
-        `${basket.name} adicionada à sacola para compra avulsa.`
-      );
+      setMessage(`${basket.name} adicionada à sacola para compra avulsa.`);
     } catch (e) {
       setError((e as Error).message);
     }
@@ -113,12 +110,7 @@ export default function CestasPage() {
     <>
       <Header />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/">Início</Link>
-          <span>/</span>Cestas fixas
-        </div>
-
-        <SectionHeading title="Cestas fixas da colheita com assinatura semanal ou mensal.">
+        <SectionHeading title="Cestas  da colheita com assinatura semanal ou mensal.">
           <Link href="/app/assinaturas" className="button button-secondary">
             <span>Minhas assinaturas</span>
             <ArrowRightIcon size={15} />
@@ -130,16 +122,23 @@ export default function CestasPage() {
             <ShieldCheckIcon size={20} />
           </div>
           <div>
-            <strong>Composição e preço fixos por ciclo · Sem fidelidade forçada</strong>
+            <strong>
+              Composição e preço fixos por ciclo · Sem fidelidade forçada
+            </strong>
             <p>
-              Cada cesta fixa reúne itens colhidos na véspera pelos produtores locais.
-              Você pode pausar, reativar ou cancelar até o prazo de cutoff configurado antes de cada entrega.
+              Cada cesta fixa reúne itens colhidos na véspera pelos produtores
+              locais. Você pode pausar, reativar ou cancelar até o prazo de
+              cutoff configurado antes de cada entrega.
             </p>
           </div>
         </div>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p
+            className="status status-success status-message"
+            role="status"
+            style={{ marginBottom: '20px' }}
+          >
             <span>{message}</span>
             <Link className="text-link" href="/app/carrinho">
               Ir para a sacola →
@@ -154,29 +153,48 @@ export default function CestasPage() {
           </div>
         )}
 
-        {loading && <p className="loading-indicator">Carregando cestas fixas…</p>}
+        {loading && (
+          <p className="loading-indicator">Carregando cestas fixas…</p>
+        )}
 
         {!loading && baskets.length > 0 && (
           <div className="product-grid">
             {baskets.map((basket) => (
-              <article className="dashboard-card" key={basket.id} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <article
+                className="dashboard-card"
+                key={basket.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                }}
+              >
                 <div className="card-heading">
                   <div>
-                    <span className="product-category-tag">{basket.producer.name}</span>
-                    <h2 style={{ marginTop: '4px', marginBottom: '4px' }}>{basket.name}</h2>
+                    <span className="product-category-tag">
+                      {basket.producer.name}
+                    </span>
+                    <h2 style={{ marginTop: '4px', marginBottom: '4px' }}>
+                      {basket.name}
+                    </h2>
                     <span className="count-tag">{basket.seasonality}</span>
-                  </div>
-                  <div className="mini-art" aria-hidden="true">
-                    <PackageIcon size={24} />
                   </div>
                 </div>
 
-                <p className="product-desc" style={{ marginBottom: 0 }}>
-                  {basket.description}
-                </p>
-
-                <div style={{ borderTop: '1px solid var(--line)', paddingTop: '12px' }}>
-                  <strong style={{ fontSize: '13px', color: 'var(--forest)', display: 'block', marginBottom: '8px' }}>
+                <div
+                  style={{
+                    borderTop: '1px solid var(--line)',
+                    paddingTop: '12px',
+                  }}
+                >
+                  <strong
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--forest)',
+                      display: 'block',
+                      marginBottom: '8px',
+                    }}
+                  >
                     Itens fixos deste ciclo ({basket.items.length} itens):
                   </strong>
                   <div className="status-history-list">
@@ -189,10 +207,19 @@ export default function CestasPage() {
                           alignItems: 'baseline',
                           fontSize: '13px',
                           paddingBlock: '5px',
-                          borderBottom: idx < basket.items.length - 1 ? '1px solid var(--line)' : '0',
+                          borderBottom:
+                            idx < basket.items.length - 1
+                              ? '1px solid var(--line)'
+                              : '0',
                         }}
                       >
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
                           <SproutIcon size={14} />
                           <strong>{item.name}</strong>
                         </span>
@@ -214,28 +241,64 @@ export default function CestasPage() {
                     gap: '10px',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <div className="product-price">
                       <strong>{formatPrice(basket.priceCents)}</strong>
                       <span className="product-unit"> / ciclo</span>
                     </div>
-                    <StatusBadge tone={basket.stock.available > 0 ? 'success' : 'warning'}>
+                    <StatusBadge
+                      tone={basket.stock.available > 0 ? 'success' : 'warning'}
+                    >
                       {basket.stock.available} disponíveis
                     </StatusBadge>
                   </div>
 
-                  <div style={{ fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
                       <CalendarIcon size={14} />
-                      Próxima entrega: <strong>{formatDate(basket.stock.deliveryDate)}</strong>
+                      Próxima entrega:{' '}
+                      <strong>{formatDate(basket.stock.deliveryDate)}</strong>
                     </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
                       <ClockIcon size={14} />
-                      Cutoff de pausa/cancelamento: <strong>{basket.cutoffHours}h antes da entrega</strong>
+                      Cancelamento:{' '}
+                      <strong>{basket.cutoffHours}h antes da entrega</strong>
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
+                      marginTop: '6px',
+                    }}
+                  >
                     <button
                       type="button"
                       disabled={basket.stock.available < 1}
@@ -268,13 +331,20 @@ export default function CestasPage() {
           >
             <div className="card-heading">
               <div>
-                <span className="product-category-tag">Configurar assinatura recorrente</span>
+                <span className="product-category-tag">
+                  Configurar assinatura recorrente
+                </span>
                 <h2 id="subscribe-heading" style={{ marginTop: '4px' }}>
-                  {selectedBasket.name} · {formatPrice(selectedBasket.priceCents)} / ciclo
+                  {selectedBasket.name} ·{' '}
+                  {formatPrice(selectedBasket.priceCents)} / ciclo
                 </h2>
                 <p className="lead">
-                  Produtor responsável: <strong>{selectedBasket.producer.name}</strong> · Cutoff de alterações:{' '}
-                  <strong>{selectedBasket.cutoffHours}h antes de cada entrega</strong>.
+                  Produtor responsável:{' '}
+                  <strong>{selectedBasket.producer.name}</strong> · Alterações:{' '}
+                  <strong>
+                    {selectedBasket.cutoffHours}h antes de cada entrega
+                  </strong>
+                  .
                 </p>
               </div>
               <button
@@ -286,21 +356,34 @@ export default function CestasPage() {
               </button>
             </div>
 
-            <form className="checkout-form" onSubmit={confirmSubscription} style={{ marginTop: '18px' }}>
+            <form
+              className="checkout-form"
+              onSubmit={confirmSubscription}
+              style={{ marginTop: '18px' }}
+            >
               <div className="form-group-grid">
                 <label>
                   Frequência de entrega e cobrança
                   <select
                     value={frequency}
-                    onChange={(e) => setFrequency(e.target.value as 'weekly' | 'monthly')}
+                    onChange={(e) =>
+                      setFrequency(e.target.value as 'weekly' | 'monthly')
+                    }
                   >
-                    <option value="weekly">Semanal (toda semana · mesmo preço fixo)</option>
-                    <option value="monthly">Mensal (1 ciclo a cada 30 dias)</option>
+                    <option value="weekly">
+                      Semanal (toda semana · mesmo preço fixo)
+                    </option>
+                    <option value="monthly">
+                      Mensal (1 ciclo a cada 30 dias)
+                    </option>
                   </select>
                 </label>
                 <label>
                   Janela de entrega
-                  <select value={slotId} onChange={(e) => setSlotId(e.target.value)}>
+                  <select
+                    value={slotId}
+                    onChange={(e) => setSlotId(e.target.value)}
+                  >
                     {MOCK_DELIVERY_SLOTS.map((slot) => (
                       <option key={slot.id} value={slot.id}>
                         {slot.label}
@@ -316,7 +399,9 @@ export default function CestasPage() {
                   <input
                     required
                     value={address.postalCode}
-                    onChange={(e) => setAddress({ ...address, postalCode: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, postalCode: e.target.value })
+                    }
                   />
                 </label>
                 <label>
@@ -324,7 +409,9 @@ export default function CestasPage() {
                   <input
                     required
                     value={address.city}
-                    onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, city: e.target.value })
+                    }
                   />
                 </label>
               </div>
@@ -335,7 +422,9 @@ export default function CestasPage() {
                   <input
                     required
                     value={address.street}
-                    onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, street: e.target.value })
+                    }
                   />
                 </label>
                 <label>
@@ -343,7 +432,9 @@ export default function CestasPage() {
                   <input
                     required
                     value={address.number}
-                    onChange={(e) => setAddress({ ...address, number: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, number: e.target.value })
+                    }
                   />
                 </label>
               </div>
@@ -353,7 +444,9 @@ export default function CestasPage() {
                   Complemento
                   <input
                     value={address.complement}
-                    onChange={(e) => setAddress({ ...address, complement: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, complement: e.target.value })
+                    }
                   />
                 </label>
                 <label>
@@ -361,7 +454,9 @@ export default function CestasPage() {
                   <input
                     required
                     value={address.state}
-                    onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                    onChange={(e) =>
+                      setAddress({ ...address, state: e.target.value })
+                    }
                   />
                 </label>
               </div>
@@ -369,8 +464,9 @@ export default function CestasPage() {
               <div className="sandbox-notice">
                 <CheckIcon size={15} />
                 <span>
-                  Ao confirmar, o 1º ciclo é reservado no estoque imediatamente e a recorrência
-                  opera no adapter fake sandbox (sem cobrança real em cartão).
+                  Ao confirmar, o 1º ciclo é reservado no estoque imediatamente
+                  e a recorrência opera no adapter fake sandbox (sem cobrança
+                  real em cartão).
                 </span>
               </div>
 
@@ -381,7 +477,11 @@ export default function CestasPage() {
                   className="button button-primary"
                 >
                   <CheckIcon size={16} />
-                  <span>{submitting ? 'Ativando assinatura…' : 'Confirmar assinatura da cesta'}</span>
+                  <span>
+                    {submitting
+                      ? 'Ativando assinatura…'
+                      : 'Confirmar assinatura da cesta'}
+                  </span>
                 </button>
                 <button
                   type="button"

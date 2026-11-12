@@ -31,9 +31,6 @@ export default function Catalogo() {
     <>
       <Header />
       <main className="page-main container">
-        <div className="breadcrumb">
-          Início <span>/</span> Catálogo
-        </div>
         <SectionHeading title="Escolha o que vai para sua mesa.">
           <span className="count-tag">
             {data?.pagination.count ? `${data.pagination.count} ofertas disponíveis` : ''}

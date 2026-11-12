@@ -89,14 +89,8 @@ export default function ProdutorCatalogoPage() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/produtor">Painel do produtor</Link>
-          <span>/</span>Produtos e cestas
-        </div>
-
         <ProducerSubnav
           active="catalogo"
-          pendingTasksCount={data?.producer.pendingTasksCount ?? 0}
           onboardingApproved={data?.producer.onboardingStatus === 'approved'}
           paymentConnected={data?.producer.paymentAccountConnected ?? true}
         />
@@ -238,7 +232,7 @@ export default function ProdutorCatalogoPage() {
                         onClick={() => startEdit(offer)}
                         className="button button-small button-secondary"
                       >
-                        Editar preço/safra
+                        Editar
                       </button>
                       <button
                         type="button"

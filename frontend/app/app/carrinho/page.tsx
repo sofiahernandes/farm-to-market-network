@@ -46,10 +46,6 @@ export default function Carrinho() {
     <>
       <Header app />
       <main className="page-main container">
-        <div className="breadcrumb">
-          <Link href="/catalogo">Catálogo</Link>
-          <span>/</span> Sacola
-        </div>
         <h2 className='title'>Sua sacola de compras</h2>
         <p className="lead">Revise os itens selecionados dos produtores locais antes de confirmar a entrega.</p>
         {loading && <p className="loading-indicator">Carregando sacola…</p>}
@@ -63,7 +59,7 @@ export default function Carrinho() {
             <h2>Sua sacola está vazia no momento.</h2>
             <p className="muted">Descubra os produtos frescos e cestas da semana dos pequenos produtores.</p>
             <Link className="button button-primary" href="/catalogo">
-              <span>Explorar ofertas</span>
+              <span>Catálogo</span>
               <ArrowRightIcon size={16} />
             </Link>
           </section>

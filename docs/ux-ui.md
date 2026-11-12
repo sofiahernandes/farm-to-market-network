@@ -36,7 +36,7 @@ Administrador técnico não é uma experiência separada: é uma permissão inte
 | `/` | Público | Hero, proposta “Do campo à porta”, como funciona, produtores/ofertas, chamada para consumidor e produtor, ajuda, termos e privacidade. |
 | `/catalogo` | Público; zona pode ser solicitada | Lista paginada de produtos e cestas fixas, busca, categoria, zona e disponibilidade. Visitante pode explorar; ação de comprar pede login. |
 | `/produto/[id]` | Público | Foto, nome, produtor/origem, unidade, preço, sazonalidade, itens (se cesta), disponibilidade, zona e CTA. |
-| `/cestas` | Público/consumidor | Cestas fixas com preço e frequência elegível; não oferecer construtor livre ou substituição sem decisão formal do piloto. |
+| `/cestas` | Público/consumidor | Cestas  com preço e frequência elegível; não oferecer construtor livre ou substituição sem decisão formal do piloto. |
 | `/entrar` | Público | Login por CPF e senha, recuperação de senha e link para cadastro. Mensagem de erro não revela se CPF existe. |
 | `/criar-conta` | Público | Escolha Consumidor ou Produtor e formulário correspondente. Não oferecer login Google. |
 | `/app` | Consumidor | Início/explorar com resumo do carrinho, próxima entrega/assinatura e atalhos para catálogo, cestas e pedidos. |
@@ -47,13 +47,13 @@ Administrador técnico não é uma experiência separada: é uma permissão inte
 | `/app/pedidos/[id]` | Consumidor | Status, itens, valor, endereço resumido, janela, última atualização e confirmar entrega quando elegível. |
 | `/app/conta` | Consumidor | Perfil, endereços, dados de pagamento apresentados pelo provedor sem armazenar cartão, privacidade e solicitação LGPD. |
 | `/produtor` | Produtor aprovado ou em onboarding | Painel com vendas, pedidos a atender, disponibilidade e alertas de estoque/oferta. |
-| `/produtor/onboarding` | Produtor | Dados da propriedade, contato, documentos/certificações exigidos e status “Em análise/Aprovado/Pendência”. |
+| `/produtor/documentos` | Produtor | Dados da propriedade, contato, documentos/certificações exigidos e status “Em análise/Aprovado/Pendência”. |
 | `/produtor/catalogo` | Produtor | Produtos e cestas fixas, publicar/editar/pausar oferta, foto, unidade, preço, sazonalidade e certificação. |
 | `/produtor/catalogo/novo` | Produtor | Cadastro guiado de oferta com pré-visualização e validações. |
 | `/produtor/estoque` | Produtor | Disponibilidade semanal, quantidades, limites e alertas; nunca permitir saldo negativo. |
 | `/produtor/pedidos` | Produtor | Fila de separação/colheita com pedidos confirmados, volumes, janela e status operacional. |
 | `/produtor/financeiro` | Produtor | Extrato por pedido/ciclo: bruto, taxa, líquido, status e data prevista do repasse. Split só se aprovado e configurado; caso contrário, mostrar estado explícito. |
-| `/produtor/conta` | Produtor | Perfil, propriedade, certificações, documentos e segurança. |
+| `/produtor` | Produtor | Perfil, propriedade, certificações, documentos e segurança. |
 | `/admin` | Operações | Visão geral: pedidos do dia, entregas, exceções, capacidade por slot e alertas acionáveis. |
 | `/admin/pedidos` | Operações | Filtros, consolidação de pedidos/ciclos, exceções, reembolsos conforme política e detalhe operacional. |
 | `/admin/zonas-slots` | Operações | Zonas de serviço, CEPs, capacidade, dias, janelas e cutoff. |
@@ -67,7 +67,7 @@ Rotas fora do MVP não devem existir no menu nem como placeholders: `/atacado`, 
 
 ### 3.1 Cabeçalho público
 
-Desktop: marca AgriTech à esquerda; links “Como funciona”, “Para produtores”, “Para consumidores”, “Ajuda”; ações “Entrar” e “Criar conta”. CTA primário “Explorar ofertas”. Mobile: marca, botão de menu acessível e CTA “Entrar”; menu em drawer com foco preso.
+Desktop: marca AgriTech à esquerda; links “Como funciona”, “Para produtores”, “Para consumidores”, “Ajuda”; ações “Entrar” e “Criar conta”. CTA primário “Catálogo”. Mobile: marca, botão de menu acessível e CTA “Entrar”; menu em drawer com foco preso.
 
 Rodapé: “Como funciona”, “Ajuda e contato”, “Termos de uso”, “Privacidade e LGPD”. Não publicar métricas de impacto como fato medido sem baseline; quando usadas, rotular como proposta/medição do piloto.
 
@@ -173,7 +173,7 @@ Claro, direto, acolhedor e sem jargão técnico. Falar “janela de entrega”, 
 ### 6.3 Exemplos de mensagens
 
 - Empty catálogo: **“Ainda não há ofertas disponíveis para esta região.”** CTA: “Trocar endereço” / “Ver todas as regiões”.
-- Empty pedidos: **“Você ainda não tem pedidos.”** CTA: “Explorar ofertas”.
+- Empty pedidos: **“Você ainda não tem pedidos.”** CTA: “Catálogo”.
 - Empty assinaturas: **“Nenhuma assinatura ativa.”** CTA: “Conhecer cestas”.
 - Estoque insuficiente: **“A quantidade disponível mudou. Ajuste o item para continuar.”**
 - Pagamento pendente: **“Estamos aguardando a confirmação do pagamento. Você pode acompanhar o pedido nesta página.”**
