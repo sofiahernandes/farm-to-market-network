@@ -58,7 +58,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, sans-serif;
   font-size: 1rem;
-  line-height: 1.25;
+  line-height: 1.15;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
@@ -101,7 +101,7 @@ h3,
 h4 {
   color: var(--forest);
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.15;
   margin: 0;
   text-wrap: balance;
 }
@@ -359,7 +359,7 @@ h1 {
 
 .hero-lead {
   font-size: 1rem;
-  line-height: 1.25;
+  line-height: 1.15;
   color: var(--ink);
   max-width: 54ch;
 }
@@ -367,7 +367,7 @@ h1 {
 .hero-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 6px;
   margin-top: 8px;
 }
 
@@ -615,9 +615,10 @@ h2 {
 
 .lead {
   font-size: 1.125rem;
-  line-height: 1.25;
+  line-height: 1.15;
   color: var(--ink);
-  margin-bottom: 12px;
+  margin-bottom: 32px;
+  max-width: 54ch;
 }
 
 /* Steps Grid */
@@ -842,7 +843,7 @@ h2 {
   font-weight: 600;
   padding: 4px 10px;
   border-radius: var(--radius-md);
-  line-height: 1.25;
+  line-height: 1.15;
 }
 
 .status-success {
@@ -931,7 +932,7 @@ h2 {
   align-items: flex-start;
   padding: 14px 18px;
   border-radius: var(--radius-md);
-  margin-bottom: 28px;
+  margin-bottom: 16px;
   font-size: 1rem;
 }
 
@@ -1058,11 +1059,10 @@ h2 {
 }
 
 .product-category-tag {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--action);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .detail-copy h1 {
@@ -1170,7 +1170,7 @@ h2 {
 .dashboard-intro {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 24px;
   margin-bottom: 32px;
 }
@@ -1184,8 +1184,8 @@ h2 {
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-bottom: 28px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .metric-card {
@@ -1482,7 +1482,6 @@ h2 {
   background: #ffffff;
   border-top: 1px solid var(--line);
   padding-top: 56px;
-  margin-top: 64px;
 }
 
 .footer-grid {

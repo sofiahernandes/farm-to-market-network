@@ -1510,10 +1510,11 @@ export async function mockApi(
     const email = body?.email?.trim().toLowerCase();
     const password = body?.password;
     if (
-      email === DEMO_CREDENTIALS.email &&
+      (email === DEMO_CREDENTIALS.email ||
+        email === 'consumidor@agritech.local') &&
       password === DEMO_CREDENTIALS.password
     ) {
-      return authResponse();
+      return authResponse(email, 'consumer', 'mock-consumer');
     }
     if (
       email === DEMO_PRODUCER_CREDENTIALS.email &&

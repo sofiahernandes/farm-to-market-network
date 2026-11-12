@@ -117,7 +117,7 @@ export default function ProductDetail() {
                   >
                     <strong
                       style={{
-                        fontSize: '13px',
+                        fontSize: '0.95rem',
                         color: 'var(--forest)',
                         display: 'block',
                         marginBottom: '6px',
@@ -125,7 +125,7 @@ export default function ProductDetail() {
                     >
                       Itens fixos inclusos nesta cesta ({product.basketItems.length}):
                     </strong>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '13px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.95rem' }}>
                       {product.basketItems.map((bi, idx) => (
                         <div
                           key={idx}

@@ -86,9 +86,74 @@ class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.db.user.findUnique({
-      where: { email: dto.email.trim().toLowerCase() },
+    const rawEmail = dto.email.trim().toLowerCase();
+    const isDemoConsumer =
+      rawEmail === 'jornada@agritech.local' ||
+      rawEmail === 'consumidor@agritech.local';
+
+    let user = await this.db.user.findFirst({
+      where: isDemoConsumer
+        ? {
+            OR: [
+              { id: 'mock-consumer' },
+              { email: 'consumidor@agritech.local' },
+              { email: 'jornada@agritech.local' },
+            ],
+          }
+        : { email: rawEmail },
     });
+
+    if (!user && dto.password === 'agritech123') {
+      const demoDefaults: Record<
+        string,
+        { id: string; email: string; cpf: string; maskedCpf: string; role: string }
+      > = {
+        'jornada@agritech.local': {
+          id: 'mock-consumer',
+          email: 'jornada@agritech.local',
+          cpf: '52998224725',
+          maskedCpf: '***.982.247-25',
+          role: 'consumer',
+        },
+        'consumidor@agritech.local': {
+          id: 'mock-consumer',
+          email: 'consumidor@agritech.local',
+          cpf: '52998224725',
+          maskedCpf: '***.982.247-25',
+          role: 'consumer',
+        },
+        'produtor@agritech.local': {
+          id: 'user-producer',
+          email: 'produtor@agritech.local',
+          cpf: '12345678909',
+          maskedCpf: '***.482.299-26',
+          role: 'producer',
+        },
+        'operacoes@agritech.local': {
+          id: 'user-ops',
+          email: 'operacoes@agritech.local',
+          cpf: '98765432100',
+          maskedCpf: '***.550.250-97',
+          role: 'operations',
+        },
+      };
+      const demo = demoDefaults[rawEmail];
+      if (demo) {
+        user = await this.db.user.upsert({
+          where: { id: demo.id },
+          update: { role: demo.role },
+          create: {
+            id: demo.id,
+            email: demo.email,
+            cpfHash: createHash('sha256').update(demo.cpf).digest('hex'),
+            maskedCpf: demo.maskedCpf,
+            passwordHash: await bcrypt.hash('agritech123', 10),
+            role: demo.role,
+          },
+        });
+      }
+    }
+
     if (!user || !(await bcrypt.compare(dto.password, user.passwordHash))) {
       throw new BadRequestException(
         'Credenciais inválidas. Use a conta de demonstração ou uma conta cadastrada.'

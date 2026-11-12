@@ -2,12 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import {
-  Footer,
-  Header,
-  ProducerSubnav,
-  StatusBadge,
-} from '@/components/ui';
+import { Footer, Header, ProducerSubnav, StatusBadge } from '@/components/ui';
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -66,9 +61,12 @@ export default function ProdutorDashboardPage() {
             <div className="dashboard-intro">
               <div>
                 <span className="product-category-tag">
-                  {data.producer.city}/{data.producer.state} · {data.producer.legalIdMasked}
+                  {data.producer.city}/{data.producer.state} ·{' '}
+                  {data.producer.legalIdMasked}
                 </span>
-                <h1 style={{ marginTop: '4px' }}>{data.producer.displayName}</h1>
+                <h1 style={{ marginTop: '4px' }}>
+                  {data.producer.displayName}
+                </h1>
                 <p className="lead">{data.producer.story}</p>
               </div>
               <div className="hero-actions">
@@ -77,16 +75,14 @@ export default function ProdutorDashboardPage() {
                     href="/produtor/catalogo/novo"
                     className="button button-primary"
                   >
-                    <span>Nova oferta da colheita</span>
-                    <ArrowRightIcon size={15} />
+                    Criar item
                   </Link>
                 ) : (
                   <Link
                     href="/produtor/documentos"
                     className="button button-primary"
                   >
-                    <span>Concluir pré-requisitos</span>
-                    <ArrowRightIcon size={15} />
+                    Concluir pré-requisitos
                   </Link>
                 )}
                 <Link
@@ -98,7 +94,10 @@ export default function ProdutorDashboardPage() {
               </div>
             </div>
 
-            <div className="metric-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <div
+              className="metric-grid"
+              style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
+            >
               <div className="metric-card">
                 <span className="metric-label">Ofertas publicadas</span>
                 <strong>{data.metrics.activeOffersCount}</strong>
@@ -135,11 +134,15 @@ export default function ProdutorDashboardPage() {
                   <div>
                     <h2>Pendências acionáveis do lote</h2>
                     <p className="muted">
-                      Itens que exigem atenção antes do fechamento da janela semanal.
+                      Itens que exigem atenção antes do fechamento da janela
+                      semanal.
                     </p>
                   </div>
                 </div>
-                <div className="status-history-list" style={{ marginTop: '12px' }}>
+                <div
+                  className="status-history-list"
+                  style={{ marginTop: '12px' }}
+                >
                   {data.producer.pendingReasons.map((reason, idx) => (
                     <div className="order-row" key={idx}>
                       <span className="status-timeline-dot" />
@@ -151,13 +154,10 @@ export default function ProdutorDashboardPage() {
             )}
 
             <div className="checkout-layout" style={{ marginTop: 0 }}>
-              <section className="dashboard-card">
+              <section className="dashboard-card h-full">
                 <div className="card-heading">
                   <div>
                     <h2>Volumes consolidados para colheita</h2>
-                    <p className="muted">
-                      Soma dos itens confirmados em pedidos ativos para separação na propriedade.
-                    </p>
                   </div>
                   <Link href="/produtor/pedidos" className="text-link">
                     Ver fila completa →
@@ -169,19 +169,34 @@ export default function ProdutorDashboardPage() {
                     Nenhum volume pendente de colheita neste momento.
                   </p>
                 ) : (
-                  <div className="status-history-list" style={{ marginTop: '14px' }}>
+                  <div
+                    className="status-history-list"
+                    style={{ marginTop: '14px' }}
+                  >
                     {data.harvestSummary.map((h) => (
                       <div
                         className="order-row"
                         key={h.productId}
-                        style={{ justifyContent: 'space-between', alignItems: 'center' }}
+                        style={{
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                          }}
+                        >
                           <SproutIcon size={18} />
                           <div>
                             <strong>{h.name}</strong>
-                            <span style={{ display: 'block', fontSize: '13px' }}>
-                              Presente em {h.ordersCount} pedido(s) confirmado(s)
+                            <span
+                              style={{ display: 'block', fontSize: '0.95rem' }}
+                            >
+                              Presente em {h.ordersCount} pedido(s)
+                              confirmado(s)
                             </span>
                           </div>
                         </div>
@@ -208,8 +223,8 @@ export default function ProdutorDashboardPage() {
                     {data.producer.onboardingStatus === 'approved'
                       ? 'Aprovado'
                       : data.producer.onboardingStatus === 'pending_review'
-                        ? 'Em análise'
-                        : 'Com pendência'}
+                      ? 'Em análise'
+                      : 'Com pendência'}
                   </StatusBadge>
                 </div>
                 <div className="summary-row">
@@ -222,7 +237,7 @@ export default function ProdutorDashboardPage() {
                     }
                   >
                     {data.producer.paymentAccountConnected
-                      ? 'Conectada (Sandbox)'
+                      ? 'Conectada'
                       : 'Desconectada'}
                   </StatusBadge>
                 </div>
@@ -231,7 +246,13 @@ export default function ProdutorDashboardPage() {
                   <StatusBadge tone="info">Feature Flag Off</StatusBadge>
                 </div>
                 <hr />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}
+                >
                   <Link
                     href="/produtor/catalogo"
                     className="button button-secondary button-full"
@@ -256,42 +277,6 @@ export default function ProdutorDashboardPage() {
                 </div>
               </aside>
             </div>
-
-            <section className="dashboard-card" style={{ marginTop: '24px' }}>
-              <div className="card-heading">
-                <div>
-                  <h2>Últimas alterações auditadas</h2>
-                  <p className="muted">
-                    Toda mudança de preço, estoque, oferta ou status gera registro imutável.
-                  </p>
-                </div>
-                <Link href="/produtor" className="text-link">
-                  Ver trilha completa →
-                </Link>
-              </div>
-              <div className="status-history-list" style={{ marginTop: '12px' }}>
-                {data.auditLogs.slice(0, 4).map((log) => (
-                  <div
-                    className="order-row"
-                    key={log.id}
-                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                      <ShieldCheckIcon size={18} />
-                      <div>
-                        <strong>{log.summary}</strong>
-                        <span className="muted" style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>
-                          {formatAuditResource(log.resourceType)} · {formatDateTime(log.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <StatusBadge tone="info">
-                      {formatAuditAction(log.action)}
-                    </StatusBadge>
-                  </div>
-                ))}
-              </div>
-            </section>
           </>
         )}
       </main>

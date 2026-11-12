@@ -13,15 +13,16 @@ async function main() {
 
   // 1. Demo Users (Consumer, Producer, Operations)
   const consumer = await db.user.upsert({
-    where: { email: 'consumidor@agritech.local' },
+    where: { id: 'mock-consumer' },
     update: {
+      email: 'jornada@agritech.local',
       passwordHash,
       role: 'consumer',
       maskedCpf: '***.982.247-25',
     },
     create: {
       id: 'mock-consumer',
-      email: 'consumidor@agritech.local',
+      email: 'jornada@agritech.local',
       cpfHash: hashCpf('52998224725'),
       maskedCpf: '***.982.247-25',
       passwordHash,
@@ -236,33 +237,33 @@ async function main() {
 
   // 5. Products & Weekly Inventory
   const familiarItems = [
-    { name: 'Alface crespa hidropônica', quantity: '2 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Couve manteiga orgânica', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Tomate italiano maduro', quantity: '1 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Cenoura orgânica com rama', quantity: '700 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
-    { name: 'Batata-doce rosada', quantity: '800 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
-    { name: 'Banana prata climatizada', quantity: '1 dúzia', origin: 'Chácara Sol · Piedade/SP', category: 'Frutas' },
-    { name: 'Cheiro-verde (salsinha e cebolinha)', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Temperos' },
-    { name: 'Ovos caipiras de galinhas livres', quantity: '1 dúzia', origin: 'Granja Livre · São Roque/SP', category: 'Granja' },
+    { name: 'Alface crespa hidropônica', quantity: '2 maços', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Couve manteiga orgânica', quantity: '1 maço', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Tomate italiano maduro', quantity: '1 kg', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Cenoura orgânica com rama', quantity: '700 g', origin: 'Sítio Verde', category: 'Raízes' },
+    { name: 'Batata-doce rosada', quantity: '800 g', origin: 'Sítio Verde', category: 'Raízes' },
+    { name: 'Banana prata climatizada', quantity: '1 dúzia', origin: 'Chácara Sol', category: 'Frutas' },
+    { name: 'Cheiro-verde (salsinha e cebolinha)', quantity: '1 maço', origin: 'Sítio Verde', category: 'Temperos' },
+    { name: 'Ovos caipiras de galinhas livres', quantity: '1 dúzia', origin: 'Granja Livre', category: 'Granja' },
   ];
 
   const individualItems = [
-    { name: 'Alface americana orgânica', quantity: '1 pé', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Rúcula selvagem', quantity: '1 maço', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Tomate cereja doce', quantity: '400 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Cenoura baby orgânica', quantity: '500 g', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
-    { name: 'Morango fresco de estufa', quantity: '1 bandeja (300 g)', origin: 'Vale Fértil · Atibaia/SP', category: 'Frutas' },
+    { name: 'Alface americana orgânica', quantity: '1 pé', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Rúcula selvagem', quantity: '1 maço', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Tomate cereja doce', quantity: '400 g', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Cenoura baby orgânica', quantity: '500 g', origin: 'Sítio Verde', category: 'Raízes' },
+    { name: 'Morango fresco de estufa', quantity: '1 bandeja (300 g)', origin: 'Vale Fértil', category: 'Frutas' },
   ];
 
   const agroItems = [
-    { name: 'Mix de folhas (alface, rúcula e agrião)', quantity: '3 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Brócolis ninja', quantity: '2 cabeças', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Tomate italiano de rama', quantity: '1,5 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Hortaliças' },
-    { name: 'Mandioca descascada a vácuo', quantity: '1 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
-    { name: 'Beterraba e cenoura orgânicas', quantity: '1,2 kg', origin: 'Sítio Verde · Ibiúna/SP', category: 'Raízes' },
-    { name: 'Morango e frutas cítricas da época', quantity: '1,2 kg', origin: 'Vale Fértil · Atibaia/SP', category: 'Frutas' },
-    { name: 'Ovos caipiras vermelhos', quantity: '1 dúzia', origin: 'Granja Livre · São Roque/SP', category: 'Granja' },
-    { name: 'Ervas frescas (manjericão, alecrim e hortelã)', quantity: '2 maços', origin: 'Sítio Verde · Ibiúna/SP', category: 'Temperos' },
+    { name: 'Mix de folhas (alface, rúcula e agrião)', quantity: '3 maços', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Brócolis ninja', quantity: '2 cabeças', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Tomate italiano de rama', quantity: '1,5 kg', origin: 'Sítio Verde', category: 'Hortaliças' },
+    { name: 'Mandioca descascada a vácuo', quantity: '1 kg', origin: 'Sítio Verde', category: 'Raízes' },
+    { name: 'Beterraba e cenoura orgânicas', quantity: '1,2 kg', origin: 'Sítio Verde', category: 'Raízes' },
+    { name: 'Morango e frutas cítricas da época', quantity: '1,2 kg', origin: 'Vale Fértil', category: 'Frutas' },
+    { name: 'Ovos caipiras vermelhos', quantity: '1 dúzia', origin: 'Granja Livre', category: 'Granja' },
+    { name: 'Ervas frescas (manjericão, alecrim e hortelã)', quantity: '2 maços', origin: 'Sítio Verde', category: 'Temperos' },
   ];
 
   const productSeeds = [

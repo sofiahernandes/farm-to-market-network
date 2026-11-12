@@ -189,7 +189,7 @@ export default function CestasPage() {
                 >
                   <strong
                     style={{
-                      fontSize: '13px',
+                      fontSize: '0.95rem',
                       color: 'var(--forest)',
                       display: 'block',
                       marginBottom: '8px',
@@ -205,7 +205,7 @@ export default function CestasPage() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'baseline',
-                          fontSize: '13px',
+                          fontSize: '0.95rem',
                           paddingBlock: '5px',
                           borderBottom:
                             idx < basket.items.length - 1
@@ -246,6 +246,7 @@ export default function CestasPage() {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      marginTop: '24px',
                     }}
                   >
                     <div className="product-price">
@@ -261,7 +262,7 @@ export default function CestasPage() {
 
                   <div
                     style={{
-                      fontSize: '12px',
+                      fontSize: '0.95rem',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '4px',
@@ -303,9 +304,9 @@ export default function CestasPage() {
                       type="button"
                       disabled={basket.stock.available < 1}
                       onClick={() => openSubscribeModal(basket)}
-                      className="button button-primary button-full"
+                      className="button button-primary button-full mt-6"
                     >
-                      <span>Assinar cesta (semanal ou mensal)</span>
+                      <span>Assinar (semanal ou mensal)</span>
                       <ArrowRightIcon size={15} />
                     </button>
                     <button

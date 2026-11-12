@@ -223,7 +223,7 @@ export default function AssinaturasPage() {
               </div>
 
               <div>
-                <strong style={{ fontSize: '13px', color: 'var(--forest)', display: 'block', marginBottom: '6px' }}>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--forest)', display: 'block', marginBottom: '6px' }}>
                   Composição fixa da cesta ({sub.items.length} itens):
                 </strong>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -340,7 +340,7 @@ export default function AssinaturasPage() {
               </div>
 
               <div style={{ borderTop: '1px solid var(--line)', paddingTop: '12px' }}>
-                <strong style={{ fontSize: '14px', color: 'var(--forest)', display: 'block', marginBottom: '8px' }}>
+                <strong style={{ fontSize: '0.95rem', color: 'var(--forest)', display: 'block', marginBottom: '8px' }}>
                   Histórico de ciclos ({sub.cycles.length})
                 </strong>
                 <div className="status-history-list">
@@ -352,7 +352,7 @@ export default function AssinaturasPage() {
                           <strong>
                             Ciclo {cycle.cycleKey} · Entrega {formatDate(cycle.deliveryDate)}
                           </strong>
-                          <span style={{ fontSize: '13px' }}>
+                          <span style={{ fontSize: '0.95rem' }}>
                             {cycle.note || `Cobrança: ${cycle.paymentStatus}`} · {formatPrice(cycle.amountCents)}
                           </span>
                         </div>

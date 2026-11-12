@@ -317,7 +317,7 @@ export default function AdminRotasPage() {
                       </strong>
                       <span
                         className="muted"
-                        style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                        style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                       >
                         <MapPinIcon size={13} /> {order.zoneName} —{' '}
                         {order.address.street}, {order.address.number}{' '}

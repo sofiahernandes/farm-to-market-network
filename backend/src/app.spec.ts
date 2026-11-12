@@ -28,6 +28,18 @@ describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () =>
   });
 
   it('1. Authenticates consumer, producer, and operations accounts against SQLite', async () => {
+    const jornadaRes = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'jornada@agritech.local',
+        password: 'agritech123',
+      }),
+    });
+    expect(jornadaRes.status).toBe(201);
+    const jornadaBody = await jornadaRes.json();
+    expect(jornadaBody.user.role).toBe('consumer');
+
     const consumerRes = await fetch(`${baseUrl}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

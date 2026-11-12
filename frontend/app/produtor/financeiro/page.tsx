@@ -99,29 +99,29 @@ export default function ProdutorFinanceiroPage() {
                     key={p.id}
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: '1.6fr 1fr 1fr 1fr auto',
-                      gap: '12px',
+                      gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr',
+                      gap: '14px',
                       alignItems: 'center',
                     }}
                   >
                     <div>
                       <strong>Pedido #{p.orderId}</strong>
-                      <span style={{ display: 'block', fontSize: '13px' }}>
+                      <span style={{ display: 'block', fontSize: '0.95rem' }}>
                         {p.itemsSummary} · Previsão: {formatDate(p.scheduledAt)}
                       </span>
                     </div>
                     <div>
-                      <span style={{ fontSize: '12px', display: 'block' }}>Bruto</span>
+                      <span style={{ fontSize: '0.95rem', display: 'block' }}>Bruto</span>
                       <strong>{formatPrice(p.grossCents)}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: '12px', display: 'block' }}>
+                      <span style={{ fontSize: '0.95rem', display: 'block' }}>
                         Taxa ({p.feePercent}%)
                       </span>
                       <strong>− {formatPrice(p.feeCents)}</strong>
                     </div>
                     <div>
-                      <span style={{ fontSize: '12px', display: 'block' }}>
+                      <span style={{ fontSize: '0.95rem', display: 'block' }}>
                         Líquido produtor
                       </span>
                       <strong style={{ color: 'var(--forest)' }}>

@@ -6,7 +6,6 @@ import { Footer, Header, StatusBadge } from '@/components/ui';
 import {
   CheckIcon,
   PinIcon,
-  PlusIcon,
 } from '@/components/icons';
 import {
   api,
@@ -167,7 +166,7 @@ export default function ContaPage() {
                   className="button button-small button-secondary"
                   onClick={() => setShowAddressForm((prev) => !prev)}
                 >
-                  {!showAddressForm && <PlusIcon size={14} />}
+                  {!showAddressForm && '+'}
                   <span>{showAddressForm ? 'Cancelar' : 'Novo endereço'}</span>
                 </button>
               </div>

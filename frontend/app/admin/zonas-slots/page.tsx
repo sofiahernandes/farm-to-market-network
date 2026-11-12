@@ -187,7 +187,7 @@ export default function AdminZonasSlotsPage() {
                       <strong>{zone.name}</strong>
                       <span
                         className="muted"
-                        style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                        style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                       >
                         CEP inicial: {zone.postalCodePrefix}* · {zone.city} ·
                         Limite de alteração: {zone.cutoffHours}h ({zone.ordersCount}{' '}
@@ -296,7 +296,7 @@ export default function AdminZonasSlotsPage() {
                       <strong>{slot.label}</strong>
                       <span
                         className="muted"
-                        style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                        style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                       >
                         {slot.zoneName} · Ocupação: {slot.occupied}/
                         {slot.capacity} pedidos

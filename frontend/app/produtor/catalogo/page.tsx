@@ -96,9 +96,9 @@ export default function ProdutorCatalogoPage() {
         />
 
         <div className="dashboard-intro">
-          <div>
+          <div className="lead">
             <h1>Catálogo de ofertas e cestas fixas</h1>
-            <p className="lead">
+            <p>
               Publique, edite preços, atualize sazonalidade ou pause ofertas sem perder o histórico.
             </p>
           </div>

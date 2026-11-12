@@ -140,7 +140,7 @@ export default function ProdutorOnboardingPage() {
                   >
                     <div>
                       <strong>{cert.name}</strong>
-                      <span className="muted" style={{ display: 'block', fontSize: '13px' }}>
+                      <span className="muted" style={{ display: 'block', fontSize: '0.95rem' }}>
                         {cert.issuer} · Válido até {formatDate(cert.validUntil)}
                       </span>
                     </div>
@@ -307,7 +307,7 @@ export default function ProdutorOnboardingPage() {
                       <ShieldCheckIcon size={18} />
                       <div>
                         <strong>{cert.name}</strong>
-                        <span style={{ display: 'block', fontSize: '13px' }}>
+                        <span style={{ display: 'block', fontSize: '0.95rem' }}>
                           Emissor: {cert.issuer} · Validade: {cert.validUntil}
                         </span>
                       </div>

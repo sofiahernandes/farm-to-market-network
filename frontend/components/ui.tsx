@@ -117,7 +117,7 @@ export function Header(_props: { app?: boolean } = {}) {
                 className="button button-small button-secondary hide-mobile"
                 href={
                   user.role === 'producer'
-                    ? '/produtor'
+                    ? '/produtor/conta'
                     : user.role === 'operations'
                     ? '/admin'
                     : '/app/conta'

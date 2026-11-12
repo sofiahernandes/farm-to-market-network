@@ -155,7 +155,7 @@ export default function AdminDashboardPage() {
                           <strong>{exc.title}</strong>
                           <span
                             className="muted"
-                            style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                            style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                           >
                             {formatExceptionType(exc.type)} · {exc.description}
                           </span>
@@ -207,7 +207,7 @@ export default function AdminDashboardPage() {
                         <strong>{slot.label}</strong>
                         <span
                           className="muted"
-                          style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                          style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                         >
                           <MapPinIcon size={13} /> {slot.zoneName}
                         </span>
@@ -257,7 +257,7 @@ export default function AdminDashboardPage() {
                       </strong>
                       <span
                         className="muted"
-                        style={{ display: 'block', fontSize: '13px', marginTop: '2px' }}
+                        style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                       >
                         <TruckIcon size={13} />{' '}
                         {order.routeName ?? 'Aguardando atribuição de rota'} ·{' '}
@@ -317,7 +317,7 @@ export default function AdminDashboardPage() {
                         <strong>{entry.summary}</strong>
                         <span
                           className="muted"
-                          style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}
+                          style={{ display: 'block', fontSize: '0.95rem', marginTop: '2px' }}
                         >
                           {formatAuditResource(entry.resourceType)} ·{' '}
                           {formatDateTime(entry.createdAt)}

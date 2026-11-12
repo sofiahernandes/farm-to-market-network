@@ -77,7 +77,7 @@ class CatalogController {
       },
       items: rawItems.map((it: any) => ({
         ...it,
-        origin: it.origin ?? 'Sítio Verde · Ibiúna/SP',
+        origin: it.origin ?? 'Sítio Verde',
       })),
     };
   }

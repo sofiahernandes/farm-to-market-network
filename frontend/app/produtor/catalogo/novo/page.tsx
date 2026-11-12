@@ -265,7 +265,7 @@ export default function ProdutorNovaOfertaPage() {
           </form>
 
           <aside style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <strong style={{ fontSize: '14px', color: 'var(--forest)' }}>
+            <strong style={{ fontSize: '0.95rem', color: 'var(--forest)' }}>
               Pré-visualização no catálogo do consumidor:
             </strong>
             <ProductCard product={previewProduct} />

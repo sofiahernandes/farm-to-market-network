@@ -95,7 +95,7 @@ export default function ProdutorPedidosPage() {
                         <SproutIcon size={18} />
                         <div>
                           <strong>{h.name}</strong>
-                          <span style={{ display: 'block', fontSize: '13px' }}>
+                          <span style={{ display: 'block', fontSize: '0.95rem' }}>
                             Distribuído em {h.ordersCount} pedido(s)
                           </span>
                         </div>
