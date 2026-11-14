@@ -1,4 +1,4 @@
-# AgriTech backend
+# Manà backend
 
 API NestJS do fluxo vertical real em `/v1`: cadastro/login, catálogo persistido, carrinho por usuário, checkout idempotente e reserva transacional de estoque.
 

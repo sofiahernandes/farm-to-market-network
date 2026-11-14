@@ -1,4 +1,4 @@
-# AgriTech MVP — Plano de implementação
+# Manà MVP — Plano de implementação
 
 **Status:** slice vertical real de consumidor implementado; restante do MVP operacional ainda aberto
 **Data-base:** 28/10/2026
@@ -9,7 +9,7 @@
 
 O MVP será uma aplicação web responsiva, em português do Brasil, para vender produtos avulsos e cestas fixas de preço definido, com assinatura semanal ou mensal. O slice vertical entregue nesta etapa é real e cobre cadastro, login, catálogo persistido, carrinho, checkout idempotente, reserva de estoque e pedidos. O fluxo completo alvo é: produtor aprovado publica oferta; consumidor cria conta, escolhe endereço e janela, compra ou assina; estoque é reservado de forma atômica; Mercado Pago confirma o pagamento por webhook idempotente; operações prepara e despacha; consumidor confirma a entrega; produtor consulta o repasse.
 
-`PLAN.md` prevalece sobre o README e sobre requisitos herdados da matriz. O README descreve B2B, cestas customizáveis, tickets, BI e roteirização automática; esses itens não entram nesta versão. O README também identifica o pacote como `amigo-do-bairro`; isso deve ser corrigido na fundação para a identidade AgriTech, sem assumir que qualquer integração externa esteja configurada.
+`PLAN.md` prevalece sobre o README e sobre requisitos herdados da matriz. O README descreve B2B, cestas customizáveis, tickets, BI e roteirização automática; esses itens não entram nesta versão. O README também identifica o pacote como `amigo-do-bairro`; isso deve ser corrigido na fundação para a identidade Manà, sem assumir que qualquer integração externa esteja configurada.
 
 ## 2. Diagnóstico do scaffold e estado atual
 
@@ -46,7 +46,7 @@ A decisão padrão é migrar o conteúdo futuro de `backend/` para `apps/api/`, 
 
 ### 3.2 Frontend
 
-- Next.js App Router, TypeScript e Tailwind; `pt-BR` como idioma e metadados AgriTech.
+- Next.js App Router, TypeScript e Tailwind; `pt-BR` como idioma e metadados Manà.
 - Rotas públicas para landing, catálogo e detalhe; rotas protegidas separadas por consumidor, produtor e operações.
 - UI mobile-first, alto contraste, tipografia legível, estados de carregamento/erro/vazio, feedback de validação e navegação por teclado/leitor de tela.
 - O frontend nunca recebe segredos de provedores. Comunicação de domínio ocorre pela API REST `/v1`.

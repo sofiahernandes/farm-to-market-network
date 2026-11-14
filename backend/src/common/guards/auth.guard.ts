@@ -15,17 +15,17 @@ const DEV_MOCK_TOKENS: Record<
 > = {
   'mock-local-session-mock-consumer': {
     sub: 'mock-consumer',
-    email: 'consumidor@agritech.local',
+    email: 'consumidor@mana.local',
     role: 'consumer',
   },
   'mock-local-session-sitio-verde': {
     sub: 'user-producer',
-    email: 'produtor@agritech.local',
+    email: 'produtor@mana.local',
     role: 'producer',
   },
   'mock-local-session-ops-central': {
     sub: 'user-ops',
-    email: 'operacoes@agritech.local',
+    email: 'operacoes@mana.local',
     role: 'operations',
   },
 };
@@ -80,7 +80,7 @@ export class OptionalAuthGuard implements CanActivate {
     }
     req.user = {
       sub: 'mock-consumer',
-      email: 'consumidor@agritech.local',
+      email: 'consumidor@mana.local',
       role: 'consumer',
     };
     return true;

@@ -5,7 +5,7 @@ export class HealthController {
   @Get() check() {
     return {
       status: 'ok',
-      service: 'agritech-api',
+      service: 'mana-api',
       version: 'v1',
       timestamp: new Date().toISOString(),
     };

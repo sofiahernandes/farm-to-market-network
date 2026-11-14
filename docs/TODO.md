@@ -1,4 +1,4 @@
-# TODO — slice AgriTech
+# TODO — slice Manà
 
 ## Concluído
 - Cadastro de consumidor com email, CPF e senha via `POST /auth/register`, com mensagens de erro e sucesso.

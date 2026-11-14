@@ -42,8 +42,8 @@ export default function Checkout() {
     setSubmitting(true);
     try {
       const key =
-        localStorage.getItem('agritech_checkout_key') || crypto.randomUUID();
-      localStorage.setItem('agritech_checkout_key', key);
+        localStorage.getItem('mana_checkout_key') || crypto.randomUUID();
+      localStorage.setItem('mana_checkout_key', key);
       setOrder(
         await api<Order>('/checkout', {
           method: 'POST',
@@ -51,7 +51,7 @@ export default function Checkout() {
           body: JSON.stringify({ address: form, deliverySlotId: slot }),
         })
       );
-      localStorage.removeItem('agritech_checkout_key');
+      localStorage.removeItem('mana_checkout_key');
     } catch (e) {
       setError((e as Error).message);
     } finally {

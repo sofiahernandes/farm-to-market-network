@@ -117,7 +117,7 @@ class AdminService {
         totalCents: o.totalCents,
         idempotencyKey: o.idempotencyKey,
         producerSeparated: o.producerSeparated || o.status === 'Entregue',
-        customerEmail: o.user?.email ?? 'consumidor@agritech.local',
+        customerEmail: o.user?.email ?? 'consumidor@mana.local',
         items: o.items.map((i) => ({
           productId: i.productId,
           name: i.product.name,

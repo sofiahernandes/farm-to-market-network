@@ -40,7 +40,7 @@ export default function CriarConta() {
       <Header />
       <main className="page-main container">
         <section className="auth-card dashboard-card">
-          <h1>Cadastre-se no AgriTech</h1>
+          <h1>Cadastre-se no Manà</h1>
           <form className="checkout-form" onSubmit={submit}>
             <label>
               Perfil da conta

@@ -1,4 +1,4 @@
-# API AgriTech — fluxo vertical real
+# API Manà — fluxo vertical real
 
 A API NestJS usa JSON e prefixo global `/v1`. O sandbox local usa SQLite persistente em `backend/prisma/dev.db`, Bearer JWT com expiração de duas horas e gateway de pagamento `fake-sandbox`. Não há Mercado Pago real nesta etapa.
 

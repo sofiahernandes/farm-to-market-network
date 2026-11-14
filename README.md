@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>AgriTech</h1>
+  <h1>Manà</h1>
   <p>Farm-to-Market Agricultural Network: Connecting family <br/>
   agriculture directly to urban consumers and retailers.
   </p>
@@ -9,9 +9,9 @@
 
 ### What it is
 
-AgriTech is a hybrid agricultural marketplace and logistics platform designed to optimize end-to-end distribution between small-scale family farmers, urban households, and local businesses.
+Manà is a hybrid agricultural marketplace and logistics platform designed to optimize end-to-end distribution between small-scale family farmers, urban households, and local businesses.
 
-By replacing traditional, static collection points and eliminating predatory intermediaries ("atravessadores"), AgriTech establishes a dynamic, direct distribution network with fair profit margins for producers and affordable, freshly harvested food for consumers.
+By replacing traditional, static collection points and eliminating predatory intermediaries ("atravessadores"), Manà establishes a dynamic, direct distribution network with fair profit margins for producers and affordable, freshly harvested food for consumers.
 
 The platform operates across three main pillars:
 
@@ -31,7 +31,7 @@ Brazil's food supply chain suffers from severe structural bottlenecks that penal
 
 > _"Connecting the productive base directly to the final market is the only way to save food from the trash and guarantee financial fairness for those who plant."_
 
-AgriTech aligns supply with actual demand, ensuring every crop harvested has a guaranteed buyer and shortening the farm-to-table transit time.
+Manà aligns supply with actual demand, ensuring every crop harvested has a guaranteed buyer and shortening the farm-to-table transit time.
 
 <br/>
 
@@ -42,7 +42,7 @@ AgriTech aligns supply with actual demand, ensuring every crop harvested has a g
 The platform is organized into four dedicated operational scopes:
 
 ```
-AgriTech
+Manà
 │
 ├── Institutional Portal (/)
 │   ├── Landing Page & Hero
@@ -206,4 +206,4 @@ Visit [http://localhost:3000](http://localhost:3000) to view the application run
 
 ## License
 
-<a href="https://github.com/sofiahernandes/farm-to-market-network">AgriTech</a> © 2026 by <a href="https://github.com/analicecoimbra">Analice Coimbra Carneiro</a>, <a href="https://github.com/alicelobwp">Mariah Alice Pimentel Lôbo Pereira</a>, <a href="https://github.com/sofiahernandes">Sofia Botechia Hernandes</a> and <a href="https://github.com/viick04">Victória Duarte Vieira Azevedo</a> is licensed under [MIT](LICENSE).
+<a href="https://github.com/sofiahernandes/farm-to-market-network">Manà</a> © 2026 by <a href="https://github.com/analicecoimbra">Analice Coimbra Carneiro</a>, <a href="https://github.com/alicelobwp">Mariah Alice Pimentel Lôbo Pereira</a>, <a href="https://github.com/sofiahernandes">Sofia Botechia Hernandes</a> and <a href="https://github.com/viick04">Victória Duarte Vieira Azevedo</a> is licensed under [MIT](LICENSE).

@@ -88,50 +88,50 @@ class AuthService {
   async login(dto: LoginDto) {
     const rawEmail = dto.email.trim().toLowerCase();
     const isDemoConsumer =
-      rawEmail === 'jornada@agritech.local' ||
-      rawEmail === 'consumidor@agritech.local';
+      rawEmail === 'jornada@mana.local' ||
+      rawEmail === 'consumidor@mana.local';
 
     let user = await this.db.user.findFirst({
       where: isDemoConsumer
         ? {
             OR: [
               { id: 'mock-consumer' },
-              { email: 'consumidor@agritech.local' },
-              { email: 'jornada@agritech.local' },
+              { email: 'consumidor@mana.local' },
+              { email: 'jornada@mana.local' },
             ],
           }
         : { email: rawEmail },
     });
 
-    if (!user && dto.password === 'agritech123') {
+    if (!user && dto.password === 'mana123') {
       const demoDefaults: Record<
         string,
         { id: string; email: string; cpf: string; maskedCpf: string; role: string }
       > = {
-        'jornada@agritech.local': {
+        'jornada@mana.local': {
           id: 'mock-consumer',
-          email: 'jornada@agritech.local',
+          email: 'jornada@mana.local',
           cpf: '52998224725',
           maskedCpf: '***.982.247-25',
           role: 'consumer',
         },
-        'consumidor@agritech.local': {
+        'consumidor@mana.local': {
           id: 'mock-consumer',
-          email: 'consumidor@agritech.local',
+          email: 'consumidor@mana.local',
           cpf: '52998224725',
           maskedCpf: '***.982.247-25',
           role: 'consumer',
         },
-        'produtor@agritech.local': {
+        'produtor@mana.local': {
           id: 'user-producer',
-          email: 'produtor@agritech.local',
+          email: 'produtor@mana.local',
           cpf: '12345678909',
           maskedCpf: '***.482.299-26',
           role: 'producer',
         },
-        'operacoes@agritech.local': {
+        'operacoes@mana.local': {
           id: 'user-ops',
-          email: 'operacoes@agritech.local',
+          email: 'operacoes@mana.local',
           cpf: '98765432100',
           maskedCpf: '***.550.250-97',
           role: 'operations',
@@ -147,7 +147,7 @@ class AuthService {
             email: demo.email,
             cpfHash: createHash('sha256').update(demo.cpf).digest('hex'),
             maskedCpf: demo.maskedCpf,
-            passwordHash: await bcrypt.hash('agritech123', 10),
+            passwordHash: await bcrypt.hash('mana123', 10),
             role: demo.role,
           },
         });

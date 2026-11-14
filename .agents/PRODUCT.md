@@ -12,7 +12,7 @@ Consumers buying locally produced food, who need to browse offers, manage a bask
 
 ## Product Purpose
 
-AgriTech connects customers with food from small local producers, from catalogue discovery through delivery tracking.
+Manà connects customers with food from small local producers, from catalogue discovery through delivery tracking.
 
 ## Positioning
 
@@ -31,7 +31,7 @@ The experience includes public catalogue and product routes, account access, a c
 
 ## Brand Commitments
 
-The product is named AgriTech. Its voice is direct, clear, local, and transparent; it should not obscure the sandbox status of payments or backend data.
+The product is named Manà. Its voice is direct, clear, local, and transparent; it should not obscure the sandbox status of payments or backend data.
 
 ## Evidence on Hand
 

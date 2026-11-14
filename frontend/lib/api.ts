@@ -364,20 +364,20 @@ export class ApiError extends Error {
 
 function notifyStateChange() {
   if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('agritech:state'));
+    window.dispatchEvent(new Event('mana:state'));
   }
 }
 
 function token() {
   return typeof window === 'undefined'
     ? null
-    : localStorage.getItem('agritech_token');
+    : localStorage.getItem('mana_token');
 }
 
 export function getCurrentUser(): User | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = localStorage.getItem('agritech_user');
+    const raw = localStorage.getItem('mana_user');
     return raw ? (JSON.parse(raw) as User) : null;
   } catch {
     return null;
@@ -385,14 +385,14 @@ export function getCurrentUser(): User | null {
 }
 
 export function saveSession(auth: AuthResponse) {
-  localStorage.setItem('agritech_token', auth.accessToken);
-  localStorage.setItem('agritech_user', JSON.stringify(auth.user));
+  localStorage.setItem('mana_token', auth.accessToken);
+  localStorage.setItem('mana_user', JSON.stringify(auth.user));
   notifyStateChange();
 }
 
 export function clearSession() {
-  localStorage.removeItem('agritech_token');
-  localStorage.removeItem('agritech_user');
+  localStorage.removeItem('mana_token');
+  localStorage.removeItem('mana_user');
   notifyStateChange();
 }
 

@@ -27,18 +27,18 @@ import type {
 } from './api';
 
 export const DEMO_CREDENTIALS = {
-  email: 'jornada@agritech.local',
-  password: 'agritech123',
+  email: 'jornada@mana.local',
+  password: 'mana123',
 };
 
 export const DEMO_PRODUCER_CREDENTIALS = {
-  email: 'produtor@agritech.local',
-  password: 'agritech123',
+  email: 'produtor@mana.local',
+  password: 'mana123',
 };
 
 export const DEMO_OPERATIONS_CREDENTIALS = {
-  email: 'operacoes@agritech.local',
-  password: 'agritech123',
+  email: 'operacoes@mana.local',
+  password: 'mana123',
 };
 
 export type OrderStage =
@@ -462,21 +462,21 @@ type ProducerState = {
 };
 
 const storageKeys = {
-  cart: 'agritech_mock_cart',
-  orders: 'agritech_mock_orders',
-  stock: 'agritech_mock_stock',
-  users: 'agritech_mock_users',
-  subscriptions: 'agritech_mock_subscriptions',
-  addresses: 'agritech_mock_addresses',
-  lgpdRequests: 'agritech_mock_lgpd_requests',
-  producerState: 'agritech_mock_producer_state',
-  customProducts: 'agritech_mock_custom_products',
-  productOverrides: 'agritech_mock_product_overrides',
-  producerAudit: 'agritech_mock_producer_audit',
-  adminZones: 'agritech_mock_admin_zones',
-  adminSlots: 'agritech_mock_admin_slots',
-  adminRoutes: 'agritech_mock_admin_routes',
-  adminExceptions: 'agritech_mock_admin_exceptions',
+  cart: 'mana_mock_cart',
+  orders: 'mana_mock_orders',
+  stock: 'mana_mock_stock',
+  users: 'mana_mock_users',
+  subscriptions: 'mana_mock_subscriptions',
+  addresses: 'mana_mock_addresses',
+  lgpdRequests: 'mana_mock_lgpd_requests',
+  producerState: 'mana_mock_producer_state',
+  customProducts: 'mana_mock_custom_products',
+  productOverrides: 'mana_mock_product_overrides',
+  producerAudit: 'mana_mock_producer_audit',
+  adminZones: 'mana_mock_admin_zones',
+  adminSlots: 'mana_mock_admin_slots',
+  adminRoutes: 'mana_mock_admin_routes',
+  adminExceptions: 'mana_mock_admin_exceptions',
 };
 
 const memoryStore = new Map<string, string>();
@@ -1511,7 +1511,7 @@ export async function mockApi(
     const password = body?.password;
     if (
       (email === DEMO_CREDENTIALS.email ||
-        email === 'consumidor@agritech.local') &&
+        email === 'consumidor@mana.local') &&
       password === DEMO_CREDENTIALS.password
     ) {
       return authResponse(email, 'consumer', 'mock-consumer');
@@ -2449,7 +2449,7 @@ export async function mockApi(
         mode: 'sandbox',
         storesCardData: false,
         description:
-          'Nenhum dado bruto de cartão de crédito é armazenado pelo AgriTech. Cobranças avulsas e recorrentes operam em modo de simulação local.',
+          'Nenhum dado bruto de cartão de crédito é armazenado pelo Manà. Cobranças avulsas e recorrentes operam em modo de simulação local.',
       },
       addresses,
       lgpdRequests,

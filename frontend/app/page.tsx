@@ -181,7 +181,7 @@ export default function Home() {
               <div>
                 <h2>Ofertas que respeitam o ciclo natural da terra.</h2>
                 <p className="lead">
-                  Ao comprar pelo AgriTech, você apoia produtores familiares
+                  Ao comprar pelo Manà, você apoia produtores familiares
                   locais e garante alimentos mais saborosos e nutritivos.
                 </p>
               </div>

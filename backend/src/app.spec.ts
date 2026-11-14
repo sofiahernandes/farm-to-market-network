@@ -4,7 +4,7 @@ import { AppModule } from './app.module';
 import { appValidationPipe } from './common/pipes/validation.pipe';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
-describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
+describe('Manà SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
   let app: INestApplication;
   let baseUrl: string;
   let consumerToken: string;
@@ -32,8 +32,8 @@ describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () =>
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'jornada@agritech.local',
-        password: 'agritech123',
+        email: 'jornada@mana.local',
+        password: 'mana123',
       }),
     });
     expect(jornadaRes.status).toBe(201);
@@ -44,8 +44,8 @@ describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () =>
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'consumidor@agritech.local',
-        password: 'agritech123',
+        email: 'consumidor@mana.local',
+        password: 'mana123',
       }),
     });
     expect(consumerRes.status).toBe(201);
@@ -57,8 +57,8 @@ describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () =>
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'produtor@agritech.local',
-        password: 'agritech123',
+        email: 'produtor@mana.local',
+        password: 'mana123',
       }),
     });
     expect(producerRes.status).toBe(201);
@@ -69,8 +69,8 @@ describe('AgriTech SQLite + NestJS Full-Stack Integration (All 4 Slices)', () =>
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'operacoes@agritech.local',
-        password: 'agritech123',
+        email: 'operacoes@mana.local',
+        password: 'mana123',
       }),
     });
     expect(opsRes.status).toBe(201);

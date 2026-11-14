@@ -1,6 +1,6 @@
 # Setup local
 
-Os comandos abaixo executam o fluxo vertical real a partir de `/home/ubuntu/agritech`.
+Os comandos abaixo executam o fluxo vertical real a partir de `/home/ubuntu/mana`.
 
 ## Pré-requisitos
 
@@ -10,7 +10,7 @@ Os comandos abaixo executam o fluxo vertical real a partir de `/home/ubuntu/agri
 ## Backend NestJS + SQLite sandbox
 
 ```bash
-cd /home/ubuntu/agritech/backend
+cd /home/ubuntu/mana/backend
 npm install
 cp .env.example .env
 npm run prisma:generate
@@ -35,7 +35,7 @@ curl http://localhost:3001/v1/catalog
 Em outro terminal:
 
 ```bash
-cd /home/ubuntu/agritech/frontend
+cd /home/ubuntu/mana/frontend
 npm install
 export NEXT_PUBLIC_API_URL=http://localhost:3001/v1
 npm run dev

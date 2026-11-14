@@ -1,4 +1,4 @@
-# Roadmap de Desenvolvimento — AgriTech MVP
+# Roadmap de Desenvolvimento — Manà MVP
 
 **Versão:** 1.0  
 **Data-base:** 28/10/2026  
@@ -8,7 +8,7 @@
 
 Na análise inicial, o repositório continha apenas um scaffold de Next.js e `backend/empty.txt`. Nesta execução, o scaffold foi convertido em um slice vertical real: frontend Next.js conectado à API NestJS, cadastro/login JWT, catálogo persistido, carrinho, checkout idempotente, pagamento fake sandbox, reserva transacional de estoque, pedidos, auditoria, documentação e manifesto de rotas. O banco local usa SQLite; PostgreSQL, Mercado Pago, worker, mapas e notificações permanecem no backlog de produção.
 
-Os documentos de produto já fornecem uma boa base de descoberta: sitemap para portal institucional, consumidor, produtor e operações; wireframes para login, vitrine, cestas, assinatura e painéis; e uma matriz de requisitos funcionais e não funcionais. Entretanto, parte da planilha contém requisitos herdados de outro domínio — pets, comunidades, prontuários e códigos de comunidade — que não deve entrar no backlog AgriTech.
+Os documentos de produto já fornecem uma boa base de descoberta: sitemap para portal institucional, consumidor, produtor e operações; wireframes para login, vitrine, cestas, assinatura e painéis; e uma matriz de requisitos funcionais e não funcionais. Entretanto, parte da planilha contém requisitos herdados de outro domínio — pets, comunidades, prontuários e códigos de comunidade — que não deve entrar no backlog Manà.
 
 O `PLAN.md` será tratado como a fonte de verdade do MVP. Portanto, a primeira versão será um marketplace B2C de uma cidade-piloto, com cestas de preço fixo recorrentes e compras avulsas, mais ferramentas de produtor e operações. B2B atacado, tickets de proposta, plantio preditivo e entrega por drones ficam fora do MVP.
 
@@ -71,7 +71,7 @@ O sistema deverá preservar estoque por transações atômicas, reconciliar paga
 **Entregáveis:**
 
 - Monorepo ou estrutura organizada para `frontend`, `api`, `worker`, `packages/contracts` e infraestrutura.
-- Next.js configurado com metadata AgriTech, idioma `pt-BR`, rotas públicas e internas e `manus-routes.json` sincronizado.
+- Next.js configurado com metadata Manà, idioma `pt-BR`, rotas públicas e internas e `manus-routes.json` sincronizado.
 - Design system mobile-first: tipografia legível, alto contraste, estados de carregamento/erro/vazio, navegação por papel, componentes de formulário e feedback.
 - Contratos compartilhados com DTOs, validação, paginação por cursor, erros estruturados e estados de domínio.
 - NestJS com `/v1`, OpenAPI, configuração por ambiente, logger estruturado, health check e CORS allowlist.
@@ -253,7 +253,7 @@ Se a equipe preferir manter `backend/` em vez de `apps/api`, deve preservar a me
 | Aprovação comercial do Mercado Pago Split 1:1    | Implementar adapter e modo de simulação; bloquear split de produção por feature flag | Conta produtora onboarded e aprovação para produção |
 | Definição da cidade-piloto e slots               | Modelar zonas/slots configuráveis, sem hardcode                                      | CEPs, dias, cutoff e capacidade aprovados           |
 | Ambiguidade entre B2C MVP e escopo B2B do README | Usar `PLAN.md` como fonte de verdade e manter B2B em roadmap posterior               | Decisão registrada no backlog                       |
-| Requisitos herdados de pets/comunidades          | Remover da matriz AgriTech e não implementar                                         | Backlog revisado                                    |
+| Requisitos herdados de pets/comunidades          | Remover da matriz Manà e não implementar                                         | Backlog revisado                                    |
 | Estoque de perecíveis                            | Reserva transacional, cutoff e política de substituição/reembolso                    | Teste de concorrência aprovado                      |
 | Dados pessoais e pagamentos                      | Não armazenar cartão; criptografar/segregar CPF; logs sem dados sensíveis            | Revisão de segurança e LGPD concluída               |
 | Operação manual no piloto                        | Rotas por zona, calendário e runbook simples antes de otimização automática          | Simulação de um dia de entrega concluída            |

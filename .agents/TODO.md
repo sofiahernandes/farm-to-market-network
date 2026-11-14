@@ -1,4 +1,4 @@
-# AgriTech MVP — TODO de outcomes
+# Manà MVP — TODO de outcomes
 
 **Escopo:** B2C, uma cidade-piloto, consumidor/produtor/operações.  
 **Fonte de verdade:** `PLAN.md` e `ROADMAP.md`.  
@@ -24,7 +24,7 @@
 - [x] Substituir o placeholder por uma fundação NestJS/Prisma transacional para o slice consumidor, usando SQLite sandbox e adapter de pagamento fake.
 - [ ] Escolher e registrar ADR para `apps/api` versus manutenção de `backend/`, preservando separação API/worker.
 - [ ] Organizar `frontend/`, `apps/api/`, `apps/worker/`, `packages/contracts/`, `packages/domain/`, `packages/config/`, `prisma/`, `infra/`, `docs/` e `tests/`.
-- [x] Corrigir nome/metadata do starter para AgriTech, registrar logo e remover conteúdo default das telas entregues.
+- [x] Corrigir nome/metadata do starter para Manà, registrar logo e remover conteúdo default das telas entregues.
 - [ ] Configurar workspace, TypeScript, lint, formatter, typecheck, build e execução de testes no CI.
 - [x] Configurar variáveis por ambiente, CORS sandbox e garantir que segredos não sejam enviados ao frontend.
 - [x] Criar health check, correlation ID e CORS allowlist; logger estruturado permanece como hardening futuro.

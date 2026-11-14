@@ -1,4 +1,4 @@
-# AgriTech MVP — Especificação de UX/UI
+# Manà MVP — Especificação de UX/UI
 
 **Status:** referência de design para implementação frontend  
 **Idioma da interface:** português do Brasil (`pt-BR`)  
@@ -67,7 +67,7 @@ Rotas fora do MVP não devem existir no menu nem como placeholders: `/atacado`, 
 
 ### 3.1 Cabeçalho público
 
-Desktop: marca AgriTech à esquerda; links “Como funciona”, “Para produtores”, “Para consumidores”, “Ajuda”; ações “Entrar” e “Criar conta”. CTA primário “Catálogo”. Mobile: marca, botão de menu acessível e CTA “Entrar”; menu em drawer com foco preso.
+Desktop: marca Manà à esquerda; links “Como funciona”, “Para produtores”, “Para consumidores”, “Ajuda”; ações “Entrar” e “Criar conta”. CTA primário “Catálogo”. Mobile: marca, botão de menu acessível e CTA “Entrar”; menu em drawer com foco preso.
 
 Rodapé: “Como funciona”, “Ajuda e contato”, “Termos de uso”, “Privacidade e LGPD”. Não publicar métricas de impacto como fato medido sem baseline; quando usadas, rotular como proposta/medição do piloto.
 
@@ -225,7 +225,7 @@ Para leitura, mostrar última atualização e botão “Tentar novamente”. Par
 
 ### Fundação
 
-- [ ] Metadados, linguagem e identidade são AgriTech; não há vestígio visual do starter ou de “amigo-do-bairro”.
+- [ ] Metadados, linguagem e identidade são Manà; não há vestígio visual do starter ou de “amigo-do-bairro”.
 - [ ] Tokens de cor, tipografia, espaçamento, foco e estados estão centralizados e reutilizáveis.
 - [ ] Não existem links ou menus para escopo explicitamente fora do MVP.
 

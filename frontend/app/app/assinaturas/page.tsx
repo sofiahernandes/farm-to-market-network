@@ -71,7 +71,7 @@ export default function AssinaturasPage() {
     subId: string,
     endpoint: 'pause' | 'resume' | 'cancel' | 'generate-cycle',
     body?: Record<string, unknown>,
-    successMsg?: string
+    successMsg?: string,
   ) {
     setBusyId(subId);
     setError('');
@@ -82,7 +82,7 @@ export default function AssinaturasPage() {
         {
           method: 'POST',
           body: body ? JSON.stringify(body) : undefined,
-        }
+        },
       );
       replaceSub(updated);
       if (successMsg) setMessage(successMsg);
@@ -103,7 +103,8 @@ export default function AssinaturasPage() {
           <div>
             <h1>Suas assinaturas de cestas fixas</h1>
             <p className="lead">
-              Acompanhe a próxima cobrança, janela de entrega, regras de cutoff e o histórico de ciclos.
+              Acompanhe a próxima cobrança, janela de entrega, regras de cutoff
+              e o histórico de ciclos.
             </p>
           </div>
           <Link href="/cestas" className="button button-primary">
@@ -141,13 +142,16 @@ export default function AssinaturasPage() {
           </div>
         )}
 
-        {loading && <p className="loading-indicator">Carregando assinaturas…</p>}
+        {loading && (
+          <p className="loading-indicator">Carregando assinaturas…</p>
+        )}
 
         {!loading && subs.length === 0 && (
           <section className="dashboard-card empty-card">
             <h2>Nenhuma assinatura ativa.</h2>
             <p className="muted">
-              Escolha uma cesta fixa semanal ou mensal para receber alimentos frescos direto dos produtores.
+              Escolha uma cesta fixa semanal ou mensal para receber alimentos
+              frescos direto dos produtores.
             </p>
             <Link href="/cestas" className="button button-primary">
               <span>Conhecer cestas</span>
@@ -169,11 +173,14 @@ export default function AssinaturasPage() {
                 <div className="stack-xs">
                   <span className="order-code">
                     Assinatura #{sub.id} ·{' '}
-                    {sub.frequency === 'weekly' ? 'Plano Semanal' : 'Plano Mensal'}
+                    {sub.frequency === 'weekly'
+                      ? 'Plano Semanal'
+                      : 'Plano Mensal'}
                   </span>
                   <h2>{sub.basketName}</h2>
                   <span className="count-tag">
-                    Produtor: {sub.producer.name} · {formatPrice(sub.priceCents)} por ciclo
+                    Produtor: {sub.producer.name} ·{' '}
+                    {formatPrice(sub.priceCents)} por ciclo
                   </span>
                 </div>
                 <StatusBadge tone={badge.tone}>{badge.text}</StatusBadge>
@@ -199,7 +206,8 @@ export default function AssinaturasPage() {
                 <div>
                   <span>Endereço e janela</span>
                   <strong>
-                    {sub.address.street}, {sub.address.number} · {sub.address.city}
+                    {sub.address.street}, {sub.address.number} ·{' '}
+                    {sub.address.city}
                   </strong>
                 </div>
               </div>
@@ -210,8 +218,8 @@ export default function AssinaturasPage() {
                 </div>
                 <div>
                   <strong>
-                    Regra de cutoff ({sub.cutoffHours}h antes da entrega): limite em{' '}
-                    {formatDateTime(sub.cutoffAt)}
+                    Regra de cutoff ({sub.cutoffHours}h antes da entrega):
+                    limite em {formatDateTime(sub.cutoffAt)}
                   </strong>
                   <p>
                     {sub.canModifyCurrentCycle
@@ -248,7 +256,7 @@ export default function AssinaturasPage() {
                           sub.id,
                           'pause',
                           undefined,
-                          'Assinatura pausada com sucesso respeitando o cutoff.'
+                          'Assinatura pausada com sucesso respeitando o cutoff.',
                         )
                       }
                       className="button button-small button-secondary"
@@ -263,7 +271,7 @@ export default function AssinaturasPage() {
                           sub.id,
                           'generate-cycle',
                           undefined,
-                          'Ciclo processado com sucesso: estoque reservado e pedido criado.'
+                          'Ciclo processado com sucesso: estoque reservado e pedido criado.',
                         )
                       }
                       className="button button-small button-primary"
@@ -282,7 +290,7 @@ export default function AssinaturasPage() {
                             cycleKey: `falha-${Date.now()}`,
                             simulatePaymentFailure: true,
                           },
-                          'Falha de cobrança recorrente simulada no histórico.'
+                          'Falha de cobrança recorrente simulada no histórico.',
                         )
                       }
                       className="button button-small button-secondary"
@@ -292,7 +300,8 @@ export default function AssinaturasPage() {
                   </>
                 )}
 
-                {(sub.status === 'paused' || sub.status === 'payment_failed') && (
+                {(sub.status === 'paused' ||
+                  sub.status === 'payment_failed') && (
                   <button
                     type="button"
                     disabled={isBusy}
@@ -301,7 +310,7 @@ export default function AssinaturasPage() {
                         sub.id,
                         'resume',
                         undefined,
-                        'Assinatura reativada para os próximos ciclos.'
+                        'Assinatura reativada para os próximos ciclos.',
                       )
                     }
                     className="button button-small button-primary"
@@ -320,7 +329,7 @@ export default function AssinaturasPage() {
                         sub.id,
                         'cancel',
                         undefined,
-                        'Assinatura cancelada dentro do prazo de cutoff.'
+                        'Assinatura cancelada dentro do prazo de cutoff.',
                       )
                     }
                     className="button button-small button-secondary danger-text"
@@ -341,16 +350,21 @@ export default function AssinaturasPage() {
                       <div className="order-row" key={cycle.id}>
                         <div className="stack-xs">
                           <strong>
-                            Ciclo {cycle.cycleKey} · Entrega {formatDate(cycle.deliveryDate)}
+                            Ciclo {cycle.cycleKey} · Entrega{' '}
+                            {formatDate(cycle.deliveryDate)}
                           </strong>
                           <span>
-                            {cycle.note || `Cobrança: ${cycle.paymentStatus}`} · {formatPrice(cycle.amountCents)}
+                            {cycle.note || `Cobrança: ${cycle.paymentStatus}`} ·{' '}
+                            {formatPrice(cycle.amountCents)}
                           </span>
                         </div>
                         <div className="cluster-md">
                           <StatusBadge tone={cb.tone}>{cb.text}</StatusBadge>
                           {cycle.orderId && (
-                            <Link href={`/app/pedidos/${cycle.orderId}`} className="text-link">
+                            <Link
+                              href={`/app/pedidos/${cycle.orderId}`}
+                              className="text-link"
+                            >
                               Pedido #{cycle.orderId} →
                             </Link>
                           )}
@@ -364,7 +378,8 @@ export default function AssinaturasPage() {
               <div className="sandbox-notice">
                 <ShieldCheckIcon size={14} />
                 <span>
-                  Ciclos são idempotentes por chave de período: gerar o mesmo ciclo duas vezes não duplica reserva de estoque nem pedido.
+                  Ciclos são idempotentes por chave de período: gerar o mesmo
+                  ciclo duas vezes não duplica reserva de estoque nem pedido.
                 </span>
               </div>
             </section>

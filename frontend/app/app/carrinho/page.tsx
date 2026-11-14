@@ -74,9 +74,6 @@ export default function Carrinho() {
                   </div>
                   <div className="cart-item-details">
                     <strong>{item.name}</strong>
-                    <span className="cart-item-meta">
-                      {item.quantity} × {formatPrice(item.unitPriceCents)}
-                    </span>
                     <StatusBadge
                       tone={
                         item.available >= item.quantity ? 'success' : 'warning'
@@ -85,6 +82,7 @@ export default function Carrinho() {
                       {item.available} disponíveis no lote
                     </StatusBadge>
                   </div>
+                  <strong className="cart-item-subtotal">{formatPrice(item.subtotalCents)}</strong>
                   <div
                     className="stepper-control"
                     aria-label={`Ajustar quantidade de ${item.name}`}
@@ -114,12 +112,11 @@ export default function Carrinho() {
                       +
                     </button>
                   </div>
-                  <strong className="cart-item-subtotal">{formatPrice(item.subtotalCents)}</strong>
                   <button
-                    className="text-button danger-text remove-button"
+                    className="danger-text remove-button"
                     onClick={() => remove(item.productId)}
                   >
-                    Remover
+                    X
                   </button>
                 </div>
               ))}

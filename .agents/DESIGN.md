@@ -1,4 +1,4 @@
-# AgriTech Design System
+# Manà Design System
 
 ## Direction
 

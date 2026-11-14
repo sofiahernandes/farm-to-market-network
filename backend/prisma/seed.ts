@@ -9,20 +9,20 @@ function hashCpf(cpf: string): string {
 }
 
 async function main() {
-  const passwordHash = await bcrypt.hash('agritech123', 10);
+  const passwordHash = await bcrypt.hash('mana123', 10);
 
   // 1. Demo Users (Consumer, Producer, Operations)
   const consumer = await db.user.upsert({
     where: { id: 'mock-consumer' },
     update: {
-      email: 'jornada@agritech.local',
+      email: 'jornada@mana.local',
       passwordHash,
       role: 'consumer',
       maskedCpf: '***.982.247-25',
     },
     create: {
       id: 'mock-consumer',
-      email: 'jornada@agritech.local',
+      email: 'jornada@mana.local',
       cpfHash: hashCpf('52998224725'),
       maskedCpf: '***.982.247-25',
       passwordHash,
@@ -31,7 +31,7 @@ async function main() {
   });
 
   const producerUser = await db.user.upsert({
-    where: { email: 'produtor@agritech.local' },
+    where: { email: 'produtor@mana.local' },
     update: {
       passwordHash,
       role: 'producer',
@@ -39,7 +39,7 @@ async function main() {
     },
     create: {
       id: 'user-producer',
-      email: 'produtor@agritech.local',
+      email: 'produtor@mana.local',
       cpfHash: hashCpf('12345678909'),
       maskedCpf: '***.482.299-26',
       passwordHash,
@@ -48,7 +48,7 @@ async function main() {
   });
 
   await db.user.upsert({
-    where: { email: 'operacoes@agritech.local' },
+    where: { email: 'operacoes@mana.local' },
     update: {
       passwordHash,
       role: 'operations',
@@ -56,7 +56,7 @@ async function main() {
     },
     create: {
       id: 'user-ops',
-      email: 'operacoes@agritech.local',
+      email: 'operacoes@mana.local',
       cpfHash: hashCpf('98765432100'),
       maskedCpf: '***.550.250-97',
       passwordHash,

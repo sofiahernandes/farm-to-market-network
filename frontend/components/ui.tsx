@@ -33,11 +33,10 @@ import {
 
 export function Logo() {
   return (
-    <Link href="/" className="logo" aria-label="AgriTech, início">
+    <Link href="/" className="logo" aria-label="Manà, início">
       <LogoIcon size={32} />
       <span className="logo-text">
-        <span className="brand-name">AgriTech</span>
-        <span className="brand-tag">Mercado Local</span>
+        <span className="brand-name">Manà</span>
       </span>
     </Link>
   );
@@ -65,10 +64,10 @@ export function Header(_props: { app?: boolean } = {}) {
     }
 
     syncState();
-    window.addEventListener('agritech:state', syncState);
+    window.addEventListener('mana:state', syncState);
     window.addEventListener('storage', syncState);
     return () => {
-      window.removeEventListener('agritech:state', syncState);
+      window.removeEventListener('mana:state', syncState);
       window.removeEventListener('storage', syncState);
     };
   }, []);
@@ -131,9 +130,9 @@ export function Header(_props: { app?: boolean } = {}) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="h-5 w-5"
+                className="h-5 w-5 text-forest hover:text-crimson"
               >
-                <ExitIcon className='text-forest h-5 w-5' />
+                <ExitIcon className='h-5 w-5' />
               </button>
             </>
           ) : (
@@ -193,7 +192,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© 2026 AgriTech · Rede de Agricultura Local</span>
+        <span>© 2026 Manà · Rede de Agricultura Local</span>
         <span className="footer-sandbox-tag">
           Ambiente de Demonstração Sandbox
         </span>

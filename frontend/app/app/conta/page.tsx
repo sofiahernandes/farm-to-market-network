@@ -195,9 +195,9 @@ export default function ContaPage() {
                       <button
                         type="button"
                         onClick={() => removeAddress(addr.id)}
-                        className="text-button danger-text"
+                        className="danger-text"
                       >
-                        Remover
+                        X
                       </button>
                     </div>
                   ))}

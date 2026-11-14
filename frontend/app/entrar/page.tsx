@@ -46,7 +46,7 @@ export default function Entrar() {
       <main className="page-main container">
         <section className="auth-card dashboard-card">
           <div className="stack-sm">
-            <h1>Acesse sua conta AgriTech</h1>
+            <h1>Acesse sua conta Manà</h1>
             <p className="sandbox-notice" role="note">
               Demonstração local (senha {DEMO_CREDENTIALS.password}):
             </p>

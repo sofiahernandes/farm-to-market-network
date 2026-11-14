@@ -37,7 +37,7 @@ import type {
   Subscription,
 } from '../api.ts';
 
-describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
+describe('Manà Mock API & Consumer/Producer Domain Rules', () => {
   beforeEach(() => {
     resetMockState();
   });
@@ -157,17 +157,17 @@ describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
       const registered = (await mockApi('/auth/register', {
         method: 'POST',
         body: JSON.stringify({
-          email: 'novo@agritech.local',
+          email: 'novo@mana.local',
           cpf: DEMO_CPF,
           password: 'password123',
         }),
       })) as AuthResponse;
-      assert.equal(registered.user.email, 'novo@agritech.local');
+      assert.equal(registered.user.email, 'novo@mana.local');
 
       const loggedIn = (await mockApi('/auth/login', {
         method: 'POST',
         body: JSON.stringify({
-          email: 'novo@agritech.local',
+          email: 'novo@mana.local',
           password: 'password123',
         }),
       })) as AuthResponse;
@@ -180,7 +180,7 @@ describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
           mockApi('/auth/register', {
             method: 'POST',
             body: JSON.stringify({
-              email: 'invalido@agritech.local',
+              email: 'invalido@mana.local',
               cpf: '111.111.111-11',
               password: 'password123',
             }),

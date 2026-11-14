@@ -558,7 +558,7 @@ class SubscriptionsService {
     return {
       user: {
         id: targetUserId,
-        email: user?.email ?? 'consumidor@agritech.local',
+        email: user?.email ?? 'consumidor@mana.local',
         role: user?.role ?? 'consumer',
       },
       maskedCpf: user?.maskedCpf ?? '***.982.247-25',
@@ -567,7 +567,7 @@ class SubscriptionsService {
         mode: 'sandbox' as const,
         storesCardData: false as const,
         description:
-          'Nenhum dado bruto de cartão de crédito é armazenado pelo AgriTech. Cobranças avulsas e recorrentes operam em modo de simulação local.',
+          'Nenhum dado bruto de cartão de crédito é armazenado pelo Manà. Cobranças avulsas e recorrentes operam em modo de simulação local.',
       },
       addresses: addresses.map((a) => ({
         id: a.id,

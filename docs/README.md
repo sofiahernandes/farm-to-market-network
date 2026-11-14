@@ -1,6 +1,6 @@
-# AgriTech MVP
+# Manà MVP
 
-Documentação da entrega atual do marketplace B2C AgriTech. Nesta etapa, o produto mantém somente o fluxo vertical real de consumidor: cadastro, login, catálogo persistido, carrinho, checkout idempotente, reserva de estoque e consulta de pedidos.
+Documentação da entrega atual do marketplace B2C Manà. Nesta etapa, o produto mantém somente o fluxo vertical real de consumidor: cadastro, login, catálogo persistido, carrinho, checkout idempotente, reserva de estoque e consulta de pedidos.
 
 > **Estado atual:** Next.js integrado à API NestJS/Prisma. O backend roda com SQLite persistente como adapter sandbox e o pagamento usa `fake-sandbox` aprovado. Não há cobrança real.
 

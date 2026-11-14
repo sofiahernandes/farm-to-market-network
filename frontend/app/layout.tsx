@@ -3,12 +3,12 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'AgriTech · Do campo à sua porta',
-    template: '%s · AgriTech',
+    default: 'Manà · Do campo à sua porta',
+    template: '%s · Manà',
   },
   description:
     'Catálogo, sacola e pedidos persistidos para compras locais. Gateway fake sandbox e backend SQLite sandbox.',
-  applicationName: 'AgriTech',
+  applicationName: 'Manà',
   keywords: ['agricultura local', 'cestas', 'produtores', 'alimentos'],
 };
 
