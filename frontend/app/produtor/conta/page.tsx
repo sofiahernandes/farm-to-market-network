@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Footer,
   Header,
   ProducerSubnav,
   StatusBadge,
@@ -111,7 +110,6 @@ export default function ProdutorContaPage() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

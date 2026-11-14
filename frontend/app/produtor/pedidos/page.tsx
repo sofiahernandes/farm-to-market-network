@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Footer,
   Header,
   ProducerSubnav,
   StatusBadge,
@@ -169,7 +168,6 @@ export default function ProdutorPedidosPage() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

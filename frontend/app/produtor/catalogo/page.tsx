@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   FluidSheet,
-  Footer,
   Header,
   ProducerSubnav,
   StatusBadge,
@@ -249,7 +248,6 @@ export default function ProdutorCatalogoPage() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

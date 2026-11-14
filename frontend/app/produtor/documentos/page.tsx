@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
-  Footer,
   Header,
   ProducerSubnav,
   StatusBadge,
@@ -314,7 +313,6 @@ export default function ProdutorOnboardingPage() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

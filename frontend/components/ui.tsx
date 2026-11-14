@@ -193,9 +193,6 @@ export function Footer() {
       </div>
       <div className="container footer-bottom">
         <span>© 2026 Manà · Rede de Agricultura Local</span>
-        <span className="footer-sandbox-tag">
-          Ambiente de Demonstração Sandbox
-        </span>
       </div>
     </footer>
   );

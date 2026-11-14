@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Footer, Header, ProductCard, SectionHeading } from '@/components/ui';
+import { Header, ProductCard, SectionHeading } from '@/components/ui';
 import { PinIcon, SearchIcon } from '@/components/icons';
 import { api, type CatalogResponse } from '@/lib/api';
 
@@ -91,7 +91,6 @@ export default function Catalogo() {
           )}
         </section>
       </main>
-      <Footer />
     </>
   );
 }

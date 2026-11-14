@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Footer, Header, StatusBadge } from '@/components/ui';
+import { Header, StatusBadge } from '@/components/ui';
 import {
   PackageIcon,
   SproutIcon,
@@ -196,7 +196,6 @@ export default function ProductDetail() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

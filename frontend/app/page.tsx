@@ -106,7 +106,7 @@ export default function Home() {
                 <div className="harvest-board-footer">
                   <div className="harvest-delivery-note">
                     <CalendarIcon size={16} />
-                    <span>Próxima rota de entrega: Terça-feira, 08h–12h</span>
+                    <span>Próxima entrega: Terça-feira, 08h–12h</span>
                   </div>
                   <Link href="/catalogo" className="harvest-explore-link">
                     <span>Ver todas as ofertas</span>

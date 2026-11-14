@@ -237,7 +237,6 @@ export default function AssinaturasPage() {
                   {sub.items.map((item, idx) => (
                     <span
                       key={`${sub.id}-item-${idx}`}
-                      className="footer-sandbox-tag"
                     >
                       <PackageIcon size={12} /> {item.name} ({item.quantity})
                     </span>

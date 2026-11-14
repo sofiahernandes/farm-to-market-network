@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Footer, Header, ProducerSubnav, StatusBadge } from '@/components/ui';
+import { Header, ProducerSubnav, StatusBadge } from '@/components/ui';
 import {
   CalendarIcon,
   PackageIcon,
@@ -242,7 +242,6 @@ export default function ProdutorDashboardPage() {
           </>
         )}
       </main>
-      <Footer />
     </>
   );
 }

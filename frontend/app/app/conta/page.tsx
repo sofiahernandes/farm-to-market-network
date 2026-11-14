@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Footer, Header, StatusBadge } from '@/components/ui';
+import { Header, StatusBadge } from '@/components/ui';
 import {
   CheckIcon,
   PinIcon,
@@ -350,7 +350,6 @@ export default function ContaPage() {
           </div>
         )}
       </main>
-      <Footer />
     </>
   );
 }

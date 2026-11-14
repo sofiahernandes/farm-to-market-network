@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   FluidSheet,
-  Footer,
   Header,
   SectionHeading,
   StatusBadge,
@@ -424,7 +423,6 @@ export default function CestasPage() {
           </FluidSheet>
         )}
       </main>
-      <Footer />
     </>
   );
 }

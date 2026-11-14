@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Footer,
   Header,
   ProductCard,
   ProducerSubnav,
@@ -271,7 +270,6 @@ export default function ProdutorNovaOfertaPage() {
           </aside>
         </div>
       </main>
-      <Footer />
     </>
   );
 }
