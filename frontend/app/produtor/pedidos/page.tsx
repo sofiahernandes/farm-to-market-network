@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   Footer,
@@ -62,7 +61,7 @@ export default function ProdutorPedidosPage() {
         </p>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
           </p>
         )}
@@ -75,27 +74,25 @@ export default function ProdutorPedidosPage() {
         {loading && <p className="loading-indicator">Carregando fila de separação…</p>}
 
         {data && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <section className="dashboard-card">
-              <h2>1. Resumo consolidado de colheita por produto</h2>
-              <p className="muted" style={{ marginBottom: '12px' }}>
-                Quantidades totais necessárias para atender todos os pedidos em aberto da janela atual.
-              </p>
+          <div className="stack-lg">
+            <section className="dashboard-card stack-md">
+              <div>
+                <h2>1. Resumo consolidado de colheita por produto</h2>
+                <p className="muted">
+                  Quantidades totais necessárias para atender todos os pedidos em aberto da janela atual.
+                </p>
+              </div>
               {data.harvestSummary.length === 0 ? (
                 <p className="muted">Todos os pedidos ativos já foram colhidos e entregues.</p>
               ) : (
                 <div className="status-history-list">
                   {data.harvestSummary.map((h) => (
-                    <div
-                      className="order-row"
-                      key={h.productId}
-                      style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="order-row" key={h.productId}>
+                      <div className="cluster-sm">
                         <SproutIcon size={18} />
-                        <div>
+                        <div className="stack-xs">
                           <strong>{h.name}</strong>
-                          <span style={{ display: 'block', fontSize: '0.95rem' }}>
+                          <span className="count-tag">
                             Distribuído em {h.ordersCount} pedido(s)
                           </span>
                         </div>
@@ -109,20 +106,19 @@ export default function ProdutorPedidosPage() {
               )}
             </section>
 
-            <section>
-              <h2 style={{ marginBottom: '12px' }}>2. Pedidos confirmados para separação</h2>
+            <section className="stack-md">
+              <h2>2. Pedidos confirmados para separação</h2>
               {data.fulfillmentQueue.map((fq) => (
                 <article
                   className="dashboard-card order-card"
                   key={fq.orderId}
-                  style={{ marginTop: '14px' }}
                 >
                   <div className="card-heading">
-                    <div>
+                    <div className="stack-xs">
                       <span className="order-code">
                         Pedido #{fq.orderId} · Destino: {fq.customerCity}
                       </span>
-                      <h3 style={{ marginTop: '4px', fontSize: '18px' }}>
+                      <h3>
                         {fq.items
                           .map((i) => `${i.quantity}× ${i.name} (${i.unit})`)
                           .join(', ')}
@@ -137,7 +133,7 @@ export default function ProdutorPedidosPage() {
                     </StatusBadge>
                   </div>
 
-                  <div className="delivery-info" style={{ alignItems: 'center' }}>
+                  <div className="delivery-info">
                     <div>
                       <span>Janela de coleta/entrega</span>
                       <strong>{formatDate(fq.deliverySlot.startsAt)}</strong>
@@ -150,7 +146,7 @@ export default function ProdutorPedidosPage() {
                       <span>Status operacional</span>
                       <strong>{fq.status}</strong>
                     </div>
-                    <div style={{ marginLeft: 'auto' }}>
+                    <div className="push-end">
                       {!fq.producerSeparated ? (
                         <button
                           type="button"
@@ -161,7 +157,7 @@ export default function ProdutorPedidosPage() {
                           <span>Confirmar colheita e separação</span>
                         </button>
                       ) : (
-                        <span className="count-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <span className="count-tag cluster-sm">
                           <TruckIcon size={15} /> Etiqueta emitida · Pronto para coleta
                         </span>
                       )}

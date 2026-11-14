@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   Footer,
@@ -53,7 +52,7 @@ export default function ProdutorContaPage() {
         )}
 
         {data && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '20px' }}>
+          <div className="stack-lg">
             <section className="dashboard-card">
               <div className="card-heading">
                 <div>
@@ -80,11 +79,11 @@ export default function ProdutorContaPage() {
               </div>
             </section>
 
-            <section className="dashboard-card">
+            <section className="dashboard-card stack-md">
               <div className="card-heading">
                 <div>
                   <h2>Histórico de auditoria ({data.auditLogs.length} registros)</h2>
-                  <p className="muted" style={{ marginBottom: '14px' }}>
+                  <p className="muted">
                     Registro cronológico e imutável das alterações realizadas pelo produtor e pela operação.
                   </p>
                 </div>
@@ -92,16 +91,12 @@ export default function ProdutorContaPage() {
               </div>
               <div className="status-history-list">
                 {data.auditLogs.map((log) => (
-                  <div
-                    className="order-row"
-                    key={log.id}
-                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                  <div className="order-row" key={log.id}>
+                    <div className="cluster-sm">
                       <ShieldCheckIcon size={18} />
-                      <div>
+                      <div className="stack-xs">
                         <strong>{log.summary}</strong>
-                        <span className="muted" style={{ display: 'block', fontSize: '12px', marginTop: '2px' }}>
+                        <span className="count-tag">
                           {formatAuditResource(log.resourceType)} · {formatDateTime(log.createdAt)}
                         </span>
                       </div>

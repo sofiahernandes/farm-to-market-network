@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -112,7 +111,7 @@ export default function ProdutorNovaOfertaPage() {
         </p>
 
         {error && (
-          <div className="info-alert" role="alert" style={{ marginTop: '16px' }}>
+          <div className="info-alert" role="alert">
             <strong>Não foi possível publicar a oferta.</strong>
             <p>{error}</p>
           </div>
@@ -242,7 +241,7 @@ export default function ProdutorNovaOfertaPage() {
               </label>
             </div>
 
-            <div className="hero-actions" style={{ flexWrap: 'wrap' }}>
+            <div className="hero-actions">
               <button
                 type="submit"
                 disabled={submitting}
@@ -264,8 +263,8 @@ export default function ProdutorNovaOfertaPage() {
             </div>
           </form>
 
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <strong style={{ fontSize: '0.95rem', color: 'var(--forest)' }}>
+          <aside className="stack-sm">
+            <strong className="section-label">
               Pré-visualização no catálogo do consumidor:
             </strong>
             <ProductCard product={previewProduct} />

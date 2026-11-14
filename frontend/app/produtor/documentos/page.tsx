@@ -97,7 +97,7 @@ export default function ProdutorOnboardingPage() {
         )}
 
         {data && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+          <div className="stack-lg">
             <section className="dashboard-card">
               <div className="card-heading">
                 <div>
@@ -133,14 +133,10 @@ export default function ProdutorOnboardingPage() {
               </div>
               <div className="status-history-list">
                 {data.producer.certifications.map((cert) => (
-                  <div
-                    className="order-row"
-                    key={cert.id}
-                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <div>
+                  <div className="order-row" key={cert.id}>
+                    <div className="stack-xs">
                       <strong>{cert.name}</strong>
-                      <span className="muted" style={{ display: 'block', fontSize: '0.95rem' }}>
+                      <span className="count-tag">
                         {cert.issuer} · Válido até {formatDate(cert.validUntil)}
                       </span>
                     </div>
@@ -160,7 +156,7 @@ export default function ProdutorOnboardingPage() {
         </p>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
           </p>
         )}
@@ -173,7 +169,7 @@ export default function ProdutorOnboardingPage() {
         {loading && <p className="loading-indicator">Carregando dados da propriedade…</p>}
 
         {data && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginTop: '20px' }}>
+          <div className="stack-lg">
             <section className="dashboard-card">
               <div className="card-heading">
                 <div>
@@ -197,7 +193,7 @@ export default function ProdutorOnboardingPage() {
                 </StatusBadge>
               </div>
 
-              <form className="checkout-form" onSubmit={save} style={{ marginTop: '16px' }}>
+              <form className="checkout-form" onSubmit={save}>
                 <label>
                   Nome da propriedade / produtor
                   <input
@@ -291,23 +287,21 @@ export default function ProdutorOnboardingPage() {
               </form>
             </section>
 
-            <section className="dashboard-card">
-              <h2>Certificações e documentos sanitários</h2>
-              <p className="muted" style={{ marginBottom: '14px' }}>
-                Certificações ativas apresentadas aos consumidores nas páginas de produto e cesta.
-              </p>
+            <section className="dashboard-card stack-md">
+              <div>
+                <h2>Certificações e documentos sanitários</h2>
+                <p className="muted">
+                  Certificações ativas apresentadas aos consumidores nas páginas de produto e cesta.
+                </p>
+              </div>
               <div className="status-history-list">
                 {data.producer.certifications.map((cert) => (
-                  <div
-                    className="order-row"
-                    key={cert.id}
-                    style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div className="order-row" key={cert.id}>
+                    <div className="cluster-sm">
                       <ShieldCheckIcon size={18} />
-                      <div>
+                      <div className="stack-xs">
                         <strong>{cert.name}</strong>
-                        <span style={{ display: 'block', fontSize: '0.95rem' }}>
+                        <span className="count-tag">
                           Emissor: {cert.issuer} · Validade: {cert.validUntil}
                         </span>
                       </div>

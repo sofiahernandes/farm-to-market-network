@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   Footer,
@@ -82,7 +81,7 @@ export default function ProdutorEstoquePage() {
         </p>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
           </p>
         )}
@@ -107,19 +106,18 @@ export default function ProdutorEstoquePage() {
                 <section
                   className="dashboard-card order-card"
                   key={offer.id}
-                  style={{ marginTop: '14px' }}
                 >
                   <div className="card-heading">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className="cluster-sm">
                       <div className="mini-art" aria-hidden="true">
                         <SproutIcon size={22} />
                       </div>
-                      <div>
+                      <div className="stack-xs">
                         <span className="order-code">
                           Lote de entrega: {formatDate(offer.stock.deliveryDate)} · Alerta mínimo:{' '}
                           {threshold} {offer.unit}
                         </span>
-                        <h2 style={{ marginBottom: '2px' }}>{offer.name}</h2>
+                        <h2>{offer.name}</h2>
                       </div>
                     </div>
                     <StatusBadge tone={isLow ? 'warning' : 'success'}>
@@ -129,7 +127,7 @@ export default function ProdutorEstoquePage() {
                     </StatusBadge>
                   </div>
 
-                  <div className="delivery-info" style={{ alignItems: 'center' }}>
+                  <div className="delivery-info">
                     <div>
                       <span>Saldo atual liberado</span>
                       <strong>
@@ -152,15 +150,7 @@ export default function ProdutorEstoquePage() {
                             : `${diff} ${offer.unit} no lote`}
                       </strong>
                     </div>
-                    <div
-                      style={{
-                        marginLeft: 'auto',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: '10px',
-                      }}
-                    >
+                    <div className="cluster-sm push-end">
                       <label htmlFor={`stock-${offer.id}`} className="count-tag">
                         Nova qtd:
                       </label>

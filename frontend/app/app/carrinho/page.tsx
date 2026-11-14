@@ -46,7 +46,7 @@ export default function Carrinho() {
     <>
       <Header app />
       <main className="page-main container">
-        <h2 className='title'>Sua sacola de compras</h2>
+        <h2 className="title">Sua sacola de compras</h2>
         <p className="lead">Revise os itens selecionados dos produtores locais antes de confirmar a entrega.</p>
         {loading && <p className="loading-indicator">Carregando sacola…</p>}
         {error && (
@@ -86,11 +86,7 @@ export default function Carrinho() {
                     </StatusBadge>
                   </div>
                   <div
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
+                    className="stepper-control"
                     aria-label={`Ajustar quantidade de ${item.name}`}
                   >
                     <button
@@ -103,13 +99,7 @@ export default function Carrinho() {
                     >
                       −
                     </button>
-                    <span
-                      style={{
-                        minWidth: '24px',
-                        textAlign: 'center',
-                        fontWeight: 600,
-                      }}
-                    >
+                    <span className="stepper-value">
                       {item.quantity}
                     </span>
                     <button

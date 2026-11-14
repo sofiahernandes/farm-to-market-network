@@ -21,6 +21,24 @@ function Icon({ size = 20, children, ...props }: IconProps) {
   );
 }
 
+export function ExitIcon({ size = 28, ...props }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 117 117"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M98.2312 63.375H39V53.625H98.2312L90.675 46.0688L97.5 39L117 58.5L97.5 78L90.675 70.9313L98.2312 63.375ZM73.125 43.875V24.375H24.375V92.625H73.125V73.125H82.875V92.625C82.875 95.3063 81.9203 97.6016 80.0109 99.5109C78.1016 101.42 75.8063 102.375 73.125 102.375H24.375C21.6937 102.375 19.3984 101.42 17.4891 99.5109C15.5797 97.6016 14.625 95.3063 14.625 92.625V24.375C14.625 21.6937 15.5797 19.3984 17.4891 17.4891C19.3984 15.5797 21.6937 14.625 24.375 14.625H73.125C75.8063 14.625 78.1016 15.5797 80.0109 17.4891C81.9203 19.3984 82.875 21.6937 82.875 24.375V43.875H73.125Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
 export function LogoIcon({ size = 28, ...props }: IconProps) {
   return (
     <svg
@@ -47,12 +65,12 @@ export function LogoIcon({ size = 28, ...props }: IconProps) {
       />
       <path
         d="M16 14.5C16 9.5 19.5 6.5 24 6.5C24 11.5 20.5 14.5 16 14.5Z"
-        stroke="#7ee19a"
+        stroke="var(--lime)"
         strokeWidth="2"
         strokeLinejoin="round"
       />
-      <circle cx="21" cy="22" r="1.5" fill="#7ee19a" />
-      <circle cx="25" cy="22" r="1.5" fill="#7ee19a" />
+      <circle cx="21" cy="22" r="1.5" fill="var(--lime)" />
+      <circle cx="25" cy="22" r="1.5" fill="var(--action-secondary)" />
     </svg>
   );
 }

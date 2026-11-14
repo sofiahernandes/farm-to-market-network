@@ -113,7 +113,7 @@ export default function ContaPage() {
         </p>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
           </p>
         )}
@@ -128,11 +128,11 @@ export default function ContaPage() {
         {loading && <p className="loading-indicator">Carregando dados da conta…</p>}
 
         {profile && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+          <div className="stack-lg">
             <section className="dashboard-card">
               <div className="card-heading">
                 <h2>Dados pessoais</h2>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <div className="cluster-sm">
                   <Link href="/app/pedidos" className="button button-small button-secondary">
                     <span>Meus pedidos</span>
                   </Link>
@@ -153,7 +153,7 @@ export default function ContaPage() {
               </div>
             </section>
 
-            <section className="dashboard-card">
+            <section className="dashboard-card stack-md">
               <div className="card-heading">
                 <div>
                   <h2>Endereços de entrega</h2>
@@ -172,25 +172,21 @@ export default function ContaPage() {
               </div>
 
               {profile.addresses.length === 0 ? (
-                <p className="muted" style={{ marginTop: '8px' }}>
+                <p className="muted">
                   Nenhum endereço salvo ainda.
                 </p>
               ) : (
-                <div className="status-history-list" style={{ marginTop: '12px' }}>
+                <div className="status-history-list">
                   {profile.addresses.map((addr) => (
-                    <div
-                      className="order-row"
-                      key={addr.id}
-                      style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                    <div className="order-row" key={addr.id}>
+                      <div className="cluster-sm">
                         <PinIcon size={18} />
-                        <div>
+                        <div className="stack-xs">
                           <strong>
                             {addr.label} · {addr.street}, {addr.number}
                             {addr.complement ? ` (${addr.complement})` : ''}
                           </strong>
-                          <span style={{ display: 'block', fontSize: '13px' }}>
+                          <span className="count-tag">
                             CEP {addr.postalCode} · {addr.city}/{addr.state} ·{' '}
                             <strong>{addr.zoneName}</strong>
                           </span>
@@ -210,9 +206,8 @@ export default function ContaPage() {
 
               {showAddressForm && (
                 <form
-                  className="checkout-form"
+                  className="checkout-form section-divider"
                   onSubmit={addAddress}
-                  style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--line)' }}
                 >
                   <div className="form-group-grid">
                     <label>
@@ -265,7 +260,7 @@ export default function ContaPage() {
                     </label>
                     <label>
                       Cidade / UF
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '8px' }}>
+                      <div className="form-city-uf">
                         <input
                           required
                           placeholder="Cidade"
@@ -292,8 +287,8 @@ export default function ContaPage() {
               )}
             </section>
 
-            <section className="dashboard-card">
-              <div className="card-heading" style={{ marginBottom: profile.lgpdRequests.length > 0 || showLgpdForm ? '12px' : 0 }}>
+            <section className="dashboard-card stack-md">
+              <div className="card-heading">
                 <div>
                   <h2>Privacidade da conta</h2>
                   <p className="muted">
@@ -314,14 +309,10 @@ export default function ContaPage() {
               {profile.lgpdRequests.length > 0 && (
                 <div className="status-history-list">
                   {profile.lgpdRequests.map((req) => (
-                    <div
-                      className="order-row"
-                      key={req.id}
-                      style={{ justifyContent: 'space-between', alignItems: 'center' }}
-                    >
-                      <div>
+                    <div className="order-row" key={req.id}>
+                      <div className="stack-xs">
                         <strong>Protocolo {req.protocol}</strong>
-                        <span style={{ display: 'block', fontSize: '13px' }}>
+                        <span className="count-tag">
                           Solicitado em {formatDateTime(req.requestedAt)}
                         </span>
                       </div>
@@ -332,7 +323,7 @@ export default function ContaPage() {
               )}
 
               {showLgpdForm && (
-                <form className="checkout-form" onSubmit={requestLgpdDeletion} style={{ marginTop: '12px' }}>
+                <form className="checkout-form" onSubmit={requestLgpdDeletion}>
                   <label>
                     Motivo ou observação (opcional)
                     <input
@@ -341,7 +332,7 @@ export default function ContaPage() {
                       placeholder="Ex: Encerramento de conta"
                     />
                   </label>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <div className="cluster-sm">
                     <button type="submit" className="button button-small button-secondary danger-text">
                       <span>Confirmar solicitação</span>
                     </button>

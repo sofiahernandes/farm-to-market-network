@@ -64,7 +64,7 @@ export default function Checkout() {
       <>
         <Header app />
         <main className="page-main container">
-          <section className="dashboard-card order-confirmed-card">
+          <section className="dashboard-card order-confirmed-card stack-sm">
             <h1>Pedido #{order.id} confirmado com sucesso</h1>
             <p className="lead">
               A reserva dos itens no estoque foi efetuada e o produtor foi notificado para o preparo.
@@ -72,7 +72,7 @@ export default function Checkout() {
             <div className="payment-summary-box">
               <span>Status do pagamento: {order.payment.provider} · {order.payment.status}</span>
             </div>
-            <div className="hero-actions" style={{ marginTop: '16px' }}>
+            <div className="hero-actions">
               <Link href={`/app/pedidos/${order.id}`} className="button button-primary">
                 Ver detalhes do pedido
               </Link>

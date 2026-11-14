@@ -126,7 +126,7 @@ export default function AssinaturasPage() {
         </div>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
             <Link href="/app/pedidos" className="text-link">
               Ver pedidos gerados →
@@ -162,17 +162,16 @@ export default function AssinaturasPage() {
 
           return (
             <section
-              className="dashboard-card order-card"
+              className="dashboard-card order-card stack-md"
               key={sub.id}
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
               <div className="card-heading">
-                <div>
+                <div className="stack-xs">
                   <span className="order-code">
                     Assinatura #{sub.id} ·{' '}
                     {sub.frequency === 'weekly' ? 'Plano Semanal' : 'Plano Mensal'}
                   </span>
-                  <h2 style={{ marginTop: '4px' }}>{sub.basketName}</h2>
+                  <h2>{sub.basketName}</h2>
                   <span className="count-tag">
                     Produtor: {sub.producer.name} · {formatPrice(sub.priceCents)} por ciclo
                   </span>
@@ -180,7 +179,7 @@ export default function AssinaturasPage() {
                 <StatusBadge tone={badge.tone}>{badge.text}</StatusBadge>
               </div>
 
-              <div className="delivery-info" style={{ marginTop: 0 }}>
+              <div className="delivery-info">
                 <div>
                   <span>Próxima cobrança prevista</span>
                   <strong>
@@ -205,7 +204,7 @@ export default function AssinaturasPage() {
                 </div>
               </div>
 
-              <div className="zone-alert" style={{ marginBottom: 0 }}>
+              <div className="zone-alert">
                 <div className="zone-alert-icon">
                   <ClockIcon size={18} />
                 </div>
@@ -223,10 +222,10 @@ export default function AssinaturasPage() {
               </div>
 
               <div>
-                <strong style={{ fontSize: '0.95rem', color: 'var(--forest)', display: 'block', marginBottom: '6px' }}>
+                <strong className="section-label">
                   Composição fixa da cesta ({sub.items.length} itens):
                 </strong>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div className="cluster-sm">
                   {sub.items.map((item, idx) => (
                     <span
                       key={`${sub.id}-item-${idx}`}
@@ -238,15 +237,7 @@ export default function AssinaturasPage() {
                 </div>
               </div>
 
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '10px',
-                  paddingTop: '12px',
-                  borderTop: '1px solid var(--line)',
-                }}
-              >
+              <div className="section-divider cluster-sm">
                 {sub.status === 'active' && (
                   <>
                     <button
@@ -339,24 +330,24 @@ export default function AssinaturasPage() {
                 )}
               </div>
 
-              <div style={{ borderTop: '1px solid var(--line)', paddingTop: '12px' }}>
-                <strong style={{ fontSize: '0.95rem', color: 'var(--forest)', display: 'block', marginBottom: '8px' }}>
+              <div className="section-divider">
+                <strong className="section-label">
                   Histórico de ciclos ({sub.cycles.length})
                 </strong>
                 <div className="status-history-list">
                   {sub.cycles.map((cycle) => {
                     const cb = cycleStatusBadge(cycle.status);
                     return (
-                      <div className="order-row" key={cycle.id} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                      <div className="order-row" key={cycle.id}>
+                        <div className="stack-xs">
                           <strong>
                             Ciclo {cycle.cycleKey} · Entrega {formatDate(cycle.deliveryDate)}
                           </strong>
-                          <span style={{ fontSize: '0.95rem' }}>
+                          <span>
                             {cycle.note || `Cobrança: ${cycle.paymentStatus}`} · {formatPrice(cycle.amountCents)}
                           </span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div className="cluster-md">
                           <StatusBadge tone={cb.tone}>{cb.text}</StatusBadge>
                           {cycle.orderId && (
                             <Link href={`/app/pedidos/${cycle.orderId}`} className="text-link">
@@ -370,7 +361,7 @@ export default function AssinaturasPage() {
                 </div>
               </div>
 
-              <div className="sandbox-notice" style={{ marginTop: 0 }}>
+              <div className="sandbox-notice">
                 <ShieldCheckIcon size={14} />
                 <span>
                   Ciclos são idempotentes por chave de período: gerar o mesmo ciclo duas vezes não duplica reserva de estoque nem pedido.

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
+  FluidSheet,
   Footer,
   Header,
   ProducerSubnav,
@@ -20,6 +21,7 @@ import {
   type ProducerDashboardData,
   type Product,
 } from '@/lib/api';
+import { triggerHaptic } from '@/lib/apple-fluid';
 
 export default function ProdutorCatalogoPage() {
   const [data, setData] = useState<ProducerDashboardData | null>(null);
@@ -38,6 +40,7 @@ export default function ProdutorCatalogoPage() {
   }, []);
 
   async function toggleOfferStatus(productId: string) {
+    triggerHaptic(8);
     setError('');
     setMessage('');
     try {
@@ -53,6 +56,7 @@ export default function ProdutorCatalogoPage() {
   }
 
   function startEdit(offer: Product) {
+    triggerHaptic(6);
     setEditing(offer);
     setEditPriceReais((offer.priceCents / 100).toFixed(2));
     setEditSeasonality(offer.seasonality ?? '');
@@ -61,6 +65,7 @@ export default function ProdutorCatalogoPage() {
   async function saveEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editing) return;
+    triggerHaptic(10);
     setError('');
     setMessage('');
     try {
@@ -112,7 +117,7 @@ export default function ProdutorCatalogoPage() {
         </div>
 
         {message && (
-          <p className="status status-success status-message" role="status" style={{ marginBottom: '20px' }}>
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
             <Link href="/catalogo" className="text-link">
               Ver no catálogo público →
@@ -128,12 +133,12 @@ export default function ProdutorCatalogoPage() {
         {loading && <p className="loading-indicator">Carregando ofertas…</p>}
 
         {editing && (
-          <section
-            className="dashboard-card"
-            style={{ marginBottom: '24px', border: '2px solid var(--forest)' }}
+          <FluidSheet
+            ariaLabelledBy="edit-offer-heading"
+            onDismiss={() => setEditing(null)}
           >
-            <h2>Editar oferta: {editing.name}</h2>
-            <form className="checkout-form" onSubmit={saveEdit} style={{ marginTop: '12px' }}>
+            <h2 id="edit-offer-heading">Editar oferta: {editing.name}</h2>
+            <form className="checkout-form" onSubmit={saveEdit}>
               <div className="form-group-grid">
                 <label>
                   Preço por {editing.unit} (R$)
@@ -166,7 +171,7 @@ export default function ProdutorCatalogoPage() {
                 </button>
               </div>
             </form>
-          </section>
+          </FluidSheet>
         )}
 
         {data && (
@@ -178,10 +183,9 @@ export default function ProdutorCatalogoPage() {
                 <section
                   className="dashboard-card order-card"
                   key={offer.id}
-                  style={{ marginTop: '14px' }}
                 >
                   <div className="card-heading">
-                    <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                    <div className="cluster-md">
                       <div className="mini-art" aria-hidden="true">
                         {isCesta ? (
                           <PackageIcon size={22} />
@@ -189,11 +193,11 @@ export default function ProdutorCatalogoPage() {
                           <SproutIcon size={22} />
                         )}
                       </div>
-                      <div>
+                      <div className="stack-xs">
                         <span className="order-code">
                           {offer.category} · {offer.certification || 'Agricultura Familiar'}
                         </span>
-                        <h2 style={{ marginBottom: '2px' }}>{offer.name}</h2>
+                        <h2>{offer.name}</h2>
                         <span className="count-tag">
                           {offer.seasonality || 'Colheita semanal'} · Produtor:{' '}
                           {offer.producer.name}
@@ -218,15 +222,7 @@ export default function ProdutorCatalogoPage() {
                         {offer.stock.available} {offer.unit} disponíveis
                       </strong>
                     </div>
-                    <div
-                      style={{
-                        marginLeft: 'auto',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        gap: '10px',
-                        alignItems: 'center',
-                      }}
-                    >
+                    <div className="cluster-sm push-end">
                       <button
                         type="button"
                         onClick={() => startEdit(offer)}

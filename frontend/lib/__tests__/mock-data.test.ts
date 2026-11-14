@@ -14,6 +14,13 @@ import {
   mockApi,
   resetMockState,
 } from '../mock-data.ts';
+import {
+  PointerVelocityTracker,
+  nearestSnapPoint,
+  project,
+  relativeVelocity,
+  rubberband,
+} from '../apple-fluid.ts';
 import type {
   AccountProfile,
   AdminDashboardData,
@@ -33,6 +40,37 @@ import type {
 describe('AgriTech Mock API & Consumer/Producer Domain Rules', () => {
   beforeEach(() => {
     resetMockState();
+  });
+
+  describe('Apple Design Fluid Physics & Gesture Primitives', () => {
+    it('projects momentum endpoint using Apple exponential-decay formula and finds nearest snap point', () => {
+      // Zero velocity -> 0 projection
+      assert.equal(project(0), 0);
+      // Positive flick velocity -> projects forward proportionally
+      const projected = project(1000, 0.99);
+      assert.equal(Math.round(projected), 99);
+      assert.equal(nearestSnapPoint(50 + projected, [0, 200]), 200);
+      assert.equal(nearestSnapPoint(20, [0, 200]), 0);
+    });
+
+    it('calculates normalized relative velocity and progressive rubber-band resistance at boundaries', () => {
+      assert.equal(relativeVelocity(50, 50, 150), 0.5);
+      assert.equal(relativeVelocity(50, 100, 100), 0);
+
+      const damped = rubberband(100, 400, 0.55);
+      assert.ok(damped > 0 && damped < 100);
+      assert.equal(rubberband(-100, 400, 0.55), -damped);
+      assert.equal(rubberband(0, 400), 0);
+    });
+
+    it('tracks pointer samples and computes release velocity', () => {
+      const tracker = new PointerVelocityTracker();
+      tracker.record(0, 0, 100);
+      tracker.record(50, 120, 150);
+      const { vx, vy } = tracker.getVelocity();
+      assert.equal(Math.round(vx), 1000);
+      assert.equal(Math.round(vy), 2400);
+    });
   });
 
   describe('CPF Validation & Masking', () => {

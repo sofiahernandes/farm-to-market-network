@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   Footer,
@@ -46,7 +45,7 @@ export default function ProdutorFinanceiroPage() {
           Transparência completa sobre valor bruto, taxa operacional da plataforma e valor líquido devido ao produtor por pedido.
         </p>
 
-        <div className="zone-alert" style={{ marginTop: '18px' }}>
+        <div className="zone-alert">
           <div className="zone-alert-icon">
             <ShieldCheckIcon size={20} />
           </div>
@@ -70,7 +69,7 @@ export default function ProdutorFinanceiroPage() {
 
         {data && (
           <>
-            <div className="metric-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            <div className="metric-grid">
               <div className="metric-card">
                 <span className="metric-label">Volume bruto de vendas</span>
                 <strong>{formatPrice(data.metrics.grossSalesCents)}</strong>
@@ -90,43 +89,32 @@ export default function ProdutorFinanceiroPage() {
               </div>
             </div>
 
-            <section className="dashboard-card">
+            <section className="dashboard-card stack-md">
               <h2>Detalhamento por pedido</h2>
-              <div className="status-history-list" style={{ marginTop: '14px' }}>
+              <div className="status-history-list">
                 {data.payouts.map((p) => (
-                  <div
-                    className="order-row"
-                    key={p.id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr',
-                      gap: '14px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div>
+                  <div className="payout-row" key={p.id}>
+                    <div className="stack-xs">
                       <strong>Pedido #{p.orderId}</strong>
-                      <span style={{ display: 'block', fontSize: '0.95rem' }}>
+                      <span className="count-tag">
                         {p.itemsSummary} · Previsão: {formatDate(p.scheduledAt)}
                       </span>
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.95rem', display: 'block' }}>Bruto</span>
+                    <div className="stack-xs">
+                      <span className="count-tag">Bruto</span>
                       <strong>{formatPrice(p.grossCents)}</strong>
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.95rem', display: 'block' }}>
+                    <div className="stack-xs">
+                      <span className="count-tag">
                         Taxa ({p.feePercent}%)
                       </span>
                       <strong>− {formatPrice(p.feeCents)}</strong>
                     </div>
-                    <div>
-                      <span style={{ fontSize: '0.95rem', display: 'block' }}>
+                    <div className="stack-xs">
+                      <span className="count-tag">
                         Líquido produtor
                       </span>
-                      <strong style={{ color: 'var(--forest)' }}>
-                        {formatPrice(p.netCents)}
-                      </strong>
+                      <strong>{formatPrice(p.netCents)}</strong>
                     </div>
                     <div>
                       <StatusBadge

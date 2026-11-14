@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Header, StatusBadge } from '@/components/ui';
@@ -48,7 +47,7 @@ export default function PedidoDetalhe() {
         {error && <p className="danger-text">{error}</p>}
         {!order && !error && <p className="loading-indicator">Carregando pedido…</p>}
         {order && (
-          <section className="dashboard-card order-detail-card">
+          <section className="dashboard-card order-detail-card stack-md">
             <div className="card-heading">
               <div>
                 <span className="order-code">Pedido #{order.id}</span>
@@ -79,7 +78,7 @@ export default function PedidoDetalhe() {
               </div>
             </div>
             {!isDelivered && (
-              <div style={{ marginTop: '20px' }}>
+              <div>
                 <button
                   type="button"
                   disabled={confirming}
@@ -100,11 +99,13 @@ export default function PedidoDetalhe() {
             <div className="status-history-list">
               {order.statusHistory.map((s, i) => (
                 <div className="order-row" key={`${s.createdAt}-${i}`}>
-                  <span className="status-timeline-dot" />
-                  <div>
+                  <div className="cluster-sm">
+                    <span className="status-timeline-dot" />
                     <strong>{s.toStatus}</strong>
-                    <span>{new Date(s.createdAt).toLocaleString('pt-BR')}</span>
                   </div>
+                  <span className="count-tag">
+                    {new Date(s.createdAt).toLocaleString('pt-BR')}
+                  </span>
                 </div>
               ))}
             </div>

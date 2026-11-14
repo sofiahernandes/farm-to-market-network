@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   api,
@@ -14,12 +14,21 @@ import {
   type User,
 } from '@/lib/api';
 import {
+  animateAppleSpring,
+  PointerVelocityTracker,
+  project,
+  rubberband,
+  triggerHaptic,
+  type SpringController,
+} from '@/lib/apple-fluid';
+import {
   LogoIcon,
   SproutIcon,
   BasketIcon,
   PackageIcon,
   ArrowRightIcon,
   UserIcon,
+  ExitIcon,
 } from '@/components/icons';
 
 export function Logo() {
@@ -65,6 +74,7 @@ export function Header(_props: { app?: boolean } = {}) {
   }, []);
 
   function handleLogout() {
+    triggerHaptic(10);
     clearSession();
     router.push('/');
   }
@@ -76,12 +86,8 @@ export function Header(_props: { app?: boolean } = {}) {
         <nav className="main-nav" aria-label="Navegação principal">
           {user ? (
             <>
-              <Link href="/catalogo" className="font-semibold!">
-                Catálogo
-              </Link>
-              <Link href="/cestas" className="font-semibold!">
-                Cestas
-              </Link>
+              <Link href="/catalogo">Catálogo</Link>
+              <Link href="/cestas">Cestas</Link>
               {user.role === 'consumer' && (
                 <>
                   <Link href="/app/assinaturas">Assinaturas</Link>
@@ -101,7 +107,7 @@ export function Header(_props: { app?: boolean } = {}) {
           )}
         </nav>
         <div className="nav-actions">
-          <Link className="cart-link" href="/app/carrinho">
+          <Link className="button button-small button-secondary hide-mobile" href="/app/carrinho">
             <BasketIcon size={18} />
             <span>
               Sacola
@@ -125,9 +131,9 @@ export function Header(_props: { app?: boolean } = {}) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="button button-small button-secondary"
+                className="h-5 w-5"
               >
-                Sair
+                <ExitIcon className='text-forest h-5 w-5' />
               </button>
             </>
           ) : (
@@ -311,27 +317,8 @@ export function ProducerSubnav({
   ];
 
   return (
-    <div
-      style={{
-        marginBottom: '28px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-      }}
-    >
-      <nav
-        aria-label="Menu do produtor"
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '10px 14px',
-          background: 'var(--surface)',
-          border: '1px solid var(--line)',
-          borderRadius: 'var(--radius-md)',
-        }}
-      >
+    <div className="producer-subnav-wrap">
+      <nav aria-label="Menu do produtor" className="producer-subnav">
         {items.map((item) => {
           const isCurrent = item.key === active;
           return (
@@ -356,9 +343,8 @@ export function ProducerSubnav({
           className="info-alert"
           role="region"
           aria-label="Alerta de pré-requisito do produtor"
-          style={{ marginBottom: 0 }}
         >
-          <div style={{ flex: 1 }}>
+          <div className="stack-xs">
             <strong>
               Publicação de novas ofertas bloqueada: pré-requisito pendente
             </strong>
@@ -373,7 +359,7 @@ export function ProducerSubnav({
           </div>
           <Link
             href="/produtor/documentos"
-            className="button button-small button-primary"
+            className="button button-small button-primary push-end"
           >
             Ver pendências
           </Link>
@@ -383,3 +369,149 @@ export function ProducerSubnav({
   );
 }
 
+/**
+ * Apple Fluid Sheet Component
+ */
+export function FluidSheet({
+  ariaLabelledBy,
+  onDismiss,
+  children,
+}: {
+  ariaLabelledBy?: string;
+  onDismiss: () => void;
+  children: React.ReactNode;
+}) {
+  const sheetRef = useRef<HTMLElement | null>(null);
+  const springRef = useRef<SpringController | null>(null);
+  const currentYRef = useRef<number>(28);
+  const velocityTrackerRef = useRef(new PointerVelocityTracker());
+  const dragStateRef = useRef<{
+    pointerId: number;
+    grabOffsetY: number;
+    startY: number;
+    committed: boolean;
+  } | null>(null);
+
+  const applyTransform = (y: number) => {
+    currentYRef.current = y;
+    const el = sheetRef.current;
+    if (!el) return;
+    if (Math.abs(y) < 0.2) {
+      el.style.transform = 'translate3d(0, 0, 0)';
+    } else {
+      el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+    }
+  };
+
+  useEffect(() => {
+    applyTransform(24);
+    springRef.current = animateAppleSpring(
+      24,
+      0,
+      (val) => applyTransform(val),
+      undefined,
+      { damping: 0.82, response: 0.32 }
+    );
+    return () => {
+      springRef.current?.stop();
+    };
+  }, []);
+
+  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    const sheetEl = sheetRef.current;
+    if (!sheetEl) return;
+
+    springRef.current?.stop();
+    e.currentTarget.setPointerCapture(e.pointerId);
+
+    const liveY = currentYRef.current;
+    velocityTrackerRef.current.reset();
+    velocityTrackerRef.current.record(e.clientX, e.clientY);
+
+    dragStateRef.current = {
+      pointerId: e.pointerId,
+      grabOffsetY: e.clientY - liveY,
+      startY: e.clientY,
+      committed: false,
+    };
+  }
+
+  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
+    const state = dragStateRef.current;
+    if (!state || state.pointerId !== e.pointerId) return;
+
+    const deltaFromStart = Math.abs(e.clientY - state.startY);
+    if (!state.committed && deltaFromStart < 8) return;
+    state.committed = true;
+
+    velocityTrackerRef.current.record(e.clientX, e.clientY);
+    const rawOffset = e.clientY - state.grabOffsetY;
+    const height = sheetRef.current?.offsetHeight || 420;
+
+    const nextY =
+      rawOffset < 0
+        ? rubberband(rawOffset, height, 0.55)
+        : rawOffset;
+
+    applyTransform(nextY);
+  }
+
+  function handlePointerRelease(e: React.PointerEvent<HTMLDivElement>) {
+    const state = dragStateRef.current;
+    if (!state || state.pointerId !== e.pointerId) return;
+    dragStateRef.current = null;
+
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+
+    const { vy } = velocityTrackerRef.current.getVelocity();
+    const currentY = currentYRef.current;
+    const height = sheetRef.current?.offsetHeight || 420;
+
+    const projectedY = currentY + project(vy, 0.99);
+    const shouldDismiss = projectedY > Math.min(160, height * 0.35) && vy > -150;
+
+    if (shouldDismiss) {
+      triggerHaptic(12);
+      springRef.current = animateAppleSpring(
+        currentY,
+        height * 0.65,
+        (val) => applyTransform(val),
+        () => onDismiss(),
+        { damping: 1.0, response: 0.28, velocity: vy }
+      );
+    } else {
+      if (Math.abs(currentY) > 12) triggerHaptic(6);
+      springRef.current = animateAppleSpring(
+        currentY,
+        0,
+        (val) => applyTransform(val),
+        undefined,
+        { damping: 0.8, response: 0.3, velocity: vy }
+      );
+    }
+  }
+
+  return (
+    <section
+      ref={sheetRef}
+      className="dashboard-card fluid-sheet stack-md"
+      aria-labelledby={ariaLabelledBy}
+    >
+      <div
+        className="fluid-sheet-grab-bar"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerRelease}
+        onPointerCancel={handlePointerRelease}
+        title="Arraste para mover ou fechar o painel"
+        aria-hidden="true"
+      >
+        <span className="fluid-sheet-pill" />
+      </div>
+      {children}
+    </section>
+  );
+}

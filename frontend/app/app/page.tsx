@@ -49,7 +49,7 @@ export default function AppHome() {
               Catálogo
             </Link>
             <Link href="/cestas" className="button button-secondary">
-              Cestas 
+              Cestas
             </Link>
           </div>
         </div>
@@ -80,12 +80,12 @@ export default function AppHome() {
             <small>Endereços, zona e dados protegidos</small>
           </div>
         </div>
-        <section className="dashboard-card">
+        <section className="dashboard-card stack-sm">
           <h2>Próximas ações</h2>
           <p className="muted">
             Consulte as ofertas persistidas no catálogo, gerencie suas cestas recorrentes, finalize os itens da sacola ou visualize os detalhes de entrega dos pedidos em andamento.
           </p>
-          <div className="hero-actions" style={{ flexWrap: 'wrap' }}>
+          <div className="hero-actions">
             <Link href="/app/carrinho" className="button button-primary">
               Ver sacola
             </Link>

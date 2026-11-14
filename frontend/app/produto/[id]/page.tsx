@@ -74,145 +74,126 @@ export default function ProductDetail() {
           </div>
         )}
         {product && (
-          <>
-            <div className="detail-grid">
-              <div className="detail-art">
-                <div className="detail-art-inner">
-                  {isCesta ? (
-                    <PackageIcon size={96} className="detail-icon" />
-                  ) : (
-                    <SproutIcon size={96} className="detail-icon" />
-                  )}
-                  <span className="detail-category-badge">{product.category}</span>
-                </div>
-                <div className="detail-guarantee">
-                  <ShieldCheckIcon size={16} />
-                  <span>Agricultura verificada · Sem agrotóxicos abusivos</span>
-                </div>
+          <div className="detail-grid">
+            <div className="detail-art">
+              <div className="detail-art-inner">
+                {isCesta ? (
+                  <PackageIcon size={96} className="detail-icon" />
+                ) : (
+                  <SproutIcon size={96} className="detail-icon" />
+                )}
+                <span className="detail-category-badge">{product.category}</span>
               </div>
-              <div className="detail-copy">
-                <span className="product-category-tag">{product.category}</span>
-                <h1>{product.name}</h1>
-                <p className="lead">{product.description}</p>
-                <div className="producer-line">
-                  <span className="producer-avatar">
-                    {product.producer.name[0]}
-                  </span>
-                  <div>
-                    <strong>{product.producer.name}</strong>
-                    <span>
-                      Produtor regional parceiro · {product.unit}
-                      {product.seasonality ? ` · ${product.seasonality}` : ''}
-                    </span>
-                  </div>
-                </div>
-                {product.basketItems && product.basketItems.length > 0 && (
-                  <div
-                    style={{
-                      padding: '12px 16px',
-                      background: 'var(--surface)',
-                      border: '1px solid var(--line)',
-                      borderRadius: 'var(--radius-md)',
-                    }}
-                  >
-                    <strong
-                      style={{
-                        fontSize: '0.95rem',
-                        color: 'var(--forest)',
-                        display: 'block',
-                        marginBottom: '6px',
-                      }}
-                    >
-                      Itens fixos inclusos nesta cesta ({product.basketItems.length}):
-                    </strong>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '0.95rem' }}>
-                      {product.basketItems.map((bi, idx) => (
-                        <div
-                          key={idx}
-                          style={{ display: 'flex', justifyContent: 'space-between' }}
-                        >
-                          <span>{bi.name}</span>
-                          <span className="count-tag">
-                            {bi.quantity} · {bi.origin}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div className="detail-price-box">
-                  <div className="detail-price">
-                    <strong>{formatPrice(product.priceCents)}</strong>
-                    <span> / {product.unit}</span>
-                  </div>
-                  <StatusBadge
-                    tone={product.stock.available > 0 ? 'success' : 'warning'}
-                  >
-                    {product.stock.available} disponíveis · entrega {formatDate(product.stock.deliveryDate)}
-                  </StatusBadge>
-                </div>
-                <div className="detail-rule" />
-                <div className="detail-controls">
-                  <div className="detail-row">
-                    <label htmlFor="quantity-input">
-                      <strong>Quantidade</strong>
-                    </label>
-                    <input
-                      id="quantity-input"
-                      aria-label="Quantidade"
-                      type="number"
-                      min={1}
-                      max={product.stock.available || 1}
-                      value={quantity}
-                      onChange={(e) =>
-                        setQuantity(
-                          Math.min(
-                            product.stock.available || 1,
-                            Math.max(1, Number(e.target.value))
-                          )
-                        )
-                      }
-                      className="quantity-input"
-                    />
-                  </div>
-                  <button
-                    disabled={!product.stock.available}
-                    onClick={add}
-                    className="button button-primary button-large button-full"
-                  >
-                    <span>Adicionar à sacola</span>
-                    <ArrowRightIcon size={18} />
-                  </button>
-                  {isCesta && (
-                    <Link
-                      href="/cestas"
-                      className="button button-secondary button-full"
-                    >
-                      <span>Assinar esta cesta fixa (semanal ou mensal)</span>
-                      <ArrowRightIcon size={16} />
-                    </Link>
-                  )}
-                </div>
-                {message && (
-                  <p className="status status-success status-message" role="status">
-                    {message}{' '}
-                    <Link className="text-link" href="/app/carrinho">
-                      Ir para a sacola →
-                    </Link>
-                  </p>
-                )}
-                {error && (
-                  <p className="danger-text" role="alert">
-                    {error}
-                  </p>
-                )}
-                <div className="sandbox-notice">
-                  <CalendarIcon size={14} />
-                  <span>Ambiente sandbox: nenhuma cobrança real será efetuada no cartão.</span>
-                </div>
+              <div className="detail-guarantee">
+                <ShieldCheckIcon size={16} />
+                <span>Agricultura verificada · Sem agrotóxicos abusivos</span>
               </div>
             </div>
-          </>
+            <div className="detail-copy">
+              <span className="product-category-tag">{product.category}</span>
+              <h1>{product.name}</h1>
+              <p className="lead">{product.description}</p>
+              <div className="producer-line">
+                <span className="producer-avatar">
+                  {product.producer.name[0]}
+                </span>
+                <div>
+                  <strong>{product.producer.name}</strong>
+                  <span>
+                    Produtor regional parceiro · {product.unit}
+                    {product.seasonality ? ` · ${product.seasonality}` : ''}
+                  </span>
+                </div>
+              </div>
+              {product.basketItems && product.basketItems.length > 0 && (
+                <div className="inset-box">
+                  <strong className="section-label">
+                    Itens fixos inclusos nesta cesta ({product.basketItems.length}):
+                  </strong>
+                  <div className="status-history-list">
+                    {product.basketItems.map((bi, idx) => (
+                      <div key={idx} className="list-row">
+                        <span>{bi.name}</span>
+                        <span className="count-tag">
+                          {bi.quantity} · {bi.origin}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="detail-price-box">
+                <div className="detail-price">
+                  <strong>{formatPrice(product.priceCents)}</strong>
+                  <span> / {product.unit}</span>
+                </div>
+                <StatusBadge
+                  tone={product.stock.available > 0 ? 'success' : 'warning'}
+                >
+                  {product.stock.available} disponíveis · entrega {formatDate(product.stock.deliveryDate)}
+                </StatusBadge>
+              </div>
+              <div className="detail-rule" />
+              <div className="detail-controls">
+                <div className="detail-row">
+                  <label htmlFor="quantity-input">
+                    <strong>Quantidade</strong>
+                  </label>
+                  <input
+                    id="quantity-input"
+                    aria-label="Quantidade"
+                    type="number"
+                    min={1}
+                    max={product.stock.available || 1}
+                    value={quantity}
+                    onChange={(e) =>
+                      setQuantity(
+                        Math.min(
+                          product.stock.available || 1,
+                          Math.max(1, Number(e.target.value))
+                        )
+                      )
+                    }
+                    className="quantity-input"
+                  />
+                </div>
+                <button
+                  disabled={!product.stock.available}
+                  onClick={add}
+                  className="button button-primary button-large button-full"
+                >
+                  <span>Adicionar à sacola</span>
+                  <ArrowRightIcon size={18} />
+                </button>
+                {isCesta && (
+                  <Link
+                    href="/cestas"
+                    className="button button-secondary button-full"
+                  >
+                    <span>Assinar esta cesta fixa (semanal ou mensal)</span>
+                    <ArrowRightIcon size={16} />
+                  </Link>
+                )}
+              </div>
+              {message && (
+                <p className="status status-success status-message" role="status">
+                  {message}{' '}
+                  <Link className="text-link" href="/app/carrinho">
+                    Ir para a sacola →
+                  </Link>
+                </p>
+              )}
+              {error && (
+                <p className="danger-text" role="alert">
+                  {error}
+                </p>
+              )}
+              <div className="sandbox-notice">
+                <CalendarIcon size={14} />
+                <span>Ambiente sandbox: nenhuma cobrança real será efetuada no cartão.</span>
+              </div>
+            </div>
+          </div>
         )}
       </main>
       <Footer />

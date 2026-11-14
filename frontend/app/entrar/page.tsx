@@ -45,12 +45,12 @@ export default function Entrar() {
       <Header />
       <main className="page-main container">
         <section className="auth-card dashboard-card">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="stack-sm">
             <h1>Acesse sua conta AgriTech</h1>
-            <p className="sandbox-notice" role="note" style={{ marginTop: 0 }}>
+            <p className="sandbox-notice" role="note">
               Demonstração local (senha {DEMO_CREDENTIALS.password}):
             </p>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="cluster-sm">
               <button
                 type="button"
                 onClick={() => {

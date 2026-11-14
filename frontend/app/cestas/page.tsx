@@ -3,7 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Footer, Header, SectionHeading, StatusBadge } from '@/components/ui';
+import {
+  FluidSheet,
+  Footer,
+  Header,
+  SectionHeading,
+  StatusBadge,
+} from '@/components/ui';
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -22,6 +28,7 @@ import {
   type Cart,
   type Subscription,
 } from '@/lib/api';
+import { triggerHaptic } from '@/lib/apple-fluid';
 import { MOCK_DELIVERY_SLOTS } from '@/lib/mock-data';
 
 export default function CestasPage() {
@@ -56,6 +63,7 @@ export default function CestasPage() {
       requireAuth();
       return;
     }
+    triggerHaptic(8);
     setError('');
     setMessage('');
     setSelectedBasket(basket);
@@ -67,6 +75,7 @@ export default function CestasPage() {
       requireAuth();
       return;
     }
+    triggerHaptic(8);
     setError('');
     setMessage('');
     try {
@@ -83,6 +92,7 @@ export default function CestasPage() {
   async function confirmSubscription(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedBasket) return;
+    triggerHaptic(10);
     setSubmitting(true);
     setError('');
     try {
@@ -134,11 +144,7 @@ export default function CestasPage() {
         </div>
 
         {message && (
-          <p
-            className="status status-success status-message"
-            role="status"
-            style={{ marginBottom: '20px' }}
-          >
+          <p className="status status-success status-message" role="status">
             <span>{message}</span>
             <Link className="text-link" href="/app/carrinho">
               Ir para a sacola →
@@ -161,65 +167,30 @@ export default function CestasPage() {
           <div className="product-grid">
             {baskets.map((basket) => (
               <article
-                className="dashboard-card"
+                className="dashboard-card stack-md"
                 key={basket.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                }}
               >
                 <div className="card-heading">
-                  <div>
+                  <div className="stack-xs">
                     <span className="product-category-tag">
                       {basket.producer.name}
                     </span>
-                    <h2 style={{ marginTop: '4px', marginBottom: '4px' }}>
-                      {basket.name}
-                    </h2>
+                    <h2>{basket.name}</h2>
                     <span className="count-tag">{basket.seasonality}</span>
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    borderTop: '1px solid var(--line)',
-                    paddingTop: '12px',
-                  }}
-                >
-                  <strong
-                    style={{
-                      fontSize: '0.95rem',
-                      color: 'var(--forest)',
-                      display: 'block',
-                      marginBottom: '8px',
-                    }}
-                  >
+                <div className="section-divider">
+                  <strong className="section-label">
                     Itens fixos deste ciclo ({basket.items.length} itens):
                   </strong>
                   <div className="status-history-list">
                     {basket.items.map((item, idx) => (
                       <div
                         key={`${basket.id}-item-${idx}`}
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'baseline',
-                          fontSize: '0.95rem',
-                          paddingBlock: '5px',
-                          borderBottom:
-                            idx < basket.items.length - 1
-                              ? '1px solid var(--line)'
-                              : '0',
-                        }}
+                        className="list-row"
                       >
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                          }}
-                        >
+                        <span className="cluster-sm">
                           <SproutIcon size={14} />
                           <strong>{item.name}</strong>
                         </span>
@@ -231,24 +202,8 @@ export default function CestasPage() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    borderTop: '1px solid var(--line)',
-                    paddingTop: '14px',
-                    marginTop: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '10px',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginTop: '24px',
-                    }}
-                  >
+                <div className="section-divider-auto stack-sm">
+                  <div className="row-between">
                     <div className="product-price">
                       <strong>{formatPrice(basket.priceCents)}</strong>
                       <span className="product-unit"> / ciclo</span>
@@ -260,51 +215,29 @@ export default function CestasPage() {
                     </StatusBadge>
                   </div>
 
-                  <div
-                    style={{
-                      fontSize: '0.95rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
+                  <div className="stack-xs">
+                    <span className="cluster-sm">
                       <CalendarIcon size={14} />
-                      Próxima entrega:{' '}
-                      <strong>{formatDate(basket.stock.deliveryDate)}</strong>
+                      <span>
+                        Próxima entrega:{' '}
+                        <strong>{formatDate(basket.stock.deliveryDate)}</strong>
+                      </span>
                     </span>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
+                    <span className="cluster-sm">
                       <ClockIcon size={14} />
-                      Cancelamento:{' '}
-                      <strong>{basket.cutoffHours}h antes da entrega</strong>
+                      <span>
+                        Cancelamento:{' '}
+                        <strong>{basket.cutoffHours}h antes da entrega</strong>
+                      </span>
                     </span>
                   </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                      marginTop: '6px',
-                    }}
-                  >
+                  <div className="stack-sm">
                     <button
                       type="button"
                       disabled={basket.stock.available < 1}
                       onClick={() => openSubscribeModal(basket)}
-                      className="button button-primary button-full mt-6"
+                      className="button button-primary button-full"
                     >
                       <span>Assinar (semanal ou mensal)</span>
                       <ArrowRightIcon size={15} />
@@ -325,17 +258,16 @@ export default function CestasPage() {
         )}
 
         {selectedBasket && (
-          <section
-            className="dashboard-card"
-            style={{ marginTop: '32px', border: '2px solid var(--forest)' }}
-            aria-labelledby="subscribe-heading"
+          <FluidSheet
+            ariaLabelledBy="subscribe-heading"
+            onDismiss={() => setSelectedBasket(null)}
           >
             <div className="card-heading">
-              <div>
+              <div className="stack-xs">
                 <span className="product-category-tag">
                   Configurar assinatura recorrente
                 </span>
-                <h2 id="subscribe-heading" style={{ marginTop: '4px' }}>
+                <h2 id="subscribe-heading">
                   {selectedBasket.name} ·{' '}
                   {formatPrice(selectedBasket.priceCents)} / ciclo
                 </h2>
@@ -357,11 +289,7 @@ export default function CestasPage() {
               </button>
             </div>
 
-            <form
-              className="checkout-form"
-              onSubmit={confirmSubscription}
-              style={{ marginTop: '18px' }}
-            >
+            <form className="checkout-form" onSubmit={confirmSubscription}>
               <div className="form-group-grid">
                 <label>
                   Frequência de entrega e cobrança
@@ -493,7 +421,7 @@ export default function CestasPage() {
                 </button>
               </div>
             </form>
-          </section>
+          </FluidSheet>
         )}
       </main>
       <Footer />

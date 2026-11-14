@@ -4,18 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Footer, Header, ProducerSubnav, StatusBadge } from '@/components/ui';
 import {
-  ArrowRightIcon,
   CalendarIcon,
   PackageIcon,
-  ShieldCheckIcon,
   SproutIcon,
   TruckIcon,
 } from '@/components/icons';
 import {
   api,
-  formatAuditAction,
-  formatAuditResource,
-  formatDateTime,
   formatPrice,
   type ProducerDashboardData,
 } from '@/lib/api';
@@ -59,14 +54,12 @@ export default function ProdutorDashboardPage() {
         {data && (
           <>
             <div className="dashboard-intro">
-              <div>
+              <div className="stack-xs">
                 <span className="product-category-tag">
                   {data.producer.city}/{data.producer.state} ·{' '}
                   {data.producer.legalIdMasked}
                 </span>
-                <h1 style={{ marginTop: '4px' }}>
-                  {data.producer.displayName}
-                </h1>
+                <h1>{data.producer.displayName}</h1>
                 <p className="lead">{data.producer.story}</p>
               </div>
               <div className="hero-actions">
@@ -94,10 +87,7 @@ export default function ProdutorDashboardPage() {
               </div>
             </div>
 
-            <div
-              className="metric-grid"
-              style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}
-            >
+            <div className="metric-grid">
               <div className="metric-card">
                 <span className="metric-label">Ofertas publicadas</span>
                 <strong>{data.metrics.activeOffersCount}</strong>
@@ -126,10 +116,7 @@ export default function ProdutorDashboardPage() {
             </div>
 
             {data.producer.pendingReasons.length > 0 && (
-              <section
-                className="dashboard-card"
-                style={{ marginBottom: '24px' }}
-              >
+              <section className="dashboard-card stack-sm order-card">
                 <div className="card-heading">
                   <div>
                     <h2>Pendências acionáveis do lote</h2>
@@ -139,22 +126,21 @@ export default function ProdutorDashboardPage() {
                     </p>
                   </div>
                 </div>
-                <div
-                  className="status-history-list"
-                  style={{ marginTop: '12px' }}
-                >
+                <div className="status-history-list">
                   {data.producer.pendingReasons.map((reason, idx) => (
                     <div className="order-row" key={idx}>
-                      <span className="status-timeline-dot" />
-                      <strong>{reason}</strong>
+                      <div className="cluster-sm">
+                        <span className="status-timeline-dot" />
+                        <strong>{reason}</strong>
+                      </div>
                     </div>
                   ))}
                 </div>
               </section>
             )}
 
-            <div className="checkout-layout" style={{ marginTop: 0 }}>
-              <section className="dashboard-card h-full">
+            <div className="checkout-layout">
+              <section className="dashboard-card stack-md">
                 <div className="card-heading">
                   <div>
                     <h2>Volumes consolidados para colheita</h2>
@@ -165,36 +151,18 @@ export default function ProdutorDashboardPage() {
                 </div>
 
                 {data.harvestSummary.length === 0 ? (
-                  <p className="muted" style={{ marginTop: '16px' }}>
+                  <p className="muted">
                     Nenhum volume pendente de colheita neste momento.
                   </p>
                 ) : (
-                  <div
-                    className="status-history-list"
-                    style={{ marginTop: '14px' }}
-                  >
+                  <div className="status-history-list">
                     {data.harvestSummary.map((h) => (
-                      <div
-                        className="order-row"
-                        key={h.productId}
-                        style={{
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                          }}
-                        >
+                      <div className="order-row" key={h.productId}>
+                        <div className="cluster-sm">
                           <SproutIcon size={18} />
-                          <div>
+                          <div className="stack-xs">
                             <strong>{h.name}</strong>
-                            <span
-                              style={{ display: 'block', fontSize: '0.95rem' }}
-                            >
+                            <span className="count-tag">
                               Presente em {h.ordersCount} pedido(s)
                               confirmado(s)
                             </span>
@@ -246,13 +214,7 @@ export default function ProdutorDashboardPage() {
                   <StatusBadge tone="info">Feature Flag Off</StatusBadge>
                 </div>
                 <hr />
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                  }}
-                >
+                <div className="stack-sm">
                   <Link
                     href="/produtor/catalogo"
                     className="button button-secondary button-full"
