@@ -39,9 +39,19 @@ export class AuthGuard implements CanActivate {
     if (!header?.startsWith('Bearer '))
       throw new UnauthorizedException('Token Bearer obrigatório');
     const rawToken = header.slice(7);
-    if (process.env.NODE_ENV !== 'production' && DEV_MOCK_TOKENS[rawToken]) {
-      req.user = DEV_MOCK_TOKENS[rawToken];
-      return true;
+    if (process.env.NODE_ENV !== 'production') {
+      if (DEV_MOCK_TOKENS[rawToken]) {
+        req.user = DEV_MOCK_TOKENS[rawToken];
+        return true;
+      }
+      if (rawToken.startsWith('mock-local-session-')) {
+        req.user = {
+          sub: 'mock-consumer',
+          email: 'jornada@mana.local',
+          role: 'consumer',
+        };
+        return true;
+      }
     }
     try {
       req.user = jwt.verify(rawToken, JWT_SECRET) as {

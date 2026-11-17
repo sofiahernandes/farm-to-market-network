@@ -33,6 +33,7 @@ class CatalogController {
       active: p.active,
       certification: p.certification ?? 'Orgânico Participativo (OPAC)',
       seasonality: p.seasonality ?? 'Safra atual · Colheita sob demanda',
+      basketId: p.baskets?.[0]?.id ?? undefined,
       basketItems: p.basketItemsJson
         ? JSON.parse(p.basketItemsJson)
         : undefined,
@@ -91,6 +92,7 @@ class CatalogController {
       orderBy: { name: 'asc' },
       include: {
         producer: true,
+        baskets: { select: { id: true }, take: 1 },
         inventory: { orderBy: { deliveryDate: 'asc' }, take: 1 },
       },
     });
@@ -124,6 +126,7 @@ class CatalogController {
       where: { id, active: true },
       include: {
         producer: true,
+        baskets: { select: { id: true }, take: 1 },
         inventory: { orderBy: { deliveryDate: 'asc' }, take: 1 },
       },
     });

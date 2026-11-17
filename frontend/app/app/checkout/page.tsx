@@ -8,12 +8,14 @@ import {
   formatPrice,
   requireAuth,
   type Cart,
+  type DeliverySlotOption,
   type Order,
 } from '@/lib/api';
 import { MOCK_DELIVERY_SLOTS } from '@/lib/mock-data';
 
 export default function Checkout() {
   const [cart, setCart] = useState<Cart | null>(null),
+    [slots, setSlots] = useState<DeliverySlotOption[]>(MOCK_DELIVERY_SLOTS),
     [form, setForm] = useState({
       postalCode: '01310-100',
       street: 'Avenida Paulista',
@@ -30,6 +32,14 @@ export default function Checkout() {
 
   useEffect(() => {
     if (!requireAuth()) return;
+    api<{ data: DeliverySlotOption[] }>('/delivery-slots')
+      .then((res) => {
+        if (res.data.length > 0) {
+          setSlots(res.data);
+          setSlot(res.data[0].id);
+        }
+      })
+      .catch(() => {});
     api<Cart>('/cart')
       .then(setCart)
       .catch((e) => setError(e.message))
@@ -168,7 +178,7 @@ export default function Checkout() {
               <label>
                 Janela de entrega
                 <select value={slot} onChange={(e) => setSlot(e.target.value)}>
-                  {MOCK_DELIVERY_SLOTS.map((s) => (
+                  {slots.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.label}
                     </option>

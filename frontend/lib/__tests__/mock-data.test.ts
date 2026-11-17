@@ -21,20 +21,22 @@ import {
   relativeVelocity,
   rubberband,
 } from '../apple-fluid.ts';
-import type {
-  AccountProfile,
-  AdminDashboardData,
-  AuthResponse,
-  Basket,
-  Cart,
-  CatalogResponse,
-  DeliverySlotOption,
-  LgpdDeletionRequest,
-  Order,
-  ProducerDashboardData,
-  Product,
-  SavedAddress,
-  Subscription,
+import {
+  USE_MOCK_DATA,
+  api,
+  type AccountProfile,
+  type AdminDashboardData,
+  type AuthResponse,
+  type Basket,
+  type Cart,
+  type CatalogResponse,
+  type DeliverySlotOption,
+  type LgpdDeletionRequest,
+  type Order,
+  type ProducerDashboardData,
+  type Product,
+  type SavedAddress,
+  type Subscription,
 } from '../api.ts';
 
 describe('Manà Mock API & Consumer/Producer Domain Rules', () => {
@@ -725,6 +727,40 @@ describe('Manà Mock API & Consumer/Producer Domain Rules', () => {
 
       const profile = (await mockApi('/account/profile')) as AccountProfile;
       assert.equal(profile.lgpdRequests[0].status, 'completed');
+    });
+  });
+
+  describe('API Client Backend-First with Mock-Data Fallback', () => {
+    it('defaults USE_MOCK_DATA to false, returns backend data when reachable, and falls back to mock-data when unreachable', async () => {
+      assert.equal(USE_MOCK_DATA, false);
+
+      const originalFetch = globalThis.fetch;
+      try {
+        // 1. When backend is reachable, returns actual backend data
+        globalThis.fetch = async () =>
+          new Response(
+            JSON.stringify({
+              data: [{ id: 'backend-prod-1', name: 'Produto Real do Backend' }],
+              pagination: { limit: 20, offset: 0, count: 1, nextOffset: null },
+            }),
+            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          );
+
+        const backendRes = await api<CatalogResponse>('/catalog');
+        assert.equal(backendRes.data.length, 1);
+        assert.equal(backendRes.data[0].id, 'backend-prod-1');
+
+        // 2. When backend is unreachable (network error), falls back to mock-data
+        globalThis.fetch = async () => {
+          throw new TypeError('fetch failed');
+        };
+
+        const fallbackRes = await api<CatalogResponse>('/catalog');
+        assert.equal(fallbackRes.data.length, 8);
+        assert.ok(fallbackRes.data.some((p) => p.id === 'mock-cesta'));
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
     });
   });
 });

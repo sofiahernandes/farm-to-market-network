@@ -55,6 +55,7 @@ export default function Catalogo() {
             <option value="">Todas as categorias</option>
             <option value="Cestas">Cestas</option>
             <option value="Hortaliças">Hortaliças</option>
+            <option value="Raízes">Raízes</option>
             <option value="Frutas">Frutas</option>
             <option value="Granja">Granja</option>
           </select>

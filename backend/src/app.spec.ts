@@ -3,9 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { appValidationPipe } from './common/pipes/validation.pipe';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { PrismaService } from './prisma/prisma.service';
+import { seedDatabase } from '../prisma/seed';
 
 describe('Manà SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let baseUrl: string;
   let consumerToken: string;
 
@@ -15,6 +18,8 @@ describe('Manà SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    prisma = app.get(PrismaService);
+    await seedDatabase(prisma);
     app.setGlobalPrefix('v1');
     app.useGlobalPipes(appValidationPipe);
     app.useGlobalFilters(new HttpExceptionFilter());
@@ -24,6 +29,9 @@ describe('Manà SQLite + NestJS Full-Stack Integration (All 4 Slices)', () => {
   });
 
   afterAll(async () => {
+    if (prisma) {
+      await seedDatabase(prisma);
+    }
     await app?.close();
   });
 

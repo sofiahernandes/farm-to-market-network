@@ -25,6 +25,7 @@ import {
   requireAuth,
   type Basket,
   type Cart,
+  type DeliverySlotOption,
   type Subscription,
 } from '@/lib/api';
 import { triggerHaptic } from '@/lib/apple-fluid';
@@ -33,6 +34,7 @@ import { MOCK_DELIVERY_SLOTS } from '@/lib/mock-data';
 export default function CestasPage() {
   const router = useRouter();
   const [baskets, setBaskets] = useState<Basket[]>([]);
+  const [slots, setSlots] = useState<DeliverySlotOption[]>(MOCK_DELIVERY_SLOTS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -51,6 +53,14 @@ export default function CestasPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    api<{ data: DeliverySlotOption[] }>('/delivery-slots')
+      .then((res) => {
+        if (res.data.length > 0) {
+          setSlots(res.data);
+          setSlotId(res.data[0].id);
+        }
+      })
+      .catch(() => {});
     api<{ data: Basket[] }>('/baskets')
       .then((res) => setBaskets(res.data))
       .catch((e) => setError((e as Error).message))
@@ -312,7 +322,7 @@ export default function CestasPage() {
                     value={slotId}
                     onChange={(e) => setSlotId(e.target.value)}
                   >
-                    {MOCK_DELIVERY_SLOTS.map((slot) => (
+                    {slots.map((slot) => (
                       <option key={slot.id} value={slot.id}>
                         {slot.label}
                       </option>

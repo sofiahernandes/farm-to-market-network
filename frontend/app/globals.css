@@ -351,6 +351,7 @@ p {
   position: sticky;
   top: 0;
   z-index: 50;
+  background-color: color-mix(in srgb, var(--palette-lime) 20%, var(--palette-white));
 }
 
 .nav-wrap {
@@ -358,7 +359,6 @@ p {
   display: flex;
   align-items: center;
   gap: var(--space-7);
-  background-color: color-mix(in srgb, var(--palette-lime) 20%, transparent);
 }
 
 .logo {

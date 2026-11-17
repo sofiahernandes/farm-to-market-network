@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-location-assign-relative-destination -- API client handles auth expiry outside React event handlers. */
-import { mockApi } from './mock-data';
+import { mockApi } from './mock-data.ts';
 
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/v1';
 
-// Local previews work without the Nest/Prisma stack. Set this to "false" in
-// .env.local when you want to call a running backend instead.
-export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA !== 'false';
+// Calls the actual Nest/Prisma backend by default and falls back to mock-data
+// when the backend cannot be reached (or when NEXT_PUBLIC_USE_MOCK_DATA="true").
+export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
 
 export type User = { id: string; email: string; role: string };
 
@@ -357,8 +357,10 @@ export type CatalogResponse = {
 };
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  status: number;
+  constructor(status: number, message: string) {
     super(message);
+    this.status = status;
   }
 }
 

@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Manà · Do campo à sua porta',
+    default: 'Manà',
     template: '%s · Manà',
   },
   description:
