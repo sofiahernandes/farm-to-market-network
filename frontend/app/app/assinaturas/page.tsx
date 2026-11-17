@@ -301,23 +301,23 @@ export default function AssinaturasPage() {
 
                 {(sub.status === 'paused' ||
                   sub.status === 'payment_failed') && (
-                  <button
-                    type="button"
-                    disabled={isBusy}
-                    onClick={() =>
-                      runAction(
-                        sub.id,
-                        'resume',
-                        undefined,
-                        'Assinatura reativada para os próximos ciclos.',
-                      )
-                    }
-                    className="button button-small button-primary"
-                  >
-                    <CheckIcon size={14} />
-                    <span>Reativar assinatura</span>
-                  </button>
-                )}
+                    <button
+                      type="button"
+                      disabled={isBusy}
+                      onClick={() =>
+                        runAction(
+                          sub.id,
+                          'resume',
+                          undefined,
+                          'Assinatura reativada para os próximos ciclos.',
+                        )
+                      }
+                      className="button button-small button-primary"
+                    >
+                      <CheckIcon size={14} />
+                      <span>Reativar assinatura</span>
+                    </button>
+                  )}
 
                 {sub.status !== 'cancelled' && (
                   <button

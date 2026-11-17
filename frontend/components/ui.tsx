@@ -285,14 +285,14 @@ export function ProducerSubnav({
   paymentConnected = true,
 }: {
   active:
-    | 'painel'
-    | 'onboarding'
-    | 'catalogo'
-    | 'novo'
-    | 'estoque'
-    | 'pedidos'
-    | 'financeiro'
-    | 'conta';
+  | 'painel'
+  | 'onboarding'
+  | 'catalogo'
+  | 'novo'
+  | 'estoque'
+  | 'pedidos'
+  | 'financeiro'
+  | 'conta';
   onboardingApproved?: boolean;
   paymentConnected?: boolean;
 }) {

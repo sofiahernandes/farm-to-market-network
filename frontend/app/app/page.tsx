@@ -22,13 +22,13 @@ export default function AppHome() {
     if (!requireAuth()) return;
     api<Cart>('/cart')
       .then(setCart)
-      .catch(() => {});
+      .catch(() => { });
     api<{ data: Order[] }>('/orders')
       .then((x) => setOrders(x.data))
-      .catch(() => {});
+      .catch(() => { });
     api<{ data: Subscription[] }>('/subscriptions')
       .then((x) => setSubs(x.data))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const activeSubs = subs.filter((s) => s.status === 'active');

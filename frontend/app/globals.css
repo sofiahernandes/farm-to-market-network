@@ -170,15 +170,18 @@ hr {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--palette-white);
   border-left: var(--border-thin);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--palette-forest);
   border: 2px solid var(--palette-white);
   border-radius: var(--radius-sm);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--palette-crimson);
 }
@@ -1726,6 +1729,7 @@ p {
 /* Responsive Breakpoints */
 
 @media (max-width: 900px) {
+
   .hero-grid,
   .steps-grid,
   .product-grid,
@@ -1792,6 +1796,7 @@ p {
   html {
     scroll-behavior: auto;
   }
+
   .button,
   .product-card,
   .cart-link,
@@ -1801,6 +1806,7 @@ p {
     transition: none !important;
     transform: none !important;
   }
+
   .button:hover,
   .button:active,
   .product-card:hover,

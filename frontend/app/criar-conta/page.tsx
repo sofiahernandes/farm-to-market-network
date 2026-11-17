@@ -11,12 +11,12 @@ export default function CriarConta() {
   const router = useRouter();
 
   const [f, setF] = useState({
-      role: 'consumer' as 'consumer' | 'producer',
-      displayName: '',
-      email: '',
-      cpf: DEMO_CPF,
-      password: '',
-    }),
+    role: 'consumer' as 'consumer' | 'producer',
+    displayName: '',
+    email: '',
+    cpf: DEMO_CPF,
+    password: '',
+  }),
     [error, setError] = useState(''),
     [loading, setLoading] = useState(false);
 

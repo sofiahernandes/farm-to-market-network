@@ -150,11 +150,11 @@ export type SubscriptionCycle = {
   billingDate: string;
   amountCents: number;
   status:
-    | 'scheduled'
-    | 'confirmed'
-    | 'stock_shortage'
-    | 'payment_failed'
-    | 'skipped';
+  | 'scheduled'
+  | 'confirmed'
+  | 'stock_shortage'
+  | 'payment_failed'
+  | 'skipped';
   paymentStatus: 'approved' | 'pending' | 'failed';
   orderId: string | null;
   note?: string;
@@ -289,11 +289,11 @@ export type AdminManualRoute = {
 export type AdminExceptionItem = {
   id: string;
   type:
-    | 'payment_failure'
-    | 'payment_failed'
-    | 'stock_shortage'
-    | 'refund_request'
-    | 'lgpd_request';
+  | 'payment_failure'
+  | 'payment_failed'
+  | 'stock_shortage'
+  | 'refund_request'
+  | 'lgpd_request';
   severity: 'medium' | 'high';
   referenceId: string;
   title: string;
@@ -428,9 +428,9 @@ export function formatDate(value: string | null) {
 export function formatDateTime(value: string | null) {
   return value
     ? new Date(value).toLocaleString('pt-BR', {
-        dateStyle: 'short',
-        timeStyle: 'short',
-      })
+      dateStyle: 'short',
+      timeStyle: 'short',
+    })
     : 'Horário a confirmar';
 }
 
@@ -524,8 +524,8 @@ export async function api<T>(
     const message = Array.isArray(body?.error?.message)
       ? body.error.message.join(', ')
       : body?.error?.message ||
-        body?.message ||
-        'Não foi possível concluir a operação.';
+      body?.message ||
+      'Não foi possível concluir a operação.';
     throw new ApiError(response.status, message);
   }
   if (method !== 'GET') notifyStateChange();

@@ -39,7 +39,7 @@ export default function Checkout() {
           setSlot(res.data[0].id);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     api<Cart>('/cart')
       .then(setCart)
       .catch((e) => setError(e.message))

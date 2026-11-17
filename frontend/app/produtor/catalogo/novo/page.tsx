@@ -36,7 +36,7 @@ export default function ProdutorNovaOfertaPage() {
   useEffect(() => {
     api<ProducerDashboardData>('/producer/dashboard')
       .then(setDashboard)
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const priceCents = Math.max(

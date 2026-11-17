@@ -60,7 +60,7 @@ export default function CestasPage() {
           setSlotId(res.data[0].id);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     api<{ data: Basket[] }>('/baskets')
       .then((res) => setBaskets(res.data))
       .catch((e) => setError((e as Error).message))

@@ -191,8 +191,8 @@ export default function ProdutorDashboardPage() {
                     {data.producer.onboardingStatus === 'approved'
                       ? 'Aprovado'
                       : data.producer.onboardingStatus === 'pending_review'
-                      ? 'Em análise'
-                      : 'Com pendência'}
+                        ? 'Em análise'
+                        : 'Com pendência'}
                   </StatusBadge>
                 </div>
                 <div className="summary-row">
