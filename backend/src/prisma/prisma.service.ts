@@ -9,9 +9,14 @@ export class PrismaService
 {
   async onModuleInit() {
     await this.$connect();
-    const count = await this.product.count();
-    if (count === 0) {
-      await seedDatabase(this);
+    if (process.env.AUTO_SEED_ON_BOOT === 'false') return;
+    try {
+      const count = await this.product.count();
+      if (count === 0) {
+        await seedDatabase(this);
+      }
+    } catch {
+      // Schema not pushed yet or concurrent seed in progress
     }
   }
   async onModuleDestroy() {

@@ -15,28 +15,40 @@ async function bootstrap() {
   ]);
   const isDevelopment =
     config.get<string>('nodeEnv', 'development') !== 'production';
+  const allowVercelOrigins = config.get<boolean>('allowVercelOrigins', true);
 
   app.enableCors({
     origin: (requestOrigin, callback) => {
+      if (!requestOrigin) {
+        callback(null, true);
+        return;
+      }
+      const cleanOrigin = requestOrigin.replace(/\/+$/, '');
+      const isConfigured =
+        configuredOrigins.includes('*') ||
+        configuredOrigins.includes(cleanOrigin);
+      const isVercelPreview =
+        allowVercelOrigins && cleanOrigin.endsWith('.vercel.app');
       const isManusPreview =
         isDevelopment &&
-        !!requestOrigin &&
-        (requestOrigin.endsWith('.manus.computer') ||
-          requestOrigin.endsWith('.manus.im'));
-      callback(
-        null,
-        !requestOrigin ||
-          configuredOrigins.includes(requestOrigin) ||
-          isManusPreview
-      );
+        (cleanOrigin.endsWith('.manus.computer') ||
+          cleanOrigin.endsWith('.manus.im'));
+      callback(null, isConfigured || isVercelPreview || isManusPreview);
     },
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-idempotency-key',
+      'x-correlation-id',
+    ],
   });
   app.useGlobalPipes(appValidationPipe);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new CorrelationIdInterceptor());
 
-  await app.listen(config.get<number>('port', 3001));
+  await app.listen(config.get<number>('port', 3001), '0.0.0.0');
 }
 
 void bootstrap();

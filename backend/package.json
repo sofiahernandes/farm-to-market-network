@@ -3,16 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "nest build",
+    "build": "node scripts/select-prisma-provider.mjs && prisma generate && nest build",
+    "build:cloud": "node scripts/select-prisma-provider.mjs && prisma generate && prisma db push && nest build",
     "start": "node dist/src/main.js",
+    "start:prod": "node dist/src/main.js",
     "start:dev": "nest start --watch",
     "test": "node --test src/domain/rules.test.ts",
     "test:jest": "jest --runInBand",
     "test:watch": "jest --watch",
-    "prisma:generate": "prisma generate",
-    "prisma:validate": "prisma validate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:provider": "node scripts/select-prisma-provider.mjs",
+    "prisma:generate": "node scripts/select-prisma-provider.mjs && prisma generate",
+    "prisma:validate": "node scripts/select-prisma-provider.mjs && prisma validate",
+    "prisma:push": "node scripts/select-prisma-provider.mjs && prisma db push",
+    "prisma:migrate": "node scripts/select-prisma-provider.mjs && prisma migrate dev",
+    "prisma:seed": "node scripts/select-prisma-provider.mjs && tsx prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",
